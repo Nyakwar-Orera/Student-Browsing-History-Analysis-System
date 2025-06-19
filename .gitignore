@@ -1,11 +1,22 @@
+# Virtual environments
 .venv/
 venv/
+
+# Bytecode & cache
 __pycache__/
+
+# Environment settings
 .env
 .vscode/
-data/browsing_history_data_clean.csv
+
+# Ignore full files but not samples
+data/browsing_history_data_cleaned.csv
 data/time_records_full.txt
 
+# Keep sample CSVs, ignore big ones
 *.csv
 *.txt
+!requirements.txt
+!runtime.txt
 !data/browsing_history_sample.csv
+!data/time_records_sample.txt
