@@ -1,7 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify, send_file
 import pandas as pd
+import requests
+import os
 from datetime import datetime, timedelta
-from io import BytesIO
+from io import BytesIO, StringIO
 from config import Config
 
 app = Flask(__name__)
@@ -10,7 +12,19 @@ app.secret_key = Config.SECRET_KEY
 # Load browsing history data
 def load_data():
     try:
-        df = pd.read_csv(Config.DATA_FILE)
+        # Try to load from local file first
+        if os.path.exists(Config.DATA_FILE):
+            df = pd.read_csv(Config.DATA_FILE)
+        else:
+            print("Local file not found. Fetching from Google Drive...")
+            file_id = Config.GOOGLE_DRIVE_FILE_ID
+            if not file_id:
+                raise ValueError("Google Drive File ID not set in config.")
+            url = f"https://drive.google.com/uc?export=download&id={file_id}"
+            response = requests.get(url)
+            response.raise_for_status()
+            df = pd.read_csv(StringIO(response.text))
+
         df['visit_time'] = pd.to_datetime(df['visit_time'], errors='coerce')
         df = df.dropna(subset=['visit_time'])
 
@@ -79,7 +93,6 @@ def report(trno):
     df = load_data()
     student_data = df[df['TRNO'] == trno]
 
-    # Filter by date
     date_from = request.args.get('date_from')
     date_to = request.args.get('date_to')
 
@@ -97,7 +110,6 @@ def report(trno):
     if student_data.empty:
         return render_template('error.html', message="No data found")
 
-    # Summary
     total_visits = len(student_data)
     unique_domains = student_data['domain'].nunique()
     first_visit = student_data['visit_time'].min()
