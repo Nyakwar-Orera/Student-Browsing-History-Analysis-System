@@ -1,0 +1,11 @@
+.venv/
+venv/
+__pycache__/
+.env
+.vscode/
+data/browsing_history_data_clean.csv
+data/time_records_full.txt
+
+*.csv
+*.txt
+!data/browsing_history_sample.csv

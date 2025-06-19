@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Analytics - Student Browsing History</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+  <!-- Navbar -->
+  <nav class="bg-white shadow sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold text-blue-600">Analytics Dashboard</h1>
+      <div class="space-x-4">
+        <a href="/home" class="text-gray-700 hover:text-blue-600 transition">Home</a>
+        <a href="/analytics" class="text-gray-700 hover:text-blue-600 transition">Analytics</a>
+        <a href="/logout" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Summary Cards -->
+  <section class="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="bg-white p-6 rounded shadow hover:shadow-lg transition">
+      <h2 class="text-lg font-semibold text-blue-600">Total Visits</h2>
+      <p class="text-3xl font-bold mt-2">{{ total_visits }}</p>
+    </div>
+    <div class="bg-white p-6 rounded shadow hover:shadow-lg transition">
+      <h2 class="text-lg font-semibold text-green-600">Total Students</h2>
+      <p class="text-3xl font-bold mt-2">{{ unique_students }}</p>
+    </div>
+    <div class="bg-white p-6 rounded shadow hover:shadow-lg transition">
+      <h2 class="text-lg font-semibold text-yellow-600">Total Domains</h2>
+      <p class="text-3xl font-bold mt-2">{{ unique_domains }}</p>
+    </div>
+  </section>
+
+  <!-- Tables -->
+  <section class="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="bg-white p-6 rounded shadow">
+      <h3 class="text-xl font-semibold mb-4">Top 10 Students</h3>
+      <table class="w-full table-auto text-left">
+        <thead class="bg-gray-200 text-gray-700">
+          <tr>
+            <th class="px-4 py-2">Student</th>
+            <th class="px-4 py-2">Visits</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in top_students %}
+          <tr class="border-t hover:bg-gray-50">
+            <td class="px-4 py-2">{{ item.Student }}</td>
+            <td class="px-4 py-2">{{ item.Visits }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="bg-white p-6 rounded shadow">
+      <h3 class="text-xl font-semibold mb-4">Domain Diversity per Class</h3>
+      <table class="w-full table-auto text-left">
+        <thead class="bg-gray-200 text-gray-700">
+          <tr>
+            <th class="px-4 py-2">Class</th>
+            <th class="px-4 py-2">Unique Domains</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in domain_per_class %}
+          <tr class="border-t hover:bg-gray-50">
+            <td class="px-4 py-2">{{ item.Class }}</td>
+            <td class="px-4 py-2">{{ item['Unique Domains'] }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Charts -->
+  <section class="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
+    <div class="bg-white p-4 rounded shadow">
+      <h4 class="text-lg font-semibold mb-3">Hourly Activity Timeline</h4>
+      <canvas id="hourlyChart" class="w-full h-64"></canvas>
+    </div>
+    <div class="bg-white p-4 rounded shadow">
+      <h4 class="text-lg font-semibold mb-3">Activity by Time Period</h4>
+      <canvas id="periodChart" class="w-full h-64"></canvas>
+    </div>
+    <div class="bg-white p-4 rounded shadow">
+      <h4 class="text-lg font-semibold mb-3">Activity by Day of Week</h4>
+      <canvas id="weekdayChart" class="w-full h-64"></canvas>
+    </div>
+    <div class="bg-white p-4 rounded shadow">
+      <h4 class="text-lg font-semibold mb-3">Visits Over Time</h4>
+      <canvas id="dailyChart" class="w-full h-64"></canvas>
+    </div>
+  </section>
+
+  <!-- Additional Tables -->
+  <section class="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="bg-white p-6 rounded shadow">
+      <h3 class="text-xl font-semibold mb-4">Top 10 Domains</h3>
+      <table class="w-full table-auto text-left">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="px-4 py-2">Domain</th>
+            <th class="px-4 py-2">Visits</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in top_domains %}
+          <tr class="border-t hover:bg-gray-50">
+            <td class="px-4 py-2">{{ item.Domain }}</td>
+            <td class="px-4 py-2">{{ item.Visits }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="bg-white p-6 rounded shadow">
+      <h3 class="text-xl font-semibold mb-4">Top 10 Classes</h3>
+      <table class="w-full table-auto text-left">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="px-4 py-2">Class</th>
+            <th class="px-4 py-2">Visits</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in active_Class %}
+          <tr class="border-t hover:bg-gray-50">
+            <td class="px-4 py-2">{{ item.Class }}</td>
+            <td class="px-4 py-2">{{ item.Visits }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Time Tracking -->
+  <section class="max-w-7xl mx-auto px-4 py-6 bg-white rounded shadow">
+    <h3 class="text-xl font-semibold mb-2">Time Tracking</h3>
+    <p><strong>Average Session Duration:</strong> {{ avg_duration }} (HH:MM)</p>
+    <p><strong>Total Time Spent:</strong> {{ total_hours }} hours</p>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-white py-4 mt-10">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+      <p>&copy; <span id="currentYear"></span> Mamal Computer Lab Group</p>
+      <p class="text-sm mt-1">Current Time: <span id="currentTime"></span></p>
+    </div>
+  </footer>
+
+  <!-- ChartJS Config -->
+  <script>
+    const hourlyData = {{ hourly_activity | tojson }};
+    const weekdayData = {{ weekday_activity | tojson }};
+    const periodData = {{ period_activity | tojson }};
+    const dailyData = {{ daily_visits | tojson }};
+
+    const createChart = (ctx, type, labels, data, options = {}) => {
+      new Chart(ctx, {
+        type,
+        data: {
+          labels,
+          datasets: [{
+            label: 'Visits',
+            data,
+            ...options.dataset
+          }]
+        },
+        options: {
+          responsive: true,
+          ...options.chart
+        }
+      });
+    };
+
+    createChart(document.getElementById('hourlyChart'), 'line',
+      hourlyData.map(x => x.Hour),
+      hourlyData.map(x => x.Visits),
+      {
+        dataset: {
+          borderColor: '#3b82f6',
+          backgroundColor: 'rgba(59, 130, 246, 0.2)',
+          tension: 0.3,
+          fill: true
+        },
+        chart: {
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+
+    createChart(document.getElementById('periodChart'), 'pie',
+      periodData.map(x => x.Period),
+      periodData.map(x => x.Visits),
+      {
+        dataset: {
+          backgroundColor: ['#f87171', '#34d399', '#60a5fa', '#facc15']
+        }
+      });
+
+    createChart(document.getElementById('weekdayChart'), 'bar',
+      weekdayData.map(x => x.Day),
+      weekdayData.map(x => x.Visits),
+      {
+        dataset: {
+          backgroundColor: '#34d399'
+        },
+        chart: {
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+
+    createChart(document.getElementById('dailyChart'), 'bar',
+      dailyData.map(x => x.Date),
+      dailyData.map(x => x.Visits),
+      {
+        dataset: {
+          backgroundColor: '#a78bfa'
+        },
+        chart: {
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+  </script>
+
+  <!-- Time Update -->
+  <script>
+    document.getElementById("currentYear").textContent = new Date().getFullYear();
+    function updateTime() {
+      const now = new Date();
+      document.getElementById("currentTime").textContent = now.toLocaleTimeString([], {
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
+      });
+    }
+    updateTime();
+    setInterval(updateTime, 1000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Report - {{ trno }}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+</head>
+<body class="bg-gray-100">
+  <nav class="bg-white shadow mb-6">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+      <h2 class="text-2xl font-bold text-blue-600">Student Report</h2>
+      <div class="space-x-4">
+        <a href="/home" class="text-gray-700 hover:text-blue-600 font-medium">Home</a>
+        <a href="/analytics" class="text-gray-700 hover:text-blue-600 font-medium">Analytics</a>
+        <a href="/logout" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="max-w-7xl mx-auto px-4 py-6" id="report">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold">Student TRNO: {{ trno }}</h1>
+      <button onclick="downloadPDF()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Download PDF</button>
+    </div>
+
+    <!-- Filter Form -->
+    <form method="get" class="bg-white p-4 rounded-lg shadow mb-6 flex flex-wrap gap-4 items-end">
+      <div>
+        <label for="date_from" class="block text-sm font-medium text-gray-700">From</label>
+        <input type="date" id="date_from" name="date_from" value="{{ date_from or '' }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+      </div>
+      <div>
+        <label for="date_to" class="block text-sm font-medium text-gray-700">To</label>
+        <input type="date" id="date_to" name="date_to" value="{{ date_to or '' }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+      </div>
+      <div>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mt-6">Apply Filter</button>
+      </div>
+      {% if date_from or date_to %}
+      <div>
+        <a href="/report/{{ trno }}" class="text-sm text-red-600 hover:underline mt-6 inline-block">Clear Filter</a>
+      </div>
+      {% endif %}
+    </form>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div class="bg-white p-4 rounded-lg shadow">
+        <h3 class="text-sm font-medium text-gray-500">Total Visits</h3>
+        <p class="text-2xl font-bold">{{ total_visits }}</p>
+      </div>
+      <div class="bg-white p-4 rounded-lg shadow">
+        <h3 class="text-sm font-medium text-gray-500">Total Domains</h3>
+        <p class="text-2xl font-bold">{{ unique_domains }}</p>
+      </div>
+      <div class="bg-white p-4 rounded-lg shadow">
+        <h3 class="text-sm font-medium text-gray-500">First Visit</h3>
+        <p class="text-lg">{{ date_from }}</p>
+      </div>
+      <div class="bg-white p-4 rounded-lg shadow">
+        <h3 class="text-sm font-medium text-gray-500">Last Visit</h3>
+        <p class="text-lg">{{ date_to }}</p>
+      </div>
+    </div>
+
+    <!-- Top Domains -->
+    <div class="bg-white p-4 rounded-lg shadow mb-6">
+      <h3 class="text-lg font-semibold text-gray-700 mb-4">Top Visited Domains</h3>
+      <div class="overflow-x-auto">
+        <table class="min-w-full">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-4 py-2 text-left">Domain</th>
+              <th class="px-4 py-2 text-left">Visits</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for domain in top_domains %}
+            <tr class="border-t">
+              <td class="px-4 py-2">{{ domain.Domain }}</td>
+              <td class="px-4 py-2">{{ domain.Visits }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Time Records -->
+    {% if time_records %}
+    <div class="bg-white p-4 rounded-lg shadow mb-6">
+      <h3 class="text-lg font-semibold text-gray-700 mb-4">Computer Usage Time</h3>
+      <div class="overflow-x-auto">
+        <table class="min-w-full">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-4 py-2 text-left">Date</th>
+              <th class="px-4 py-2 text-left">Login Time</th>
+              <th class="px-4 py-2 text-left">Logout Time</th>
+              <th class="px-4 py-2 text-left">Duration</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for record in time_records %}
+            <tr class="border-t">
+              <td class="px-4 py-2">{{ record.Date }}</td>
+              <td class="px-4 py-2">{{ record.LoginTime }}</td>
+              <td class="px-4 py-2">{{ record.LogoutTime }}</td>
+              <td class="px-4 py-2">{{ record.Duration }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Browsing History -->
+    <div class="bg-white p-4 rounded-lg shadow mb-6">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold text-gray-700">Detailed Browsing History</h3>
+        <button onclick="downloadStudentCSV('{{ trno }}')" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">Download CSV</button>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="min-w-full">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-4 py-2 text-left">Title</th>
+              <th class="px-4 py-2 text-left">URL</th>
+              <th class="px-4 py-2 text-left">Domain</th>
+              <th class="px-4 py-2 text-left">Visit Time</th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody">
+            <!-- Data will be loaded here -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="flex justify-between items-center mt-4">
+        <div>
+          <span id="paginationInfo" class="text-sm text-gray-600">Loading...</span>
+        </div>
+        <div class="flex space-x-2">
+          <button id="prevPage" onclick="prevPage()" class="bg-gray-200 px-3 py-1 rounded disabled:opacity-50">Previous</button>
+          <div id="pageNumbers" class="flex space-x-1"></div>
+          <button id="nextPage" onclick="nextPage()" class="bg-gray-200 px-3 py-1 rounded disabled:opacity-50">Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="bg-gray-800 text-white py-4">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+      <p>&copy; <span id="currentYear"></span> Mamal Computer Lab Group</p>
+      <p class="text-sm mt-1">Current Time: <span id="currentTime"></span></p>
+    </div>
+  </footer>
+
+  <script>
+    let currentPage = 1;
+    const perPage = 10;
+    let totalPages = 1;
+
+    const dateFrom = "{{ date_from or '' }}";
+    const dateTo = "{{ date_to or '' }}";
+
+    document.addEventListener('DOMContentLoaded', function() {
+      updateCurrentTime();
+      setInterval(updateCurrentTime, 1000);
+
+      document.getElementById('currentYear').textContent = new Date().getFullYear();
+      loadHistoryData();
+    });
+
+    function updateCurrentTime() {
+      const now = new Date();
+      document.getElementById('currentTime').textContent = now.toLocaleString();
+    }
+
+    function loadHistoryData() {
+      const params = new URLSearchParams({
+        trno: "{{ trno }}",
+        page: currentPage,
+        per_page: perPage,
+        ...(dateFrom ? { date_from: dateFrom } : {}),
+        ...(dateTo ? { date_to: dateTo } : {})
+      });
+
+      fetch(`/api/data?${params.toString()}`)
+        .then(response => response.json())
+        .then(data => {
+          renderHistoryTable(data.data);
+          updatePagination(data.page, data.total_pages, data.total);
+        });
+    }
+
+    function renderHistoryTable(data) {
+      const tableBody = document.getElementById('historyTableBody');
+      tableBody.innerHTML = '';
+
+      if (data.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="4" class="py-4 text-center text-gray-500">No browsing history found</td></tr>';
+        return;
+      }
+
+      data.forEach(item => {
+        const row = document.createElement('tr');
+        row.className = 'border-t hover:bg-gray-50';
+        row.innerHTML = `
+          <td class="px-4 py-2 max-w-xs truncate" title="${item.title || 'No title'}">${item.title || 'No title'}</td>
+          <td class="px-4 py-2 max-w-xs truncate">
+            <a href="${item.url}" target="_blank" class="text-blue-600 hover:underline" title="${item.url}">${item.url}</a>
+          </td>
+          <td class="px-4 py-2">${item.domain || 'N/A'}</td>
+          <td class="px-4 py-2">${new Date(item.visit_time).toLocaleString()}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    function updatePagination(current, total, totalItems) {
+      currentPage = current;
+      totalPages = total;
+
+      const start = (currentPage - 1) * perPage + 1;
+      const end = Math.min(currentPage * perPage, totalItems);
+      document.getElementById('paginationInfo').textContent = `Showing ${start} to ${end} of ${totalItems} entries`;
+
+      const pageNumbers = document.getElementById('pageNumbers');
+      pageNumbers.innerHTML = '';
+
+      const maxVisiblePages = 5;
+      let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+      let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+
+      for (let i = startPage; i <= endPage; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        btn.className = `px-3 py-1 rounded ${i === currentPage ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300'}`;
+        btn.onclick = () => {
+          currentPage = i;
+          loadHistoryData();
+        };
+        pageNumbers.appendChild(btn);
+      }
+
+      document.getElementById('prevPage').disabled = currentPage === 1;
+      document.getElementById('nextPage').disabled = currentPage === totalPages;
+    }
+
+    function prevPage() {
+      if (currentPage > 1) {
+        currentPage--;
+        loadHistoryData();
+      }
+    }
+
+    function nextPage() {
+      if (currentPage < totalPages) {
+        currentPage++;
+        loadHistoryData();
+      }
+    }
+
+    function downloadStudentCSV(trno) {
+      let url = `/download_csv?mode=report&trno=${trno}&date_from=${dateFrom}&date_to=${dateTo}`;
+      window.location.href = url;
+    }
+
+    function downloadPDF() {
+      const element = document.getElementById('report');
+      const opt = {
+        margin: 0.5,
+        filename: `student_report_{{ trno }}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(element).save();
+    }
+  </script>
+</body>
+</html>
