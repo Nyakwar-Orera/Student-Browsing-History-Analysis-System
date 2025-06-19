@@ -12,9 +12,8 @@ app.secret_key = Config.SECRET_KEY
 # Load browsing history data
 def load_data():
     try:
-        # Try to load from local file first
         if os.path.exists(Config.DATA_FILE):
-            df = pd.read_csv(Config.DATA_FILE)
+            df = pd.read_csv(Config.DATA_FILE, encoding='utf-8', on_bad_lines='skip')
         else:
             print("Local file not found. Fetching from Google Drive...")
             file_id = Config.GOOGLE_DRIVE_FILE_ID
@@ -23,9 +22,9 @@ def load_data():
             url = f"https://drive.google.com/uc?export=download&id={file_id}"
             response = requests.get(url)
             response.raise_for_status()
-            df = pd.read_csv(StringIO(response.text))
+            df = pd.read_csv(StringIO(response.text), encoding='utf-8', on_bad_lines='skip')
 
-        df['visit_time'] = pd.to_datetime(df['visit_time'], errors='coerce')
+        df['visit_time'] = pd.to_datetime(df['visit_time'], format='%d/%m/%Y %H:%M', errors='coerce')
         df = df.dropna(subset=['visit_time'])
 
         missing_counts = df.isnull().sum()
@@ -35,6 +34,7 @@ def load_data():
             print(missing_counts[missing_counts > 0])
 
         return df
+
     except Exception as e:
         print(f"[load_data] Error: {e}")
         return pd.DataFrame()
