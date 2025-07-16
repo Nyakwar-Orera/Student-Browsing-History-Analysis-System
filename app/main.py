@@ -2,15 +2,29 @@ from flask import Flask, render_template, request, redirect, url_for, session
 import pandas as pd
 from datetime import datetime, timedelta
 from config import Config
+import gdown
+import os
 
 app = Flask(__name__)
 app.secret_key = Config.SECRET_KEY
 
-# Global cache variables
+# Global cache variable
 time_records = None
 
-# Load browsing history data
+# ----------- Download CSV from Google Drive if needed -----------
+def download_csv_from_gdrive(file_id, output_path):
+    if not os.path.exists(output_path):
+        url = f'https://drive.google.com/uc?id={file_id}'
+        print(f"Downloading CSV from Google Drive (file ID: {file_id})...")
+        gdown.download(url, output_path, quiet=False)
+    else:
+        print("CSV file already exists locally, skipping download.")
+
+# ----------- Load browsing history data -----------
 def load_data():
+    if Config.GOOGLE_DRIVE_FILE_ID:
+        download_csv_from_gdrive(Config.GOOGLE_DRIVE_FILE_ID, Config.DATA_FILE)
+
     try:
         df = pd.read_csv(Config.DATA_FILE)
         df['visit_time'] = pd.to_datetime(df['visit_time'], errors='coerce')
@@ -27,7 +41,7 @@ def load_data():
         print(f"[load_data] Error: {e}")
         return pd.DataFrame()
 
-# Load time records with caching
+# ----------- Load time records -----------
 def load_time_records():
     global time_records
     if time_records is None:
