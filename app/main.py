@@ -1,37 +1,17 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import pandas as pd
-import requests
-import os
-from datetime import timedelta
-from io import StringIO
+from datetime import datetime, timedelta
+from io import BytesIO
 from config import Config
 
 app = Flask(__name__)
 app.secret_key = Config.SECRET_KEY
 
-# Load browsing history data with cache support
+# Load browsing history data
 def load_data():
     try:
-        local_cache_path = '/tmp/cached_data.csv'
-
-        if os.path.exists(local_cache_path):
-            print("Loading data from cache...")
-            df = pd.read_csv(local_cache_path, encoding='utf-8', on_bad_lines='skip')
-        else:
-            print("Local cache not found. Fetching from Google Drive...")
-            file_id = Config.GOOGLE_DRIVE_FILE_ID
-            if not file_id:
-                raise ValueError("Google Drive File ID not set in config.")
-
-            url = f"https://drive.google.com/uc?export=download&id={file_id}"
-            response = requests.get(url)
-            response.raise_for_status()
-
-            df = pd.read_csv(StringIO(response.text), encoding='utf-8', on_bad_lines='skip')
-            df.to_csv(local_cache_path, index=False)
-            print("Data cached at /tmp/cached_data.csv")
-
-        df['visit_time'] = pd.to_datetime(df['visit_time'], format='%d/%m/%Y %H:%M', errors='coerce')
+        df = pd.read_csv(Config.DATA_FILE)
+        df['visit_time'] = pd.to_datetime(df['visit_time'], errors='coerce')
         df = df.dropna(subset=['visit_time'])
 
         missing_counts = df.isnull().sum()
@@ -41,21 +21,23 @@ def load_data():
             print(missing_counts[missing_counts > 0])
 
         return df
-
     except Exception as e:
         print(f"[load_data] Error: {e}")
         return pd.DataFrame()
 
-# Load time records
+# Load time records with caching
 def load_time_records():
-    try:
-        tr = pd.read_csv(Config.TIME_RECORDS_FILE, sep='\t', header=None, names=['TRNO', 'Date', 'Duration'])
-        tr['Date'] = pd.to_datetime(tr['Date'], format='%d/%m/%Y')
-        tr['DurationMinutes'] = tr['Duration'].apply(lambda x: float(x) * 60 if isinstance(x, str) else 0)
-        return tr
-    except Exception as e:
-        print(f"[load_time_records] Error: {e}")
-        return pd.DataFrame()
+    global time_records
+    if time_records is None:
+        try:
+            tr = pd.read_csv(Config.TIME_RECORDS_FILE, sep='\t', header=None, names=['TRNO', 'Date', 'Duration'])
+            tr['Date'] = pd.to_datetime(tr['Date'], format='%d/%m/%Y')
+            tr['DurationMinutes'] = tr['Duration'].apply(lambda x: float(x) * 60 if isinstance(x, str) else 0)
+            time_records = tr
+        except Exception as e:
+            print(f"[load_time_records] Error: {e}")
+            time_records = pd.DataFrame()
+    return time_records
 
 # ---------------- Routes ----------------
 
