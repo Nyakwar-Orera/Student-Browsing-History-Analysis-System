@@ -1,11 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import pandas as pd
 from datetime import datetime, timedelta
-from io import BytesIO
 from config import Config
 
 app = Flask(__name__)
 app.secret_key = Config.SECRET_KEY
+
+# Global cache variables
+time_records = None
 
 # Load browsing history data
 def load_data():
@@ -107,8 +109,8 @@ def report(trno):
     top_domains = student_data['domain'].value_counts().head(10).reset_index()
     top_domains.columns = ['Domain', 'Visits']
 
-    time_records = load_time_records()
-    student_time = time_records[time_records['TRNO'] == trno] if not time_records.empty else pd.DataFrame()
+    time_records_df = load_time_records()
+    student_time = time_records_df[time_records_df['TRNO'] == trno] if not time_records_df.empty else pd.DataFrame()
 
     return render_template('report.html',
         trno=trno,
@@ -128,7 +130,7 @@ def analytics():
         return redirect(url_for('index'))
 
     df = load_data()
-    time_records = load_time_records()
+    time_records_df = load_time_records()
 
     total_visits = len(df)
     unique_students = df['TRNO'].nunique()
@@ -171,8 +173,8 @@ def analytics():
     daily_visits = df['visit_date'].value_counts().sort_index().reset_index()
     daily_visits.columns = ['Date', 'Visits']
 
-    avg_duration = time_records['DurationMinutes'].mean() if not time_records.empty else 0
-    total_hours = time_records['DurationMinutes'].sum() / 60 if not time_records.empty else 0
+    avg_duration = time_records_df['DurationMinutes'].mean() if not time_records_df.empty else 0
+    total_hours = time_records_df['DurationMinutes'].sum() / 60 if not time_records_df.empty else 0
 
     return render_template('analytics.html',
         total_visits=total_visits,
