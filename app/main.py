@@ -14,15 +14,23 @@ time_records = None
 # ----------- Download CSV from Google Drive if needed -----------
 def download_csv_from_gdrive(file_id, output_path):
     if not os.path.exists(output_path):
-        url = f'https://drive.google.com/uc?id={file_id}'
-        print(f"Downloading CSV from Google Drive (file ID: {file_id})...")
-        gdown.download(url, output_path, quiet=False)
+        url = f'https://drive.google.com/uc?id={file_id}&export=download'
+        print(f"[download_csv_from_gdrive] Downloading CSV from Google Drive with URL: {url}")
+
+        try:
+            success = gdown.download(url, output_path, quiet=False)
+            if not success:
+                print("[download_csv_from_gdrive] Warning: gdown.download returned None or failed.")
+        except Exception as e:
+            print(f"[download_csv_from_gdrive] Error downloading file: {e}")
     else:
-        print("CSV file already exists locally, skipping download.")
+        print("[download_csv_from_gdrive] CSV file already exists locally, skipping download.")
 
 # ----------- Load browsing history data -----------
 def load_data():
-    if Config.GOOGLE_DRIVE_FILE_ID:
+    if not Config.GOOGLE_DRIVE_FILE_ID:
+        print("[load_data] GOOGLE_DRIVE_FILE_ID is not set! Skipping download.")
+    else:
         download_csv_from_gdrive(Config.GOOGLE_DRIVE_FILE_ID, Config.DATA_FILE)
 
     try:
@@ -33,12 +41,12 @@ def load_data():
         missing_counts = df.isnull().sum()
         total_missing = missing_counts.sum()
         if total_missing > 0:
-            print(f"Warning: Found {total_missing} missing values:")
+            print(f"[load_data] Warning: Found {total_missing} missing values:")
             print(missing_counts[missing_counts > 0])
 
         return df
     except Exception as e:
-        print(f"[load_data] Error: {e}")
+        print(f"[load_data] Error loading CSV data: {e}")
         return pd.DataFrame()
 
 # ----------- Load time records -----------
@@ -51,7 +59,7 @@ def load_time_records():
             tr['DurationMinutes'] = tr['Duration'].apply(lambda x: float(x) * 60 if isinstance(x, str) else 0)
             time_records = tr
         except Exception as e:
-            print(f"[load_time_records] Error: {e}")
+            print(f"[load_time_records] Error loading time records: {e}")
             time_records = pd.DataFrame()
     return time_records
 
@@ -81,8 +89,8 @@ def home():
         return redirect(url_for('index'))
 
     df = load_data()
-    students = df['TRNO'].nunique()
-    domains = df['domain'].nunique()
+    students = df['TRNO'].nunique() if not df.empty else 0
+    domains = df['domain'].nunique() if not df.empty else 0
     return render_template('home.html', students=students, domains=domains)
 
 @app.route('/report/<trno>')
@@ -104,12 +112,12 @@ def report(trno):
     if date_from:
         try:
             student_data = student_data[student_data['visit_time'] >= pd.to_datetime(date_from)]
-        except:
+        except Exception:
             pass
     if date_to:
         try:
             student_data = student_data[student_data['visit_time'] < pd.to_datetime(date_to) + timedelta(days=1)]
-        except:
+        except Exception:
             pass
 
     if student_data.empty:
