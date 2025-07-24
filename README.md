@@ -1,7 +1,3 @@
-Here’s your updated `README.md`, now including **Render deployment instructions for a PHP-Flask hybrid project**. I’ve organized it cleanly so you can **copy and paste** directly into your file.
-
----
-
 ````markdown
 # Student Browsing History Analysis System
 
