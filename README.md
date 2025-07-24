@@ -1,11 +1,10 @@
-````markdown
+
 # Student Browsing History Analysis System
 
 ## 📚 Browsing History Data Cleaning, Processing & Analysis
 
 This project involves cleaning, processing, and analyzing browsing history data using Python and Flask. It provides a secure admin dashboard for viewing and interacting with detailed reports and analytics, with options to export data in CSV and PDF formats.
 
----
 
 ## 🚀 Deployment Instructions
 
