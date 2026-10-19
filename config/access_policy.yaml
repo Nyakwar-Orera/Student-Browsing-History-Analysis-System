@@ -1,0 +1,435 @@
+# ============================================================
+# MamalBrowse Sentinel — Authoritative Access Policy
+# ============================================================
+# Updated: Institutional Upgrade 2026-10-07
+# - Adult content blocklist populated (was empty)
+# - Proxy/VPN/Bypass domains added
+# - Per-department (per-darajah) extra blocking rules
+# - Dars Burhani WhatsApp restriction maintained
+# - Collegiate II (Std 8-11) now permitted in lab with 120min quota
+# - Social media block: Social media is forbidden for ALL departments
+# - Gaming block: Gaming is forbidden for ALL departments
+# ============================================================
+
+session_time_limits:
+  darajah_1: 30
+  darajah_2: 30
+  darajah_3: 30
+  darajah_4: 30
+  darajah_5: 60
+  darajah_6: 60
+  darajah_7: 60
+  darajah_8: 120
+  darajah_9: 120
+  darajah_10: 120
+  darajah_11: 120
+  darajah_12: 120
+  igcse: 120
+  dars_burhani: 60
+  default: 60
+session_warning_threshold_minutes: 5
+auto_expire_account_on_timeout: true
+
+email_alerts:
+  enabled: false                      # Q3: dashboard-only, no emails
+  recipients: []
+  digest_interval_seconds: 3600
+  immediate_alert_categories: []
+
+browser_enforcement:
+  enabled: true
+  allowed_browsers:
+  - chrome.exe
+  action_on_unauthorized: block
+  message: Only Google Chrome is permitted on lab workstations.
+
+default_action: allow
+
+# ── Account lock ─────────────────────────────────────────────
+# Manual suspensions only per institutional policy (Q1 2026-10-02).
+account_lock:
+  enabled: false
+  auto_block_categories: []
+  max_warnings_before_block: 3       # 3 strikes for other categories
+
+# ── Categories ───────────────────────────────────────────────
+# `action: block` blocks the URL in real time.
+# `action: warn`  records violation but allows access (teacher review).
+categories:
+
+  social_media:
+    action: block
+    message: Social media is prohibited during lab hours. Violation recorded.
+    allow_override: true
+    domains:
+    - instagram.com
+    - www.instagram.com
+    - facebook.com
+    - www.facebook.com
+    - m.facebook.com
+    - tiktok.com
+    - www.tiktok.com
+    - snapchat.com
+    - www.snapchat.com
+    - twitter.com
+    - x.com
+    - reddit.com
+    - www.reddit.com
+    - threads.net
+    - threads.com
+    - www.threads.com
+    - discord.com
+    - pinterest.com
+    - tumblr.com
+    - linkedin.com
+    - telegram.org
+    - web.telegram.org
+
+  movie_download:
+    action: block
+    message: Downloading movies or media files is strictly prohibited.
+    allow_override: false
+    domains:
+    - thepiratebay.org
+    - 1337x.to
+    - yts.mx
+    - eztv.re
+    - putlocker.com
+    - fmovies.io
+    - 123movies.com
+    - soap2day.to
+    - hdrezka.ag
+    - opensubtitles.org
+    - subscene.com
+    - filmywap.com
+    - movierulz.com
+    - filmyzilla.com
+    - bollyshare.com
+    - downloadhub.in
+    - katmovie.in
+    - worldfree4u.com
+    - moviesmod.zone
+    - themoviebox.org
+    - moviebox.ac
+    - movie-box.co
+    - ww8.123moviesfree.net
+    - videodownloader.site
+
+  torrent:
+    action: block
+    message: BitTorrent and file-sharing sites are prohibited.
+    allow_override: false
+    domains:
+    - bittorrent.com
+    - utorrent.com
+    - qbittorrent.org
+    - transmission-bt.com
+    - thepiratebay.se
+    - rarbg.to
+    - magnetdl.com
+    - zooqle.com
+    - torrend.to
+    - limetorrents.co
+    - seedr.cc
+
+  streaming:
+    action: block
+    message: Video streaming is restricted during academic sessions.
+    allow_override: true
+    domains:
+    - youtube.com
+    - www.youtube.com
+    - m.youtube.com
+    - netflix.com
+    - www.netflix.com
+    - twitch.tv
+    - www.twitch.tv
+    - hotstar.com
+    - primevideo.com
+    - hulu.com
+    - disneyplus.com
+    - dailymotion.com
+    - vimeo.com
+    - crunchyroll.com
+    - hidive.com
+    - tubitv.com
+    - pluto.tv
+
+  gaming:
+    action: block
+    message: Online gaming is restricted on lab workstations.
+    allow_override: false
+    domains:
+    - roblox.com
+    - www.roblox.com
+    - miniclip.com
+    - poki.com
+    - crazygames.com
+    - krunker.io
+    - steamcommunity.com
+    - store.steampowered.com
+    - epicgames.com
+    - minecraft.net
+    - coregames.com
+    - fortnite.com
+    - garrysmod.com
+    - recroom.com
+    - vrchat.com
+    - playtogether.gg
+    - ko-ga.me
+    - ylands.com
+    - trovegame.com
+    - manticoregames.com
+    - sandbox.game
+    - habbo.com
+    - secondlife.com
+    - blockmango.com
+    - toontownrewritten.com
+    - animaljam.com
+    - pokemon.com
+    - wizard101.com
+    - challengerush.com
+    - browser.lol
+
+  # ── PROXY / VPN / BYPASS (CRITICAL — auto-block) ─────────────
+  proxy_vpn:
+    action: block
+    message: Proxy, VPN, and bypass tools are strictly prohibited. Account may be suspended.
+    allow_override: false
+    domains:
+    - nordvpn.com
+    - expressvpn.com
+    - protonvpn.com
+    - surfshark.com
+    - cyberghostvpn.com
+    - ipvanish.com
+    - purevpn.com
+    - mullvad.net
+    - privatevpn.com
+    - hidemyass.com
+    - hotspotshield.com
+    - tunnelbear.com
+    - windscribe.com
+    - kproxy.com
+    - proxysite.com
+    - hide.me
+    - anonymouse.org
+    - hidester.com
+    - croxyproxy.com
+    - 4everproxy.com
+    - sslsecureproxy.com
+    - anonymizer.com
+    - proxyfree.net
+    - proxyunblock.net
+    - ultrasurf.us
+
+  # ── ADULT CONTENT (CRITICAL — auto-block) ────────────────────
+  adult:
+    action: block
+    message: Restricted content. Access absolutely prohibited under institutional policy. Account suspended.
+    allow_override: false
+    domains:
+    - pornhub.com
+    - xvideos.com
+    - xnxx.com
+    - xhamster.com
+    - redtube.com
+    - youporn.com
+    - tube8.com
+    - spankbang.com
+    - motherless.com
+    - xxx.com
+    - porn.com
+    - beeg.com
+    - onlyfans.com
+    - chaturbate.com
+    - livejasmin.com
+    - bongacams.com
+    - myfreecams.com
+    - stripchat.com
+    - naughtyamerica.com
+
+  # ── ANIME PIRACY ─────────────────────────────────────────────
+  anime_piracy:
+    action: block
+    message: Anime streaming on piracy sites is prohibited.
+    allow_override: false
+    domains:
+    - anikai.to
+    - animepahe.ru
+    - kaa.mx
+    - animedao.to
+    - hianime.to
+    - anicrush.to
+    - wcofun.net
+    - anix.ac
+    - retrocrush.tv
+    - anime-planet.com
+
+  educational:
+    action: allow
+    message: "Educational resource — permitted."
+    allow_override: false
+    domains:
+    - khanacademy.org
+    - www.khanacademy.org
+    - coursera.org
+    - wikipedia.org
+    - en.wikipedia.org
+    - arxiv.org
+    - jstor.org
+    - ncert.nic.in
+    - nptel.ac.in
+    - edx.org
+    - mit.edu
+    - stackoverflow.com
+    - github.com
+    - python.org
+    - w3schools.com
+    - geeksforgeeks.org
+    - quizlet.com
+    - britannica.com
+    - scholar.google.com
+    - darseburhani.org
+    - mumineen.org
+    - jameasaifiyah.org
+
+# ── Whitelist ────────────────────────────────────────────────
+whitelist_domains:
+- koha.ajsn.local
+- 10.10.117.76
+- 152.55.221.78
+- localhost
+- 127.0.0.1
+- darseburhani.org
+- mumineen.org
+- jameasaifiyah.org
+- aljamea.edu
+
+# ── Explicit blocklist ───────────────────────────────────────
+blocklist_domains:
+- test-unwanted-site.org
+- threads.com
+- instagram.com
+- anikai.to
+- themoviebox.org
+- challengerush.com
+- moviebox.ac
+- videodownloader.site
+- browser.lol
+- ww8.123moviesfree.net
+- movie-box.co
+- minecraft.net
+- coregames.com
+- fortnite.com
+- garrysmod.com
+- recroom.com
+- vrchat.com
+- playtogether.gg
+- ko-ga.me
+- ylands.com
+- trovegame.com
+- manticoregames.com
+- sandbox.game
+- habbo.com
+- secondlife.com
+- blockmango.com
+- toontownrewritten.com
+- animaljam.com
+- pokemon.com
+- wizard101.com
+- crunchyroll.com
+- netflix.com
+- hidive.com
+- tubitv.com
+- pluto.tv
+- retrocrush.tv
+- anime-planet.com
+- animepahe.ru
+- kaa.mx
+- animedao.to
+- hianime.to
+- anicrush.to
+- wcofun.net
+- anix.ac
+- moviesmod.zone
+
+# ── Time windows ─────────────────────────────────────────────
+# During these hours, listed categories are blocked on top of
+# their normal rule. Outside these hours, categories still apply
+# per their `action` field.
+time_windows:
+- days:
+  - mon
+  - tue
+  - wed
+  - thu
+  - fri
+  - sat
+  start: '08:00'
+  end: '14:30'
+  blocked_categories:
+  - social_media
+  - streaming
+  - gaming
+  - movie_download
+  - torrent
+  - proxy_vpn
+  - anime_piracy
+
+# ── Per-Department (Per-Darajah) extra blocks ────────────────
+# Department mapping:
+#   Culture Générale (Std 1-2): darajah 1-2
+#   Culture Générale (Std 3-4): darajah 3-4
+#   Collegiate I (5-7): darajah 5-7
+#   Collegiate II & Higher Studies: darajah 8-11
+#   Dars Burhani: darajah DB1/DB2/DB3 (key: 'dars')
+per_darajah_extra_block:
+  # Culture Générale (Std 1-2) — Maximum restrictions
+  '1':
+  - whatsapp.com
+  - web.whatsapp.com
+  - youtube.com
+  - www.youtube.com
+  - twitter.com
+  - x.com
+  - tiktok.com
+  '2':
+  - whatsapp.com
+  - web.whatsapp.com
+  - youtube.com
+  - www.youtube.com
+  - twitter.com
+  - x.com
+  - tiktok.com
+  # Culture Générale (Std 3-4) — Moderate restrictions
+  '3':
+  - whatsapp.com
+  - web.whatsapp.com
+  - youtube.com
+  - www.youtube.com
+  '4':
+  - whatsapp.com
+  - web.whatsapp.com
+  # Collegiate I (5-7) — Standard restrictions (no extras beyond category blocks)
+  # Collegiate II & Higher Studies (8-11) — Academic mode
+  '8':
+  - tiktok.com
+  - instagram.com
+  '9':
+  - tiktok.com
+  - instagram.com
+  '10':
+  - tiktok.com
+  - instagram.com
+  '11':
+  - tiktok.com
+  - instagram.com
+  # Dars Burhani — WhatsApp + social restrictions
+  'dars':
+  - whatsapp.com
+  - web.whatsapp.com
+  - tiktok.com
+  - instagram.com
+
+per_student_whitelist: {}

@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab Session Ended — MamalBrowse Sentinel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* Institutional Royal Blue + Gold Palette */
+      --bg:           #0a1128;
+      --bg-elevated:  #0f1a35;
+      --surface:      #131c3a;
+      --surface-2:    #1a2447;
+      --border:       rgba(255, 255, 255, 0.09);
+      --border-strong:rgba(255, 255, 255, 0.16);
+
+      --gold:         #f5c842;
+      --gold-soft:    #fbbf24;
+      --gold-deep:    #d97706;
+      --royal:        #1e3a8a;
+      --royal-light:  #2563eb;
+      --amber:        #f59e0b;
+      --amber2:       #fbbf24;
+      --text:         #f8fafc;
+      --muted:        #94a3b8;
+      --radius:       20px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background-image:
+        radial-gradient(circle at 50% 0%, rgba(30, 58, 138, 0.45) 0%, transparent 60%),
+        radial-gradient(circle at 85% 90%, rgba(245, 200, 66, 0.07) 0%, transparent 50%),
+        radial-gradient(circle at 15% 85%, rgba(37, 99, 235, 0.15) 0%, transparent 50%);
+    }
+
+    /* ── Main Card ── */
+    .card {
+      width: 100%;
+      max-width: 680px;
+      background: var(--surface);
+      border: 1px solid rgba(245, 200, 66, 0.25);
+      border-radius: var(--radius);
+      padding: 52px 48px 44px;
+      text-align: center;
+      position: relative;
+      box-shadow:
+        0 0 0 1px rgba(245, 200, 66, 0.08),
+        0 32px 64px rgba(0,0,0,0.6),
+        0 0 80px rgba(30, 58, 138, 0.25) inset;
+      animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Clock Icon ── */
+    .clock-ring {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: rgba(245, 200, 66, 0.12);
+      border: 2px solid rgba(245, 200, 66, 0.45);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 28px;
+      font-size: 44px;
+      position: relative;
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(245, 200, 66, 0.35); }
+      50%       { box-shadow: 0 0 0 16px rgba(245, 200, 66, 0); }
+    }
+
+    /* ── Badge ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(245,158,11,0.15);
+      border: 1px solid rgba(245,158,11,0.35);
+      color: var(--amber2);
+      border-radius: 999px;
+      padding: 4px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: -0.5px;
+      margin-bottom: 12px;
+      line-height: 1.15;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 480px;
+      margin: 0 auto 36px;
+    }
+
+    /* ── Info Grid ── */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 36px;
+      text-align: left;
+    }
+
+    .info-cell {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+
+    .info-cell .label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .info-cell .value {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    /* ── Time limit bar ── */
+    .time-bar-wrap {
+      margin-bottom: 36px;
+      text-align: left;
+    }
+
+    .time-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .time-bar {
+      height: 8px;
+      background: rgba(255,255,255,0.07);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .time-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--amber), var(--amber2));
+      border-radius: 999px;
+      width: 100%;
+    }
+
+    /* ── Instruction Box ── */
+    .instructions {
+      background: rgba(245,158,11,0.07);
+      border: 1px solid rgba(245,158,11,0.2);
+      border-radius: 14px;
+      padding: 20px 24px;
+      margin-bottom: 28px;
+      text-align: left;
+    }
+
+    .instructions h3 {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--amber2);
+      margin-bottom: 12px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .instructions ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .instructions li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 14px;
+      color: #c9d1d9;
+      line-height: 1.5;
+    }
+
+    .instructions li .num {
+      min-width: 22px;
+      height: 22px;
+      background: rgba(245,158,11,0.2);
+      border-radius: 50%;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--amber2);
+      display: flex; align-items: center; justify-content: center;
+      margin-top: 1px;
+    }
+
+    /* ── Footer ── */
+    .footer-note {
+      font-size: 12px;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+      margin-top: 8px;
+    }
+
+    /* ── Darajah Time Policy Table ── */
+    .policy-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 28px 0 8px;
+      font-size: 13px;
+    }
+
+    .policy-table th {
+      background: rgba(255,255,255,0.05);
+      color: var(--muted);
+      font-weight: 600;
+      padding: 8px 12px;
+      text-align: left;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .policy-table td {
+      padding: 9px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      color: var(--text);
+    }
+
+    .policy-table tr.highlight td {
+      background: rgba(245,158,11,0.08);
+      color: var(--amber2);
+      font-weight: 600;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .pill-amber { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .pill-green { background: rgba(16,185,129,0.2); color: #34d399; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+
+  <div class="clock-ring">⏰</div>
+
+  <div class="badge">⏱ Session Ended</div>
+
+  <h1>Your Lab Session Has Ended</h1>
+
+  <p class="subtitle">
+    Your allocated computer lab time for today's session has been reached.
+    {% if student_name %}<strong>{{ student_name }}</strong>, please {% else %}Please {% endif %}
+    log off and speak with your teacher or lab technician if you need more time.
+  </p>
+
+  <!-- Info grid -->
+  <div class="info-grid">
+    {% if trno %}
+    <div class="info-cell">
+      <div class="label">Student TRNO</div>
+      <div class="value">{{ trno }}</div>
+    </div>
+    {% endif %}
+    {% if darajah %}
+    <div class="info-cell">
+      <div class="label">Darajah</div>
+      <div class="value">Darajah {{ darajah }}</div>
+    </div>
+    {% endif %}
+    {% if station %}
+    <div class="info-cell">
+      <div class="label">Workstation</div>
+      <div class="value">{{ station }}</div>
+    </div>
+    {% endif %}
+    {% if limit_minutes %}
+    <div class="info-cell">
+      <div class="label">Time Limit</div>
+      <div class="value">{{ limit_minutes }} Minutes</div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Time bar (shows 100% used) -->
+  <div class="time-bar-wrap">
+    <div class="time-bar-label">
+      <span>Session Duration</span>
+      <span style="color: #fbbf24; font-weight: 700;">{{ limit_minutes }} / {{ limit_minutes }} min used</span>
+    </div>
+    <div class="time-bar">
+      <div class="time-bar-fill"></div>
+    </div>
+  </div>
+
+  <!-- Instructions -->
+  <div class="instructions">
+    <h3>📋 Next Steps</h3>
+    <ul>
+      <li>
+        <span class="num">1</span>
+        <span>Save any open documents and close your applications.</span>
+      </li>
+      <li>
+        <span class="num">2</span>
+        <span>Inform your <strong>teacher or lab technician</strong> that your session has ended.</span>
+      </li>
+      <li>
+        <span class="num">3</span>
+        <span>If you need more time, your teacher can extend your session from the <strong>MamalBrowse Sentinel dashboard</strong>.</span>
+      </li>
+      <li>
+        <span class="num">4</span>
+        <span>Log out of the workstation when finished.</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Time policy reference table -->
+  <table class="policy-table">
+    <thead>
+      <tr>
+        <th>Class Group</th>
+        <th>Darajah</th>
+        <th>Time Limit</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="{% if darajah in ['1','2','3','4'] %}highlight{% endif %}">
+        <td>Primary</td>
+        <td>Darajah 1 – 4</td>
+        <td><span class="pill pill-amber">30 Minutes</span></td>
+      </tr>
+      <tr class="{% if darajah in ['5','6','7'] %}highlight{% endif %}">
+        <td>Lower Secondary</td>
+        <td>Darajah 5 – 7</td>
+        <td><span class="pill pill-green">60 Minutes</span></td>
+      </tr>
+      <tr class="{% if darajah in ['8','9','10','11','12'] or darajah|lower == 'igcse' %}highlight{% endif %}">
+        <td>IGCSE / Senior</td>
+        <td>Darajah 8 – 12 / IGCSE</td>
+        <td><span class="pill pill-green">120 Minutes</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="footer-note">
+    🛡️ MamalBrowse Sentinel · {{ station or 'Lab Workstation' }} · Powered by AJSN IT Department
+  </div>
+
+</div>
+
+</body>
+</html>

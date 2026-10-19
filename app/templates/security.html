@@ -1,0 +1,3617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🛡️ Security Command Center — MamalBrowse Sentinel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* ── Institutional Deep Royal Blue & Gold Palette ── */
+      --bg:          #0a1128;
+      --bg-elevated: #0f1a35;
+      --bg-radial:   radial-gradient(1200px 800px at 50% -5%, #131c3a 0%, #0a1128 75%);
+      --surface:     rgba(19, 28, 58, 0.85);
+      --surface-card: rgba(26, 36, 71, 0.75);
+      --surface-hover: rgba(35, 46, 84, 0.85);
+      --border:      rgba(255, 255, 255, 0.09);
+      --border-focus: rgba(245, 200, 66, 0.5);
+      --border-rose:  rgba(244, 63, 94, 0.35);
+      --border-amber: rgba(245, 158, 11, 0.35);
+      --border-green: rgba(16, 185, 129, 0.35);
+      --border-gold:  rgba(245, 200, 66, 0.35);
+
+      --gold:        #f5c842;
+      --gold-soft:   #fbbf24;
+      --gold-deep:   #d97706;
+      --royal:       #1e3a8a;
+      --royal-light: #2563eb;
+      --accent:      #1e3a8a;
+      --accent-glow: rgba(30, 58, 138, 0.35);
+      --rose:        #f43f5e;
+      --rose-glow:   rgba(244, 63, 94, 0.25);
+      --amber:       #f59e0b;
+      --amber-glow:  rgba(245, 158, 11, 0.25);
+      --green:       #10b981;
+      --green-glow:  rgba(16, 185, 129, 0.25);
+      --sky:         #38bdf8;
+      --purple:      #8b5cf6;
+
+      --text:        #f8fafc;
+      --text-muted:  #94a3b8;
+      --text-sub:    #64748b;
+      --radius-sm:   8px;
+      --radius-md:   14px;
+      --radius-lg:   20px;
+
+      --gradient-gold: linear-gradient(135deg, #f5c842 0%, #fbbf24 50%, #d97706 100%);
+      --gradient-royal: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      background-image: var(--bg-radial);
+      background-attachment: fixed;
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    /* ── Navbar ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(8, 13, 26, 0.82);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 28px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-brand {
+      display: flex; align-items: center; gap: 12px;
+      font-weight: 700; font-size: 15px; color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    .nav-brand .icon-shield {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, #f43f5e, #be123c);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 0 16px var(--rose-glow);
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .nav-brand-text { display: flex; flex-direction: column; }
+    .nav-title { font-weight: 800; font-size: 14px; color: #fff; }
+    .nav-sub { font-size: 10px; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
+
+    .nav-links { display: flex; align-items: center; gap: 6px; }
+
+    .nav-link {
+      color: var(--text-muted); text-decoration: none; font-size: 13px;
+      font-weight: 600; padding: 7px 14px; border-radius: var(--radius-sm);
+      transition: all 0.2s ease;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .nav-link:hover { color: var(--text); background: rgba(255, 255, 255, 0.05); }
+    .nav-link.active {
+      color: #fb7185;
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid var(--border-rose);
+      box-shadow: 0 0 12px rgba(244, 63, 94, 0.15);
+    }
+
+    .btn-logout {
+      background: rgba(244, 63, 94, 0.12); color: #fca5a5;
+      border: 1px solid rgba(244, 63, 94, 0.25); border-radius: var(--radius-sm);
+      padding: 7px 16px; font-size: 13px; font-weight: 600;
+      cursor: pointer; text-decoration: none; margin-left: 8px;
+      transition: all 0.2s ease;
+    }
+    .btn-logout:hover { background: rgba(244, 63, 94, 0.25); color: #fff; }
+
+    /* ── Layout Container ── */
+    .container { max-width: 1480px; margin: 0 auto; padding: 28px 24px 60px; }
+
+    /* ── Hero Page Header ── */
+    .page-header {
+      background: var(--surface);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px 28px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+      box-shadow: 0 12px 30px -10px rgba(0,0,0,0.5);
+    }
+
+    .header-left { display: flex; flex-direction: column; gap: 4px; }
+    .page-title {
+      font-size: 26px; font-weight: 800; letter-spacing: -0.02em;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .page-title .grad-red {
+      background: linear-gradient(135deg, #f43f5e 0%, #fb7185 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .page-subtitle { font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
+
+    .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+    .radar-pulse-badge {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+      padding: 7px 14px; border-radius: 30px;
+      background: rgba(244, 63, 94, 0.1);
+      border: 1px solid var(--border-rose);
+      color: #fda4af;
+    }
+
+    .pulse-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--rose);
+      box-shadow: 0 0 10px var(--rose);
+      animation: pulseAnim 1.6s infinite ease-in-out;
+    }
+    @keyframes pulseAnim {
+      0%   { transform: scale(0.9); opacity: 1; box-shadow: 0 0 4px var(--rose); }
+      50%  { transform: scale(1.4); opacity: 0.5; box-shadow: 0 0 14px var(--rose); }
+      100% { transform: scale(0.9); opacity: 1; box-shadow: 0 0 4px var(--rose); }
+    }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px;
+      font-weight: 600; cursor: pointer; border: 1px solid transparent;
+      transition: all 0.2s ease; text-decoration: none;
+    }
+    .btn-surface {
+      background: rgba(255, 255, 255, 0.05); color: var(--text);
+      border-color: var(--border);
+    }
+    .btn-surface:hover { background: rgba(255, 255, 255, 0.09); border-color: rgba(255, 255, 255, 0.16); }
+    
+    .btn-danger-ghost {
+      background: rgba(244, 63, 94, 0.1); color: #fda4af;
+      border-color: var(--border-rose);
+    }
+    .btn-danger-ghost:hover { background: rgba(244, 63, 94, 0.2); color: #fff; }
+
+    /* ── KPI Grid ── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .kpi-card {
+      background: var(--surface);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -8px rgba(0,0,0,0.5);
+    }
+
+    .kpi-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: transparent;
+    }
+
+    .kpi-card.critical {
+      border-color: var(--border-rose);
+      background: linear-gradient(145deg, rgba(244, 63, 94, 0.08) 0%, var(--surface) 60%);
+    }
+    .kpi-card.critical::before { background: linear-gradient(90deg, #f43f5e, #fb7185); }
+
+    .kpi-card.warning {
+      border-color: var(--border-amber);
+      background: linear-gradient(145deg, rgba(245, 158, 11, 0.08) 0%, var(--surface) 60%);
+    }
+    .kpi-card.warning::before { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+
+    .kpi-card.purple-card {
+      border-color: rgba(168, 85, 247, 0.35);
+      background: linear-gradient(145deg, rgba(168, 85, 247, 0.08) 0%, var(--surface) 60%);
+    }
+    .kpi-card.purple-card::before { background: linear-gradient(90deg, #a855f7, #c084fc); }
+
+    .kpi-card.success {
+      border-color: var(--border-green);
+      background: linear-gradient(145deg, rgba(16, 185, 129, 0.08) 0%, var(--surface) 60%);
+    }
+    .kpi-card.success::before { background: linear-gradient(90deg, #10b981, #34d399); }
+
+    .kpi-card.radar {
+      border-color: rgba(56, 189, 248, 0.3);
+      background: linear-gradient(145deg, rgba(56, 189, 248, 0.06) 0%, var(--surface) 60%);
+    }
+    .kpi-card.radar::before { background: linear-gradient(90deg, #38bdf8, #818cf8); }
+
+    .kpi-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .kpi-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); }
+    .kpi-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+
+    .kpi-val { font-size: 34px; font-weight: 800; color: #fff; letter-spacing: -0.02em; line-height: 1; }
+    .kpi-sub { font-size: 12px; color: var(--text-sub); margin-top: 8px; font-weight: 500; }
+
+    /* ── Filter Toolbar ── */
+    .filter-panel {
+      background: var(--surface);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px 24px;
+      margin-bottom: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .filter-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .filter-pills {
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+    .filter-pill {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .filter-pill:hover { color: var(--text); background: rgba(255,255,255,0.08); }
+    .filter-pill.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+    .filter-pill.active-rose {
+      background: rgba(244, 63, 94, 0.18);
+      color: #fda4af;
+      border-color: var(--border-rose);
+      box-shadow: 0 0 12px var(--rose-glow);
+    }
+    .filter-pill.active-amber {
+      background: rgba(245, 158, 11, 0.18);
+      color: #fde68a;
+      border-color: var(--border-amber);
+      box-shadow: 0 0 12px var(--amber-glow);
+    }
+    .filter-pill.active-purple {
+      background: rgba(168, 85, 247, 0.2);
+      color: #d8b4fe;
+      border-color: rgba(168, 85, 247, 0.5);
+      box-shadow: 0 0 12px rgba(168, 85, 247, 0.3);
+    }
+    .filter-pill.active-sky {
+      background: rgba(56, 189, 248, 0.2);
+      color: #7dd3fc;
+      border-color: rgba(56, 189, 248, 0.5);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+    }
+    .station-radar-pill {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 5px 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 12px;
+      user-select: none;
+    }
+    .station-radar-pill:hover {
+      border-color: rgba(255,255,255,0.3);
+      transform: translateY(-1px);
+    }
+    .station-radar-pill.critical {
+      border-color: rgba(244,63,94,0.45);
+      background: rgba(244,63,94,0.1);
+      color: #fca5a5;
+    }
+    .station-radar-pill.warning {
+      border-color: rgba(245,158,11,0.45);
+      background: rgba(245,158,11,0.1);
+      color: #fde68a;
+    }
+    .station-radar-count {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 4px;
+      background: rgba(0,0,0,0.35);
+    }
+    .station-radar-lock {
+      background: rgba(244,63,94,0.15);
+      border: 1px solid rgba(244,63,94,0.35);
+      color: #fca5a5;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 10px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .station-radar-lock:hover {
+      background: var(--rose);
+      color: #fff;
+    }
+
+    .filter-controls {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr auto;
+      gap: 14px;
+      align-items: center;
+    }
+    @media (max-width: 900px) {
+      .filter-controls { grid-template-columns: 1fr; }
+    }
+
+    .search-input-wrap {
+      position: relative;
+      display: flex; align-items: center;
+    }
+    .search-input-wrap span.search-icon {
+      position: absolute; left: 14px; font-size: 14px; color: var(--text-sub); pointer-events: none;
+    }
+    .search-input-wrap input {
+      width: 100%;
+      padding: 10px 14px 10px 38px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-input-wrap input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+
+    .select-wrap select {
+      width: 100%;
+      padding: 10px 14px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .select-wrap select:focus { border-color: var(--accent); }
+
+    .btn-reset-filter {
+      background: transparent;
+      border: 1px dashed var(--border);
+      color: var(--text-muted);
+      padding: 9px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .btn-reset-filter:hover { color: #fff; border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.03); }
+
+    /* ── Analytics Tier 1: Macro Velocity & Threat Composition ── */
+    .analytics-top-grid {
+      display: grid;
+      grid-template-columns: 1.45fr 1fr;
+      gap: 22px;
+      margin-bottom: 22px;
+    }
+    @media (max-width: 1150px) {
+      .analytics-top-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── Analytics Tier 2: Targeted Hotspots & Accountability (3-Columns) ── */
+    .analytics-trio-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1.15fr;
+      gap: 22px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 1150px) {
+      .analytics-trio-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 768px) {
+      .analytics-trio-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── Analytics Tier 3: Real-Time Incident Stream Section ── */
+    .stream-section {
+      margin-bottom: 24px;
+    }
+
+    /* ── Live Stream Panel ── */
+    .stream-card {
+      background: var(--surface);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 12px 30px -10px rgba(0,0,0,0.5);
+    }
+
+    .stream-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+
+    .stream-title-group {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .stream-title { font-size: 16px; font-weight: 800; color: #fff; }
+    .badge-count {
+      font-size: 11px; font-weight: 700; padding: 3px 9px;
+      border-radius: 20px; text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .badge-rose { background: rgba(244, 63, 94, 0.15); color: #fda4af; border: 1px solid var(--border-rose); }
+    .badge-amber { background: rgba(245, 158, 11, 0.15); color: #fde68a; border: 1px solid var(--border-amber); }
+    .badge-sky { background: rgba(56, 189, 248, 0.15); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.35); }
+    .badge-purple { background: rgba(168, 85, 247, 0.15); color: #d8b4fe; border: 1px solid rgba(168, 85, 247, 0.35); }
+
+    .feed-container {
+      overflow-y: auto;
+      max-height: 720px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-right: 6px;
+    }
+    .feed-container::-webkit-scrollbar { width: 6px; }
+    .feed-container::-webkit-scrollbar-track { background: transparent; }
+    .feed-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 4px; }
+    .feed-container::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.22); }
+
+    /* Alert Card Item */
+    .alert-item {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .alert-item:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px -6px rgba(0,0,0,0.6);
+      background: var(--surface-hover);
+    }
+
+    .alert-item.risk-high {
+      border-left: 4px solid var(--rose);
+      background: linear-gradient(90deg, rgba(244, 63, 94, 0.08) 0%, var(--surface-card) 40%);
+    }
+    .alert-item.risk-medium {
+      border-left: 4px solid var(--amber);
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.08) 0%, var(--surface-card) 40%);
+    }
+
+    .alert-top-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;
+    }
+    .alert-tags-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    
+    .sev-meter {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px; font-weight: 700;
+      padding: 2px 7px; border-radius: 4px;
+      background: rgba(0,0,0,0.35); border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .sev-meter.high { color: #fca5a5; border-color: var(--border-rose); }
+    .sev-meter.med { color: #fde68a; border-color: var(--border-amber); }
+
+    .time-stamp {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; color: var(--text-sub);
+    }
+
+    .alert-student-section {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .student-avatar {
+      width: 42px; height: 42px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 14px;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.25));
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #e2e8f0;
+      flex-shrink: 0;
+    }
+
+    .student-details { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+    .student-header-line {
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+    .student-name-text {
+      font-size: 14px; font-weight: 700; color: #fff;
+    }
+    .student-trno-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; font-weight: 600;
+      color: var(--sky); background: rgba(56, 189, 248, 0.1);
+      padding: 1px 6px; border-radius: 4px;
+    }
+
+    .student-meta-sub {
+      font-size: 12px; color: var(--text-muted);
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+
+    .station-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; font-weight: 600;
+      color: #f1f5f9; background: rgba(255,255,255,0.06);
+      padding: 1px 7px; border-radius: 4px; border: 1px solid var(--border);
+    }
+
+    /* Target Box (URL or Process) */
+    .target-callout {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .target-info {
+      display: flex; align-items: center; gap: 10px; overflow: hidden;
+    }
+    .target-icon {
+      font-size: 16px; flex-shrink: 0;
+    }
+    .target-name {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px; font-weight: 700;
+      color: #fda4af; text-decoration: none;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .target-name.proc { color: #d8b4fe; }
+
+    .category-tag {
+      font-size: 11px; font-weight: 700;
+      padding: 2px 8px; border-radius: 6px;
+      text-transform: uppercase; letter-spacing: 0.04em;
+    }
+
+    .alert-reason-banner {
+      font-size: 12px; color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.02);
+      border-left: 2px solid rgba(255,255,255,0.15);
+      padding: 6px 10px; border-radius: 0 4px 4px 0;
+    }
+
+    .alert-actions-bar {
+      display: flex; align-items: center; justify-content: flex-end; gap: 8px;
+      padding-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .btn-action {
+      padding: 5px 12px; font-size: 12px; font-weight: 600; border-radius: 6px;
+      cursor: pointer; border: 1px solid transparent; transition: all 0.18s;
+      text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-action-dossier {
+      background: rgba(99, 102, 241, 0.12); color: #c7d2fe; border-color: rgba(99, 102, 241, 0.3);
+    }
+    .btn-action-dossier:hover { background: rgba(99, 102, 241, 0.25); color: #fff; }
+
+    .btn-action-ack {
+      background: rgba(16, 185, 129, 0.12); color: #a7f3d0; border-color: rgba(16, 185, 129, 0.3);
+    }
+    .btn-action-ack:hover { background: rgba(16, 185, 129, 0.25); color: #fff; }
+
+    /* ── Right Column: Stacked Threat Radar Cards ── */
+    .radar-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .radar-card {
+      background: var(--surface);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px 22px;
+      box-shadow: 0 12px 30px -10px rgba(0,0,0,0.5);
+    }
+
+    .card-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border);
+    }
+    .card-head-title {
+      font-size: 14px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px;
+    }
+
+    .chart-container-box {
+      position: relative;
+      width: 100%;
+    }
+
+    /* matrix-section removed — replaced by trajectory-row, mid-pair-row, bottom-trio-row */
+
+    /* Top Offending Students List */
+    .student-rank-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      transition: all 0.2s ease;
+    }
+    .student-rank-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.16);
+    }
+    .rank-num {
+      width: 24px; height: 24px; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 800;
+    }
+    .rank-num.gold { background: rgba(245, 158, 11, 0.25); color: #fbbf24; border: 1px solid var(--border-amber); }
+    .rank-num.silver { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; border: 1px solid var(--border); }
+    .rank-num.bronze { background: rgba(180, 83, 9, 0.2); color: #f97316; border: 1px solid rgba(249, 115, 22, 0.3); }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center; padding: 48px 20px; color: var(--text-muted);
+    }
+    .empty-state .icon { font-size: 40px; margin-bottom: 12px; }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(4, 7, 15, 0.75); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
+    }
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+    
+    .modal-card {
+      background: #0f172a; border: 1px solid rgba(255,255,255,0.12);
+      border-radius: var(--radius-lg); width: 100%; max-width: 540px;
+      transform: scale(0.95); transition: transform 0.2s ease;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+    }
+    .modal-overlay.active .modal-card { transform: scale(1); }
+    
+    .modal-header {
+      padding: 20px 24px; border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .modal-header h3 { font-size: 16px; font-weight: 800; color: #fff; }
+    .modal-close {
+      cursor: pointer; color: var(--text-muted); font-size: 20px;
+      border: none; background: transparent; padding: 4px;
+    }
+    .modal-close:hover { color: #fff; }
+    
+    /* ── Active Directory & Account Governance Console ── */
+    .gov-section {
+      margin-top: 24px;
+      margin-bottom: 24px;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-lg);
+      padding: 24px 28px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+    .gov-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+    }
+    .gov-title-wrap h2 {
+      font-size: 19px;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .gov-subtitle {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .gov-kpi-chips {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .gov-chip {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .gov-chip.disabled-chip {
+      background: rgba(244, 63, 94, 0.12);
+      border-color: rgba(244, 63, 94, 0.35);
+      color: #fda4af;
+      cursor: pointer;
+    }
+    .gov-chip.disabled-chip:hover { background: rgba(244, 63, 94, 0.2); }
+    .gov-chip.active-chip {
+      background: rgba(16, 185, 129, 0.12);
+      border-color: rgba(16, 185, 129, 0.35);
+      color: #6ee7b7;
+      cursor: pointer;
+    }
+    .gov-chip.domain-chip {
+      background: rgba(99, 102, 241, 0.12);
+      border-color: rgba(99, 102, 241, 0.35);
+      color: #c7d2fe;
+    }
+    .gov-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .gov-tabs {
+      display: flex;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 4px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+    }
+    .gov-tab {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .gov-tab:hover { color: #fff; background: rgba(255, 255, 255, 0.05); }
+    .gov-tab.active { background: var(--accent); color: #fff; box-shadow: 0 0 10px var(--accent-glow); }
+    .gov-tab.active-danger { background: var(--rose); color: #fff; box-shadow: 0 0 10px var(--rose-glow); }
+    
+    .gov-table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: rgba(10, 16, 32, 0.6);
+    }
+    .gov-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+    }
+    .gov-table th {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 12px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-sub);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-bottom: 1px solid var(--border);
+    }
+    .gov-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      vertical-align: middle;
+    }
+    .gov-table tr:hover td { background: rgba(255, 255, 255, 0.02); }
+    .gov-student-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .gov-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(168, 85, 247, 0.3));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .gov-badge-disabled {
+      background: rgba(244, 63, 94, 0.15);
+      border: 1px solid rgba(244, 63, 94, 0.45);
+      color: #fca5a5;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+    .gov-badge-active {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #6ee7b7;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+    .gov-reason-text {
+      max-width: 260px;
+      font-size: 12px;
+      color: #cbd5e1;
+      line-height: 1.35;
+      word-break: break-word;
+    }
+    /* Student photo in governance table */
+    .gov-photo-wrap {
+      position: relative;
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+    }
+    .gov-photo {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      object-fit: cover;
+      border: 2px solid rgba(255,255,255,0.1);
+      background: linear-gradient(135deg, rgba(99,102,241,0.3), rgba(168,85,247,0.3));
+      display: block;
+    }
+    .gov-photo-fallback {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(99,102,241,0.3), rgba(168,85,247,0.3));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 16px;
+      color: #e2e8f0;
+      border: 2px solid rgba(255,255,255,0.1);
+      flex-shrink: 0;
+    }
+    .gov-photo-badge {
+      position: absolute;
+      bottom: -4px; right: -4px;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      font-size: 9px;
+      display: flex; align-items: center; justify-content: center;
+      border: 2px solid var(--bg);
+    }
+    .gov-photo-badge.disabled { background: #f43f5e; }
+    .gov-photo-badge.active   { background: #10b981; }
+
+    /* Days remaining pill */
+    .days-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .days-pill.urgent {
+      background: rgba(244, 63, 94, 0.18);
+      border: 1px solid rgba(244, 63, 94, 0.45);
+      color: #fca5a5;
+    }
+    .days-pill.warning {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: #fde68a;
+    }
+    .days-pill.ok {
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: #7dd3fc;
+    }
+    .days-pill.indefinite {
+      background: rgba(148, 163, 184, 0.1);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      color: var(--text-muted);
+    }
+    /* Date cell */
+    .gov-date-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .gov-date-main {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #e2e8f0;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .gov-date-by {
+      font-size: 11px;
+      color: var(--text-sub);
+    }
+    .gov-actions {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .btn-gov-enable {
+      background: rgba(16, 185, 129, 0.18);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: inline-flex; align-items: center; gap: 5px;
+    }
+    .btn-gov-enable:hover {
+      background: #10b981;
+      color: #fff;
+      box-shadow: 0 0 12px rgba(16,185,129,0.4);
+    }
+    .btn-gov-disable {
+      background: rgba(244, 63, 94, 0.18);
+      color: #fca5a5;
+      border: 1px solid rgba(244, 63, 94, 0.4);
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: inline-flex; align-items: center; gap: 5px;
+    }
+    .btn-gov-disable:hover {
+      background: #f43f5e;
+      color: #fff;
+      box-shadow: 0 0 12px rgba(244,63,94,0.4);
+    }
+    .btn-gov-dossier {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--sky);
+      border: 1px solid var(--border);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 5px 8px;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: all 0.15s;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .btn-gov-dossier:hover {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+
+    /* ── Toggle buttons for chart composition ── */
+    .chart-toggle-wrap {
+      display: flex;
+      gap: 4px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 3px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+    }
+    .chart-toggle-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 4px 10px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .chart-toggle-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.05); }
+    .chart-toggle-btn.active {
+      background: var(--sky);
+      color: #030d17;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.35);
+    }
+
+    /* ── Header Badges & Summary Pills ── */
+    .metric-callout-pill {
+      font-size: 11px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: #94a3b8;
+    }
+    .comp-stat-pill {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .comp-stat-pill.high-box { border-left: 3px solid #f43f5e; }
+    .comp-stat-pill.med-box { border-left: 3px solid #f59e0b; }
+    .comp-stat-pill .stat-lbl { font-size: 11px; color: var(--text-sub); }
+    .comp-stat-pill .stat-num { font-size: 16px; font-weight: 800; color: #fff; font-family: 'JetBrains Mono', monospace; }
+
+    /* ── Pagination Bar System ── */
+    .pagination-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 20px;
+      background: rgba(10, 16, 32, 0.65);
+      border-top: 1px solid var(--border);
+      border-radius: 0 0 var(--radius-md) var(--radius-md);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .pagination-info {
+      font-size: 12.5px;
+      color: var(--text-sub);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .pagination-nav {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+    .pg-btn {
+      background: rgba(255, 255, 255, 0.05);
+      color: #cbd5e1;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+      min-width: 32px;
+      text-align: center;
+    }
+    .pg-btn:hover:not(:disabled) {
+      background: rgba(56, 189, 248, 0.15);
+      color: #fff;
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+    .pg-btn.active {
+      background: var(--sky);
+      color: #030d17;
+      border-color: var(--sky);
+      font-weight: 800;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+    }
+    .pg-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+    .pg-ellipsis {
+      color: var(--text-muted);
+      padding: 5px 6px;
+      font-size: 12px;
+      user-select: none;
+    }
+    .page-size-selector {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-sub);
+    }
+    .page-size-selector select {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid var(--border);
+      color: #e2e8f0;
+      border-radius: 6px;
+      padding: 5px 8px;
+      font-size: 12px;
+      outline: none;
+      cursor: pointer;
+    }
+    .feed-pagination-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      margin-top: 12px;
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--text-sub);
+    /* ══ CONCURRENT LOGIN & ANOMALY DETECTOR ══ */
+    .anomaly-banner {
+      background: linear-gradient(135deg, rgba(244,63,94,0.08) 0%, rgba(19,28,58,0.9) 100%);
+      border: 1px solid rgba(244,63,94,0.3);
+      border-left: 4px solid var(--rose);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin-bottom: 20px;
+    }
+    .anomaly-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .anomaly-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .anomaly-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 12px;
+    }
+    .anomaly-card {
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: all 0.15s;
+    }
+    .anomaly-card:hover {
+      border-color: rgba(244,63,94,0.4);
+      background: rgba(0,0,0,0.5);
+    }
+    .station-tags-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .station-badge-anomaly {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 5px;
+      background: rgba(244,63,94,0.18);
+      color: #fca5a5;
+      border: 1px solid rgba(244,63,94,0.35);
+    }
+
+    /* ══ EMERGENCY LAB LOCK STRIP ══ */
+    .lab-lock-strip {
+      background: rgba(15,26,53,0.85);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      padding: 14px 20px;
+      margin-bottom: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .lab-lock-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .lab-lock-buttons {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .btn-lab-lock {
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 7px 14px;
+      border-radius: 7px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+      border: 1px solid transparent;
+    }
+    .btn-lab-lock.mk {
+      background: rgba(37,99,235,0.18);
+      color: #93c5fd;
+      border-color: rgba(37,99,235,0.4);
+    }
+    .btn-lab-lock.mk:hover {
+      background: #2563eb;
+      color: #fff;
+    }
+    .btn-lab-lock.rb {
+      background: rgba(16,185,129,0.18);
+      color: #6ee7b7;
+      border-color: rgba(16,185,129,0.4);
+    }
+    .btn-lab-lock.rb:hover {
+      background: #10b981;
+      color: #fff;
+    }
+    .btn-lab-lock.all-lock {
+      background: rgba(244,63,94,0.2);
+      color: #fca5a5;
+      border-color: rgba(244,63,94,0.45);
+    }
+    .btn-lab-lock.all-lock:hover {
+      background: #dc2626;
+      color: #fff;
+      box-shadow: 0 0 14px rgba(220,38,38,0.5);
+    }
+    .btn-lab-lock.unlock {
+      background: rgba(255,255,255,0.06);
+      color: var(--text-muted);
+      border-color: var(--border);
+    }
+    .btn-lab-lock.unlock:hover {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+    }
+
+    /* ══ THREE-STRIKE MATRIX ══ */
+    .strike-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 28px;
+    }
+    .strike-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+    .strike-tab {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+    .strike-tab:hover {
+      color: #fff;
+      background: rgba(255,255,255,0.05);
+    }
+    .strike-tab.active {
+      background: var(--royal);
+      color: #fff;
+      border-color: var(--royal-light);
+    }
+    .strike-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .strike-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .strike-dot.strike-1 { background: #f59e0b; border-color: #f59e0b; box-shadow: 0 0 6px rgba(245,158,11,0.5); }
+    .strike-dot.strike-2 { background: #f97316; border-color: #f97316; box-shadow: 0 0 6px rgba(249,115,22,0.5); }
+    .strike-dot.strike-3 { background: #ef4444; border-color: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,0.6); }
+
+    /* ══ DOSSIER MODAL & PRINTING ══ */
+    .dossier-modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(5, 10, 25, 0.88);
+      backdrop-filter: blur(8px);
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .dossier-modal-overlay.active {
+      display: flex;
+    }
+    .dossier-paper {
+      background: #0f1a35;
+      border: 1px solid rgba(245,200,66,0.3);
+      border-radius: 16px;
+      max-width: 860px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.8), 0 0 30px rgba(245,200,66,0.1);
+      position: relative;
+    }
+    .dossier-header-strip {
+      background: linear-gradient(135deg, rgba(30,58,138,0.6) 0%, rgba(245,200,66,0.12) 100%);
+      border-bottom: 2px solid var(--gold);
+      padding: 24px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .dossier-crest {
+      font-size: 36px;
+      line-height: 1;
+    }
+    .dossier-inst-title {
+      font-size: 18px;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: -0.01em;
+    }
+    .dossier-inst-sub {
+      font-size: 12px;
+      color: var(--gold);
+      font-weight: 600;
+      margin-top: 2px;
+    }
+    .dossier-body {
+      padding: 24px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .dossier-student-box {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+    }
+    .dossier-field-lbl {
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-dim);
+      margin-bottom: 3px;
+    }
+    .dossier-field-val {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .dossier-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    .dossier-table th {
+      text-align: left;
+      padding: 8px 10px;
+      background: rgba(0,0,0,0.3);
+      color: var(--text-muted);
+      font-weight: 700;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border);
+    }
+    .dossier-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      color: #cbd5e1;
+    }
+    .dossier-footer-bar {
+      padding: 16px 28px;
+      background: rgba(10,17,40,0.9);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      .dossier-modal-overlay,
+      .dossier-paper,
+      .dossier-paper * {
+        visibility: visible;
+      }
+      .dossier-modal-overlay {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background: #fff !important;
+        padding: 0;
+      }
+      .dossier-paper {
+        background: #fff !important;
+        color: #000 !important;
+        border: 2px solid #000 !important;
+        box-shadow: none !important;
+        max-width: 100% !important;
+        max-height: none !important;
+      }
+      .dossier-header-strip {
+        background: #f8fafc !important;
+        border-bottom: 2px solid #000 !important;
+        color: #000 !important;
+      }
+      .dossier-inst-title { color: #000 !important; }
+      .dossier-inst-sub { color: #1e3a8a !important; }
+      .dossier-field-val { color: #000 !important; }
+      .dossier-table th { background: #e2e8f0 !important; color: #000 !important; }
+      .dossier-table td { color: #000 !important; border-bottom: 1px solid #cbd5e1 !important; }
+      .dossier-footer-bar { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <nav>
+    <div class="nav-brand">
+      <div class="icon-shield">🛡️</div>
+      <div class="nav-brand-text">
+        <span class="nav-title">MamalBrowse Sentinel</span>
+        <span class="nav-sub">Security Command Center</span>
+      </div>
+    </div>
+    <div class="nav-links">
+      <a href="/home" class="nav-link">📊 Dashboard</a>
+      <a href="/darajah" class="nav-link">🏛️ Darajah Matrix</a>
+      <a href="/students" class="nav-link">👥 Students</a>
+      <a href="/analytics" class="nav-link">📈 Analytics</a>
+      <a href="/security" class="nav-link active">🛡️ Security</a>
+      <a href="/logout" class="btn-logout">Sign Out</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- Hero Header -->
+    <div class="page-header">
+      <div class="header-left">
+        <h1 class="page-title">
+          <span>AI Threat Radar &amp;</span>
+          <span class="grad-red">Security Command Center</span>
+        </h1>
+        <p class="page-subtitle">
+          <span>Autonomous real-time security radar monitoring student sessions, unauthorized software, and restricted web access across lab workstations.</span>
+        </p>
+      </div>
+
+      <div class="header-actions">
+        <div class="radar-pulse-badge">
+          <span class="pulse-dot"></span>
+          <span id="radarHeartbeat">RADAR LIVE (5s)</span>
+        </div>
+        <button id="btnSoundToggle" class="btn btn-surface" onclick="toggleAudioMute()">
+          <span id="soundIcon">🔊</span> <span id="soundLabel">Sound Alert: ON</span>
+        </button>
+        <button id="btnNotif" class="btn btn-surface" onclick="requestNotificationPermission()">
+          🔔 Desktop Alerts
+        </button>
+        <button class="btn btn-surface" onclick="acknowledgeAllVisible()" title="Acknowledge all filtered alerts currently visible">
+          ✅ Review All Visible
+        </button>
+        <button class="btn btn-surface" onclick="promptLockStation()" title="Emergency remote lock for a workstation">
+          🔒 Remote Lock PC
+        </button>
+        <button class="btn btn-surface" onclick="exportThreatCSV()">
+          📥 Export CSV
+        </button>
+        <button class="btn btn-danger-ghost" onclick="resetAllAcknowledged()">
+          🔄 Reset Review Queue
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Institutional Security Policy & Compliance Strip ── -->
+    <div class="policy-status-banner" style="display:flex;align-items:center;justify-content:space-between;background:rgba(30,58,138,0.22);border:1px solid rgba(56,189,248,0.28);border-radius:10px;padding:11px 16px;margin-bottom:18px;flex-wrap:wrap;gap:10px;font-size:12px;">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <span style="display:inline-flex;align-items:center;gap:6px;color:#7dd3fc;font-weight:700;">
+          <span>🛡️</span> Institutional Policy Window: 14 Days
+        </span>
+        <span style="color:var(--text-sub);">•</span>
+        <span style="color:#e2e8f0;">
+          <strong>Active Directory Domain:</strong> <code style="color:#a5b4fc;background:rgba(255,255,255,0.06);padding:2px 6px;border-radius:4px;">mamal.nbi</code>
+        </span>
+        <span style="color:var(--text-sub);">•</span>
+        <span style="color:#e2e8f0;">
+          <strong>Real-Time Policy Enforcement:</strong> Instant Web Intercept &amp; Workstation Lock
+        </span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="badge-count badge-sky" style="font-size:11px;">100+ Monitored Workstations (MK &amp; RB)</span>
+      </div>
+    <!-- ══ EMERGENCY LAB LOCK STRIP ══ -->
+    <div class="lab-lock-strip">
+      <div class="lab-lock-info">
+        <span style="font-size:22px;">🔒</span>
+        <div>
+          <div style="font-size:13px;font-weight:800;color:#fff;">Emergency Lab Session &amp; Terminal Interlock</div>
+          <div style="font-size:11px;color:var(--text-sub);">Instant workstation lockout for exam invigilation, security quarantine, or prayer intervals</div>
+        </div>
+      </div>
+      <div class="lab-lock-buttons">
+        <button class="btn-lab-lock mk" onclick="executeLabLock('MK', 'lock')">
+          <span>🖥️</span> Lock Maktab (MK-01..50)
+        </button>
+        <button class="btn-lab-lock rb" onclick="executeLabLock('RB', 'lock')">
+          <span>🖥️</span> Lock Rabwah (RB-01..50)
+        </button>
+        <button class="btn-lab-lock all-lock" onclick="executeLabLock('ALL', 'lock')">
+          <span>🛑</span> Emergency Lock All 100
+        </button>
+        <button class="btn-lab-lock unlock" onclick="executeLabLock('ALL', 'unlock')">
+          <span>🔓</span> Unlock All
+        </button>
+      </div>
+    </div>
+
+    <!-- KPI Metrics Ribbon -->
+    <div class="kpi-grid">
+      <div class="kpi-card critical">
+        <div class="kpi-header">
+          <span class="kpi-title">Critical Threats (High)</span>
+          <div class="kpi-icon" style="background:rgba(244,63,94,0.15); color:#f87171;">🚨</div>
+        </div>
+        <div class="kpi-val" id="kpiHighCount" style="color:#f87171;">0</div>
+        <div class="kpi-sub">Proxy evasion, Pirated media, Adult, Unapproved software</div>
+      </div>
+
+      <div class="kpi-card warning">
+        <div class="kpi-header">
+          <span class="kpi-title">Policy Warnings (Medium)</span>
+          <div class="kpi-icon" style="background:rgba(245,158,11,0.15); color:#fbbf24;">⚠️</div>
+        </div>
+        <div class="kpi-val" id="kpiMedCount" style="color:#fbbf24;">0</div>
+        <div class="kpi-sub">Social media, Gaming metaverse, Streaming during lab hours</div>
+      </div>
+
+      <div class="kpi-card purple-card">
+        <div class="kpi-header">
+          <span class="kpi-title">Disallowed Software</span>
+          <div class="kpi-icon" style="background:rgba(168,85,247,0.15); color:#d8b4fe;">💻</div>
+        </div>
+        <div class="kpi-val" id="kpiAppCount" style="color:#d8b4fe;">0</div>
+        <div class="kpi-sub">Non-approved browsers, media players, proxy executables</div>
+      </div>
+
+      <div class="kpi-card success">
+        <div class="kpi-header">
+          <span class="kpi-title">Reviewed &amp; Suppressed</span>
+          <div class="kpi-icon" style="background:rgba(16,185,129,0.15); color:#34d399;">✅</div>
+        </div>
+        <div class="kpi-val" id="kpiAckCount" style="color:#34d399;">0</div>
+        <div class="kpi-sub">Acknowledged alerts removed from active queue</div>
+      </div>
+
+      <div class="kpi-card radar">
+        <div class="kpi-header">
+          <span class="kpi-title">Sentinel Radar Engine</span>
+          <div class="kpi-icon" style="background:rgba(56,189,248,0.15); color:#38bdf8;">📡</div>
+        </div>
+        <div class="kpi-val" id="kpiRadarStatus" style="font-size:22px;color:#7dd3fc;margin-top:6px;">Armed &amp; Syncing</div>
+        <div class="kpi-sub" id="kpiLastUpdated">Sync: Live polling</div>
+      </div>
+    </div>
+
+    <!-- ══ CONCURRENT LOGIN & ANOMALY DETECTOR ══ -->
+    <div class="anomaly-banner" id="anomalyBanner" style="display:none;">
+      <div class="anomaly-header">
+        <div class="anomaly-title">
+          <span>👥</span>
+          <span>Credential Sharing &amp; Multi-Station Anomaly Detector</span>
+          <span class="badge-count badge-rose" id="anomalyCountBadge">0 Flagged</span>
+        </div>
+        <div style="font-size:11.5px;color:var(--text-sub);">
+          Same TRNO detected active on multiple terminals simultaneously, or off-hours sessions (10PM–5AM)
+        </div>
+      </div>
+      <div class="anomaly-grid" id="anomalyGrid"></div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         ANALYTICS TIER 1: 14-DAY VELOCITY & THREAT COMPOSITION SUITE
+         (Placed above Governance Hub for immediate situational awareness)
+         ══════════════════════════════════════════════════════════════════════ -->
+    <div class="analytics-top-grid">
+      <!-- ① 14-Day Threat Velocity Trajectory -->
+      <div class="radar-card" style="display:flex;flex-direction:column;">
+        <div class="card-head">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <span class="card-head-title"><span>📈</span> 14-Day Threat Trajectory &amp; Activity Waves</span>
+            <span class="badge-count badge-sky">14-Day Telemetry</span>
+          </div>
+          <div class="chart-badge-group" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <span class="metric-callout-pill" id="trajectoryPeakBadge">⚡ Calculating peak…</span>
+            <span class="metric-callout-pill" id="trajectoryTotalBadge">14-Day Window</span>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--text-sub);margin-bottom:12px;">
+          Chronological frequency of Critical (High) vs Warning (Medium) violations across lab sessions to detect systemic outbreak spikes.
+        </div>
+        <div class="chart-container-box" style="height:265px;flex:1;">
+          <canvas id="chartDailyTrend"></canvas>
+        </div>
+      </div>
+
+      <!-- ② Risk Severity & Policy Category Composition -->
+      <div class="radar-card" style="display:flex;flex-direction:column;">
+        <div class="card-head">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <span class="card-head-title"><span>📊</span> Threat Severity &amp; Policy Mix</span>
+            <span class="badge-count badge-amber" id="threatCompBadge">Severity Split</span>
+          </div>
+          <div class="chart-toggle-wrap">
+            <button class="chart-toggle-btn active" id="btnToggleSeverity" onclick="switchThreatCompView('severity')">Severity Split</button>
+            <button class="chart-toggle-btn" id="btnToggleCategory" onclick="switchThreatCompView('category')">Policy Mix</button>
+          </div>
+        </div>
+
+        <!-- View A: Severity Split Doughnut -->
+        <div id="viewSeveritySplit" style="display:flex;flex-direction:column;flex:1;">
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--text-sub);margin-bottom:8px;">
+            <span>Critical vs Warning proportion</span>
+            <span id="severityRatioText" style="font-weight:700;color:#fff;">—</span>
+          </div>
+          <div class="chart-container-box" style="height:190px;">
+            <canvas id="chartRiskDist"></canvas>
+          </div>
+          <div class="comp-stats-ribbon" id="compStatsRibbon" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;">
+            <div class="comp-stat-pill high-box">
+              <span class="stat-lbl">🚨 Critical Evasions</span>
+              <span class="stat-num" id="compStatHigh">0</span>
+            </div>
+            <div class="comp-stat-pill med-box">
+              <span class="stat-lbl">⚠️ Policy Warnings</span>
+              <span class="stat-num" id="compStatMed">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- View B: Policy Category Doughnut -->
+        <div id="viewCategoryMix" style="display:none;flex-direction:column;flex:1;">
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--text-sub);margin-bottom:8px;">
+            <span>Classification by institutional rule</span>
+            <span id="topCategoryText" style="font-weight:700;color:var(--sky);">—</span>
+          </div>
+          <div class="chart-container-box" style="height:250px;">
+            <canvas id="chartCategoryBreakdown"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         ANALYTICS TIER 2: TARGETED HOTSPOTS & ACCOUNTABILITY GRID (3 COLUMNS)
+         ══════════════════════════════════════════════════════════════════════ -->
+    <div class="analytics-trio-grid">
+      <!-- ③ Events by Academic Darajah -->
+      <div class="radar-card" style="display:flex;flex-direction:column;">
+        <div class="card-head">
+          <span class="card-head-title"><span>🏛️</span> Darajah Risk Hotspots</span>
+          <span class="badge-count badge-amber">Class 1–11</span>
+        </div>
+        <div style="font-size:12px;color:var(--text-sub);margin-bottom:8px;">
+          Violation density per class year. Identifies grades needing strict lab oversight.
+        </div>
+        <div class="chart-container-box" style="height:225px;flex:1;">
+          <canvas id="chartDarajahRisk"></canvas>
+        </div>
+      </div>
+
+      <!-- ④ Top Restricted Targets & Blocked Software -->
+      <div class="radar-card" style="display:flex;flex-direction:column;">
+        <div class="card-head">
+          <span class="card-head-title"><span>🌐</span> Top Restricted Targets</span>
+          <span class="badge-count badge-rose">Top 5 Intercepts</span>
+        </div>
+        <div style="font-size:12px;color:var(--text-sub);margin-bottom:8px;">
+          Frequently blocked domains, web proxies, and disallowed <code>.exe</code> binaries.
+        </div>
+        <div class="chart-container-box" style="height:225px;flex:1;">
+          <canvas id="chartTopDomains"></canvas>
+        </div>
+      </div>
+
+      <!-- ⑤ Top Offending Student Dossiers Leaderboard -->
+      <div class="radar-card" style="display:flex;flex-direction:column;">
+        <div class="card-head">
+          <span class="card-head-title"><span>👤</span> Repeat Violation Dossiers</span>
+          <span class="badge-count badge-rose">Top Repeaters</span>
+        </div>
+        <div style="font-size:12px;color:var(--text-sub);margin-bottom:8px;">
+          Students with multiple logged security strikes requiring counseling or action.
+        </div>
+        <div id="topStudentsList" style="display:flex;flex-direction:column;gap:8px;max-height:225px;overflow-y:auto;flex:1;">
+          <div style="text-align:center;color:var(--text-sub);font-size:12px;padding:24px;">Scanning student dossiers…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         WORKSTATION THREAT EXPOSURE RADAR & PHYSICAL LAB MONITOR
+         ══════════════════════════════════════════════════════════════════════ -->
+    <div class="radar-card" style="margin-bottom:22px;display:flex;flex-direction:column;">
+      <div class="card-head">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <span class="card-head-title"><span>🖥️</span> Lab Workstation Threat Radar</span>
+          <span class="badge-count badge-rose" id="radarStationBadge">Active Workstation Telemetry</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:12px;color:var(--text-sub);">Click station to filter incident stream</span>
+          <button class="btn btn-surface" style="font-size:11px;padding:3px 9px;" onclick="clearStationFilter()">Clear Station Filter</button>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--text-sub);margin-bottom:12px;">
+        Institutional workstations (MK &amp; RB series) exhibiting active or recent policy violations. Terminals with 3+ logged events flagged Critical.
+      </div>
+      <div id="workstationRadarGrid" style="display:flex;flex-wrap:wrap;gap:8px;max-height:130px;overflow-y:auto;padding:2px;">
+        <span style="font-size:12px;color:var(--text-muted);">Syncing lab workstation radar…</span>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         ANALYTICS TIER 3: REAL-TIME SECURITY INCIDENT STREAM & FILTER TOOLBAR
+         ══════════════════════════════════════════════════════════════════════ -->
+    <div class="stream-section">
+      <!-- Filter & Search Toolbar for Threat Incidents -->
+      <div class="filter-panel" style="margin-bottom:16px;">
+        <div class="filter-top-row">
+          <div class="filter-pills" style="display:flex;flex-wrap:wrap;gap:6px;">
+            <button class="filter-pill active" id="pillAll" onclick="setRiskPill('ALL')">All Threats</button>
+            <button class="filter-pill" id="pillHigh" onclick="setRiskPill('HIGH')">🚨 Critical Only</button>
+            <button class="filter-pill" id="pillMed" onclick="setRiskPill('MEDIUM')">⚠️ Warnings Only</button>
+            <button class="filter-pill" id="pillProxy" onclick="setCategoryPill('proxy')">🌐 Proxy / VPN</button>
+            <button class="filter-pill" id="pillSocial" onclick="setCategoryPill('social')">📱 Social Media</button>
+            <button class="filter-pill" id="pillGaming" onclick="setCategoryPill('gaming')">🎮 Gaming</button>
+            <button class="filter-pill" id="pillPiracy" onclick="setCategoryPill('piracy')">🎬 Piracy / Media</button>
+            <button class="filter-pill" id="pillApp" onclick="setCategoryPill('.exe')">💻 Software (.exe)</button>
+          </div>
+          <span style="font-size:12px;color:var(--text-sub);" id="filterResultsCount">Displaying all active threat records</span>
+        </div>
+
+        <div class="filter-controls">
+          <div class="search-input-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="inpSearch" placeholder="Search TRNO, student name, domain, executable, or workstation..." oninput="filterLocalFeed()">
+          </div>
+
+          <div class="select-wrap">
+            <select id="selDarajah" onchange="fetchThreatData()">
+              <option value="">All Darajahs / Classes</option>
+            </select>
+          </div>
+
+          <div class="select-wrap">
+            <select id="selGroup" onchange="fetchThreatData()">
+              <option value="">All Student Groups</option>
+              <option value="Talabaat">Talabaat (Boys)</option>
+              <option value="Talebaat">Talebaat (Girls)</option>
+            </select>
+          </div>
+
+          <button class="btn-reset-filter" onclick="resetFilters()">✕ Clear Filter</button>
+        </div>
+      </div>
+
+      <!-- Real-Time Stream Card -->
+      <div class="stream-card">
+        <div class="stream-header" style="margin-bottom:16px;">
+          <div class="stream-title-group">
+            <span class="stream-title">🚨 Real-Time Security Incident Telemetry Stream</span>
+            <span id="feedCountBadge" class="badge-count badge-rose">0 Active</span>
+          </div>
+          <span style="font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--text-sub);" id="streamTimestamp">—</span>
+        </div>
+        <div class="feed-container" id="alertFeedList" style="max-height:480px;overflow-y:auto;">
+          <div class="empty-state">
+            <div class="icon">🛡️</div>
+            <h4>Scanning live telemetry…</h4>
+            <p>Querying MamalBrowse Sentinel violation logs and workstation monitors.</p>
+          </div>
+        </div>
+
+        <!-- Feed Pagination Bar -->
+        <div class="feed-pagination-bar" id="feedPaginationBar">
+          <span id="feedPaginationInfo">Showing 0 of 0 alerts</span>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <button class="pg-btn" id="feedBtnPrev" onclick="changeFeedPage(-1)" disabled>‹ Prev</button>
+            <span id="feedPageNum" style="font-family:'JetBrains Mono',monospace;font-weight:700;color:#fff;padding:0 6px;">1 / 1</span>
+            <button class="pg-btn" id="feedBtnNext" onclick="changeFeedPage(1)" disabled>Next ›</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ THREE-STRIKE DISCIPLINARY ESCALATION MATRIX ══ -->
+    <div class="strike-section">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;flex-wrap:wrap;gap:12px;">
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <h2 style="font-size:18px;font-weight:900;color:#fff;letter-spacing:-0.01em;">⚖️ Three-Strike Disciplinary Escalation Matrix</h2>
+            <span class="badge-count badge-rose" id="strikeMatrixBadge">0 Enforced</span>
+          </div>
+          <p style="font-size:12px;color:var(--text-sub);margin-top:4px;">
+            Institutional 3-Tier Escalation Model: <strong>Strike 1:</strong> Formal Warning · <strong>Strike 2:</strong> Proctor Counseling · <strong>Strike 3:</strong> 14-Day Lab Suspension.
+          </p>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="text" id="strikeSearchInp" placeholder="Search TRNO or Name..." oninput="filterStrikeMatrix()"
+            style="background:rgba(0,0,0,0.3);border:1px solid var(--border);color:#fff;padding:6px 12px;border-radius:6px;font-size:12px;outline:none;">
+          <button class="btn btn-surface" onclick="fetchStrikeMatrix()" style="font-size:11.5px;padding:6px 12px;">🔄 Refresh</button>
+        </div>
+      </div>
+
+      <!-- Strike Tabs -->
+      <div class="strike-tabs">
+        <button class="strike-tab active" id="tabStrikeAll" onclick="setStrikeFilter('ALL')">
+          All Escalations (<span id="strikeCountAll">0</span>)
+        </button>
+        <button class="strike-tab" id="tabStrike3" onclick="setStrikeFilter('3')">
+          🔴 Strike 3 · Suspended (<span id="strikeCount3">0</span>)
+        </button>
+        <button class="strike-tab" id="tabStrike2" onclick="setStrikeFilter('2')">
+          🟠 Strike 2 · Counseling (<span id="strikeCount2">0</span>)
+        </button>
+        <button class="strike-tab" id="tabStrike1" onclick="setStrikeFilter('1')">
+          🟡 Strike 1 · Warning (<span id="strikeCount1">0</span>)
+        </button>
+      </div>
+
+      <!-- Table -->
+      <div style="overflow-x:auto;">
+        <table class="dossier-table" style="width:100%;">
+          <thead>
+            <tr>
+              <th>Student Identity</th>
+              <th>Darajah &amp; Group</th>
+              <th>Strike Tier</th>
+              <th>Policy Incidents</th>
+              <th>Account Status</th>
+              <th style="text-align:right;">Disciplinary Actions</th>
+            </tr>
+          </thead>
+          <tbody id="strikeMatrixTbody">
+            <tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-sub);">Loading disciplinary escalation records…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         SECTION 4: ACTIVE DIRECTORY & ACCOUNT GOVERNANCE CONSOLE
+         (Positioned below all charts with complete pagination & self-service controls)
+         ══════════════════════════════════════════════════════════════════════ -->
+    <div class="gov-section">
+      <div class="gov-head">
+        <div class="gov-title-wrap">
+          <h2><span>🏛️</span> Active Directory &amp; Student Account Governance Hub</h2>
+          <p class="gov-subtitle">
+            Centralized Windows Domain (<code>mamal.nbi</code>) account control for HODs and administrators.
+            Inspect disabled students, trace exact violation reasons, and restore access with 1 click without server logins.
+          </p>
+        </div>
+        <div class="gov-kpi-chips">
+          <div class="gov-chip domain-chip" title="Windows Domain Controller Status">
+            <span>🖥️</span> <strong>mamal.nbi</strong> <span style="font-size:10px;color:#a5b4fc;">(ONLINE)</span>
+          </div>
+          <div class="gov-chip disabled-chip" onclick="switchGovTab('disabled')" title="Click to view all disabled accounts">
+            <span>⛔</span> <strong><span id="govKpiDisabledCount">424</span> Disabled in AD</strong>
+          </div>
+          <div class="gov-chip active-chip" onclick="switchGovTab('active')" title="Click to view active accounts">
+            <span>🟢</span> <strong><span id="govKpiActiveCount">1,037</span> Active in AD</strong>
+          </div>
+          <button class="btn btn-surface" onclick="fetchGovAccounts(true)" style="font-size:11.5px;padding:5px 10px;">
+            🔄 Refresh AD
+          </button>
+          <a href="/enforce/admin/governance/export-disabled" class="btn btn-surface" style="font-size:11.5px;padding:5px 10px;text-decoration:none;">
+            📥 Export CSV
+          </a>
+          <button class="btn btn-surface" onclick="openGovAuditModal()" style="font-size:11.5px;padding:5px 10px;">
+            📜 Audit Trail
+          </button>
+        </div>
+      </div>
+
+      <!-- Controls & Filter Toolbar -->
+      <div class="gov-toolbar">
+        <div class="gov-tabs">
+          <button class="gov-tab active-danger" id="tabGovDisabled" onclick="switchGovTab('disabled')">
+            ⛔ Disabled Accounts (<span id="tabCountDisabled">424</span>)
+          </button>
+          <button class="gov-tab" id="tabGovActive" onclick="switchGovTab('active')">
+            🟢 Active Accounts
+          </button>
+          <button class="gov-tab" id="tabGovViolations" onclick="switchGovTab('violations')">
+            🚨 Policy Warnings / Strikes
+          </button>
+          <button class="gov-tab" id="tabGovAll" onclick="switchGovTab('all')">
+            👥 All Students
+          </button>
+        </div>
+
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <div class="search-input-wrap" style="width:260px;">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="inpGovSearch" placeholder="Search TRNO, student, or reason..." oninput="filterGovLocalTable()">
+          </div>
+          <div class="select-wrap" style="width:160px;">
+            <select id="selGovDarajah" onchange="fetchGovAccounts()">
+              <option value="">All Darajahs</option>
+              <option value="1">Darajah 1</option>
+              <option value="2">Darajah 2</option>
+              <option value="3">Darajah 3</option>
+              <option value="4">Darajah 4</option>
+              <option value="5">Darajah 5</option>
+              <option value="6">Darajah 6</option>
+              <option value="7">Darajah 7</option>
+              <option value="8">Darajah 8</option>
+              <option value="9">Darajah 9</option>
+              <option value="10">Darajah 10</option>
+              <option value="11">Darajah 11</option>
+            </select>
+          </div>
+          <!-- Page size selector -->
+          <div class="page-size-selector">
+            <span>Show:</span>
+            <select id="selGovPageSize" onchange="setGovPageSize(this.value)">
+              <option value="15" selected>15 / page</option>
+              <option value="25">25 / page</option>
+              <option value="50">50 / page</option>
+              <option value="100">100 / page</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Governance Accounts Table -->
+      <div class="gov-table-wrap">
+        <table class="gov-table">
+          <thead>
+            <tr>
+              <th style="width:64px;">Photo</th>
+              <th style="width:220px;">Student</th>
+              <th style="width:130px;">AD Status</th>
+              <th style="width:170px;">Date Disabled</th>
+              <th>Reason / Policy Note</th>
+              <th style="width:130px;text-align:center;">Days Left</th>
+              <th style="width:200px;text-align:right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="govTableBody">
+            <tr>
+              <td colspan="7" style="text-align:center;padding:30px;color:var(--text-muted);">
+                Querying Windows Active Directory (mamal.nbi) &amp; Sentinel roster…
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination Bar for Governance Table -->
+      <div class="pagination-bar" id="govPaginationBar">
+        <div class="pagination-info" id="govPaginationInfo">
+          <span>Showing 0 to 0 of 0 accounts</span>
+        </div>
+        <div class="pagination-nav" id="govPaginationNav">
+          <!-- Populated dynamically by renderGovPaginationControls -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Threat Details Modal -->
+  <div class="modal-overlay" id="threatModal" onclick="if(event.target===this)closeThreatModal()">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modalTitle">🛡️ Incident Details</h3>
+        <button class="modal-close" onclick="closeThreatModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-row">
+          <span class="modal-label">Student Identification</span>
+          <span class="modal-val" id="modStudent" style="font-size:15px;color:#fff;">—</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div class="modal-row">
+            <span class="modal-label">Darajah & Group</span>
+            <span class="modal-val" id="modClass">—</span>
+          </div>
+          <div class="modal-row">
+            <span class="modal-label">Incident Timestamp</span>
+            <span class="modal-val" id="modTime" style="font-family:'JetBrains Mono',monospace;">—</span>
+          </div>
+        </div>
+        <div class="modal-row">
+          <span class="modal-label">Target Entity (Domain / Process)</span>
+          <div class="target-callout" style="width:100%;">
+            <div class="target-info">
+              <span class="target-icon">🎯</span>
+              <span class="target-name" id="modDomain" style="word-break:break-all;">—</span>
+            </div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div class="modal-row">
+            <span class="modal-label">Category & Severity</span>
+            <div id="modRisk">—</div>
+          </div>
+          <div class="modal-row">
+            <span class="modal-label">Workstation / Machine</span>
+            <span class="modal-val" id="modIP" style="font-family:'JetBrains Mono',monospace;color:var(--sky);">—</span>
+          </div>
+        </div>
+        <div class="modal-row">
+          <span class="modal-label">Enforcement Guidance</span>
+          <div class="alert-reason-banner" id="modAction" style="font-size:13px;color:#fde68a;">—</div>
+        </div>
+        <div class="modal-footer" style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.08);flex-wrap:wrap;">
+          <button class="btn btn-surface" onclick="closeThreatModal()" style="font-size:12px;padding:6px 12px;">Close</button>
+          <button class="btn btn-surface" id="modalBtnLock" style="font-size:12px;padding:6px 12px;color:#7dd3fc;border-color:rgba(56,189,248,0.4);" onclick="adminModalLockStation()">🔒 Lock Station</button>
+          <button class="btn btn-surface" id="modalBtnLogout" style="font-size:12px;padding:6px 12px;color:#fcd34d;border-color:rgba(245,158,11,0.4);" onclick="adminModalForceLogout()">🚪 Force Logout</button>
+          <button class="btn btn-danger" id="modalBtnDisable" style="font-size:12px;padding:6px 12px;background:#dc2626;color:#fff;" onclick="adminModalDisableAccount()">⛔ Disable Account</button>
+        </div>
+      </div>
+  </div>
+
+  <!-- 📜 Governance Audit Trail Modal -->
+  <div class="modal-overlay" id="govAuditModal" onclick="if(event.target===this)closeGovAuditModal()">
+    <div class="modal-card" style="max-width: 720px; width: 92%;">
+      <div class="modal-header">
+        <h3 style="display:flex;align-items:center;gap:8px;"><span>📜</span> Active Directory &amp; Governance Audit Trail</h3>
+        <button class="modal-close" onclick="closeGovAuditModal()">✕</button>
+      </div>
+      <div class="modal-body" style="max-height: 480px; overflow-y: auto; padding: 18px 24px;">
+        <div id="govAuditList" style="display:flex;flex-direction:column;gap:10px;">
+          <div style="text-align:center;color:var(--text-muted);padding:30px;">Loading audit trail from server…</div>
+        </div>
+      </div>
+      <div class="modal-footer" style="padding:12px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;">
+        <button class="btn btn-surface" onclick="closeGovAuditModal()">Close</button>
+      </div>
+    </div>
+  <!-- ══ INSTITUTIONAL DISCIPLINARY DOSSIER MODAL (OPTION C) ══ -->
+  <div class="dossier-modal-overlay" id="disciplinaryDossierModal" onclick="if(event.target===this)closeDisciplinaryDossier()">
+    <div class="dossier-paper">
+      <!-- Printable Header Strip -->
+      <div class="dossier-header-strip">
+        <div style="display:flex;align-items:center;gap:16px;">
+          <div class="dossier-crest">🛡️</div>
+          <div>
+            <div class="dossier-inst-title">Al-Jamea tus-Saifiyah · Nairobi</div>
+            <div class="dossier-inst-sub">Office of the Proctor &amp; IT Governance · Disciplinary Incident Dossier</div>
+            <div style="font-size:11px;color:var(--text-sub);margin-top:2px;">Campus Network &amp; Computer Lab Sentinel Telemetry System</div>
+          </div>
+        </div>
+        <div style="text-align:right;font-size:11px;color:var(--text-sub);line-height:1.5;">
+          <div><strong style="color:var(--gold);">STRICTLY CONFIDENTIAL</strong></div>
+          <div id="dossierHijriDate">Fatemi Hijri Calendar</div>
+          <div id="dossierGeneratedAt">—</div>
+        </div>
+      </div>
+
+      <!-- Dossier Content Body -->
+      <div class="dossier-body" id="dossierModalBody">
+        <div style="text-align:center;padding:40px;color:var(--text-sub);">Loading student disciplinary dossier…</div>
+      </div>
+
+      <!-- Footer Action Bar -->
+      <div class="dossier-footer-bar">
+        <div style="font-size:11.5px;color:var(--text-sub);">
+          Official Record · Generated per Institutional 14-Day Enforcement Directive
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-surface" onclick="printDisciplinaryDossier()" style="font-size:12px;padding:6px 14px;color:var(--gold);border-color:rgba(245,200,66,0.4);">
+            🖨️ Print / Save PDF Dossier
+          </button>
+          <button class="btn btn-surface" onclick="closeDisciplinaryDossier()" style="font-size:12px;padding:6px 14px;">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let rawAlerts = [];
+    let acknowledgedCount = 0;
+    let knownAlertKeys = new Set();
+    let audioContext = null;
+    let isAudioMuted = false;
+
+    // Chart instances
+    let chartRiskDistInst = null;
+    let chartTopDomainsInst = null;
+    let chartDarajahRiskInst = null;
+    let chartDailyTrendInst = null;
+    let chartCategoryInst = null;
+
+    // Filter state
+    let activeRiskFilter = 'ALL';
+    let activeCategoryFilter = '';
+    let activeStationFilter = '';
+
+    function setRiskPill(risk) {
+      activeRiskFilter = risk;
+      activeCategoryFilter = '';
+      clearActiveCategoryPills();
+      document.getElementById('pillAll').className = 'filter-pill' + (risk === 'ALL' ? ' active' : '');
+      document.getElementById('pillHigh').className = 'filter-pill' + (risk === 'HIGH' ? ' active-rose' : '');
+      document.getElementById('pillMed').className = 'filter-pill' + (risk === 'MEDIUM' ? ' active-amber' : '');
+      fetchThreatData();
+    }
+
+    function setCategoryPill(category) {
+      activeCategoryFilter = category;
+      activeRiskFilter = 'ALL';
+      document.getElementById('pillAll').className = 'filter-pill';
+      document.getElementById('pillHigh').className = 'filter-pill';
+      document.getElementById('pillMed').className = 'filter-pill';
+      clearActiveCategoryPills();
+
+      const pillMap = {
+        'proxy': 'pillProxy',
+        'social': 'pillSocial',
+        'gaming': 'pillGaming',
+        'piracy': 'pillPiracy',
+        '.exe': 'pillApp'
+      };
+      const pillId = pillMap[category];
+      if (pillId && document.getElementById(pillId)) {
+        document.getElementById(pillId).className = 'filter-pill active-purple';
+      }
+      fetchThreatData();
+    }
+
+    function clearActiveCategoryPills() {
+      ['pillProxy', 'pillSocial', 'pillGaming', 'pillPiracy', 'pillApp'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.className = 'filter-pill';
+      });
+    }
+
+    function resetFilters() {
+      document.getElementById('inpSearch').value = '';
+      document.getElementById('selDarajah').value = '';
+      document.getElementById('selGroup').value = '';
+      activeCategoryFilter = '';
+      activeStationFilter = '';
+      clearActiveCategoryPills();
+      setRiskPill('ALL');
+    }
+
+    // Workstation radar filtering
+    function filterByStation(st) {
+      activeStationFilter = st;
+      const inp = document.getElementById('inpSearch');
+      if (inp) inp.value = st;
+      filterLocalFeed();
+    }
+
+    function clearStationFilter() {
+      activeStationFilter = '';
+      const inp = document.getElementById('inpSearch');
+      if (inp) inp.value = '';
+      filterLocalFeed();
+    }
+
+    function renderWorkstationRadar(radarList) {
+      const container = document.getElementById('workstationRadarGrid');
+      const badge = document.getElementById('radarStationBadge');
+      if (!container) return;
+      if (!radarList || radarList.length === 0) {
+        container.innerHTML = `<span style="font-size:12px;color:var(--text-sub);">✅ No workstation active alerts detected. All lab terminals clear.</span>`;
+        if (badge) badge.textContent = 'All Terminals Clear';
+        return;
+      }
+      if (badge) badge.textContent = `${radarList.length} Active Workstations`;
+
+      container.innerHTML = radarList.map(item => {
+        const isCrit = item.status === 'critical' || item.count >= 3;
+        const cls = isCrit ? 'critical' : 'warning';
+        return `
+          <div class="station-radar-pill ${cls}" onclick="filterByStation('${escapeJs(item.station)}')" title="Filter incidents on ${escapeHtml(item.station)}">
+            <span style="font-weight:700;">🖥️ ${escapeHtml(item.station)}</span>
+            <span class="station-radar-count">${item.count} flag${item.count !== 1 ? 's' : ''}</span>
+            <button class="station-radar-lock" onclick="event.stopPropagation(); adminLockStation('${escapeJs(item.station)}')" title="Remote Lock ${escapeHtml(item.station)}">🔒</button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Bulk review visible alerts
+    async function acknowledgeAllVisible() {
+      if (!filteredFeedAlerts || filteredFeedAlerts.length === 0) {
+        alert('No alerts currently in view to review.');
+        return;
+      }
+      const keys = filteredFeedAlerts.map(a => a.alert_key || `${a.trno}|${a.domain}|${a.visit_time}`);
+      if (!confirm(`Mark all ${keys.length} currently visible alerts as reviewed & resolved?`)) return;
+
+      try {
+        const res = await fetch('/api/analytics/acknowledge_all', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ keys: keys })
+        });
+        const data = await res.json();
+        if (data.status === 'ok') {
+          acknowledgedCount += keys.length;
+          const kpiAck = document.getElementById('kpiAckCount');
+          if (kpiAck) kpiAck.textContent = acknowledgedCount;
+          rawAlerts = rawAlerts.filter(a => !keys.includes(a.alert_key || `${a.trno}|${a.domain}|${a.visit_time}`));
+          filterLocalFeed();
+          alert(`✅ ${keys.length} alerts marked as reviewed.`);
+        }
+      } catch (e) {
+        alert('Network error: ' + e.message);
+      }
+    }
+
+    function promptLockStation() {
+      const station = prompt('Enter Workstation / PC name to lock immediately (e.g. MK-50, RB-12):', 'MK-01');
+      if (station) {
+        adminLockStation(station.trim());
+      }
+    }
+
+    // Audio alarm toggle & synthesizer
+    function toggleAudioMute() {
+      isAudioMuted = !isAudioMuted;
+      document.getElementById('soundIcon').textContent = isAudioMuted ? '🔇' : '🔊';
+      document.getElementById('soundLabel').textContent = isAudioMuted ? 'Sound Alert: MUTED' : 'Sound Alert: ON';
+      document.getElementById('btnSoundToggle').style.borderColor = isAudioMuted ? 'rgba(244,63,94,0.4)' : 'var(--border)';
+    }
+
+    function playAlertBeep(isHigh) {
+      if (isAudioMuted) return;
+      try {
+        if (!audioContext) {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioContext.state === 'suspended') {
+          audioContext.resume();
+        }
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+
+        if (isHigh) {
+          osc.frequency.setValueAtTime(880, audioContext.currentTime);
+          osc.frequency.setValueAtTime(440, audioContext.currentTime + 0.15);
+          gain.gain.setValueAtTime(0.25, audioContext.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.35);
+          osc.start();
+          osc.stop(audioContext.currentTime + 0.35);
+        } else {
+          osc.frequency.setValueAtTime(520, audioContext.currentTime);
+          gain.gain.setValueAtTime(0.12, audioContext.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+          osc.start();
+          osc.stop(audioContext.currentTime + 0.2);
+        }
+      } catch (e) {
+        console.warn('Audio alert unavailable:', e);
+      }
+    }
+
+    // Desktop Notification API
+    function requestNotificationPermission() {
+      if (!('Notification' in window)) {
+        alert('Desktop notifications are not supported in this browser.');
+        return;
+      }
+      Notification.requestPermission().then(permission => {
+        const btn = document.getElementById('btnNotif');
+        if (permission === 'granted') {
+          btn.textContent = '🔔 Alerts Active';
+          btn.style.borderColor = 'rgba(16,185,129,0.4)';
+          btn.style.color = '#34d399';
+          new Notification('MamalBrowse Sentinel Security', {
+            body: 'Real-time desktop threat alerts are now active.',
+            icon: '🛡️'
+          });
+        } else {
+          btn.textContent = '🔕 Alerts Blocked';
+          btn.style.borderColor = 'rgba(244,63,94,0.4)';
+          btn.style.color = '#f87171';
+        }
+      });
+    }
+
+    function initNotifButton() {
+      if ('Notification' in window && Notification.permission === 'granted') {
+        const btn = document.getElementById('btnNotif');
+        btn.textContent = '🔔 Alerts Active';
+        btn.style.borderColor = 'rgba(16,185,129,0.4)';
+        btn.style.color = '#34d399';
+      }
+    }
+
+    // Fetch alerts & summary from backend
+    async function fetchThreatData() {
+      const darajah = document.getElementById('selDarajah').value;
+      const group = document.getElementById('selGroup').value;
+
+      const params = new URLSearchParams({
+        risk: activeRiskFilter,
+        category: activeCategoryFilter,
+        darajah: darajah,
+        group: group,
+        limit: 150
+      });
+
+      try {
+        const [alertsRes, summaryRes] = await Promise.all([
+          fetch(`/api/analytics/live_alerts?${params.toString()}`),
+          fetch('/api/analytics/threat_summary')
+        ]);
+
+        if (alertsRes.ok) {
+          const alertsData = await alertsRes.json();
+          processAlerts(alertsData);
+        }
+
+        if (summaryRes.ok) {
+          const summaryData = await summaryRes.json();
+          updateSummaryCharts(summaryData);
+
+          const kpiH = document.getElementById('kpiHighCount');
+          const kpiM = document.getElementById('kpiMedCount');
+          const kpiA = document.getElementById('kpiAppCount');
+          if (kpiH && summaryData.high_count !== undefined) kpiH.textContent = summaryData.high_count.toLocaleString();
+          if (kpiM && summaryData.medium_count !== undefined) kpiM.textContent = summaryData.medium_count.toLocaleString();
+          if (kpiA && summaryData.app_count !== undefined) kpiA.textContent = summaryData.app_count.toLocaleString();
+          if (summaryData.workstation_radar) renderWorkstationRadar(summaryData.workstation_radar);
+        }
+
+        const nowStr = new Date().toLocaleTimeString();
+        document.getElementById('kpiLastUpdated').textContent = `Sync: ${nowStr}`;
+        document.getElementById('streamTimestamp').textContent = `Updated ${nowStr}`;
+
+      } catch (err) {
+        console.error('Error fetching threat data:', err);
+      }
+    }
+
+    function processAlerts(data) {
+      rawAlerts = data.alerts || [];
+
+      // Calculate app violations count (processes ending in .exe)
+      let appViolations = 0;
+      rawAlerts.forEach(a => {
+        const dom = (a.domain || '').toLowerCase();
+        if (dom.endsWith('.exe') || (a.browser && a.browser !== 'chrome.exe')) {
+          appViolations++;
+        }
+      });
+      document.getElementById('kpiAppCount').textContent = appViolations;
+
+      document.getElementById('feedCountBadge').textContent = `${rawAlerts.length} Active`;
+
+      // Check for new High Risk alerts to fire notification sound
+      let hasNewHigh = false;
+      rawAlerts.forEach(a => {
+        const key = a.alert_key || `${a.trno}|${a.domain}|${a.visit_time}`;
+        if (!knownAlertKeys.has(key)) {
+          knownAlertKeys.add(key);
+          if (a.risk_level === 'HIGH') {
+            hasNewHigh = true;
+          }
+        }
+      });
+
+      if (hasNewHigh) {
+        playAlertBeep(true);
+        if ('Notification' in window && Notification.permission === 'granted') {
+          new Notification('🚨 CRITICAL SAFETY THREAT DETECTED', {
+            body: 'A student has attempted to access a restricted high-risk domain or launch unauthorized software.',
+            requireInteraction: true
+          });
+        }
+      }
+
+      filterLocalFeed();
+      populateDarajahOptions();
+    }
+
+    let feedCurrentPage = 1;
+    const feedPageSize = 6;
+    let filteredFeedAlerts = [];
+
+    function changeFeedPage(delta) {
+      const totalPages = Math.ceil(filteredFeedAlerts.length / feedPageSize) || 1;
+      feedCurrentPage = Math.min(Math.max(1, feedCurrentPage + delta), totalPages);
+      renderFeedPage();
+    }
+
+    function filterLocalFeed() {
+      feedCurrentPage = 1;
+      const search = (document.getElementById('inpSearch').value || '').toLowerCase().trim();
+      let res = rawAlerts;
+      if (activeStationFilter) {
+        res = res.filter(a => a.station && a.station.toLowerCase().includes(activeStationFilter.toLowerCase()));
+      }
+      if (search && (!activeStationFilter || search !== activeStationFilter.toLowerCase())) {
+        res = res.filter(a =>
+          (a.name && a.name.toLowerCase().includes(search)) ||
+          (a.trno && a.trno.toLowerCase().includes(search)) ||
+          (a.domain && a.domain.toLowerCase().includes(search)) ||
+          (a.reason && a.reason.toLowerCase().includes(search)) ||
+          (a.class && a.class.toLowerCase().includes(search)) ||
+          (a.station && a.station.toLowerCase().includes(search))
+        );
+      }
+      filteredFeedAlerts = res;
+      renderFeedPage();
+    }
+
+
+    function renderFeedPage() {
+      const container = document.getElementById('alertFeedList');
+      const counterEl = document.getElementById('filterResultsCount');
+      const totalCount = filteredFeedAlerts.length;
+      const totalPages = Math.ceil(totalCount / feedPageSize) || 1;
+
+      if (feedCurrentPage > totalPages) feedCurrentPage = totalPages;
+      if (feedCurrentPage < 1) feedCurrentPage = 1;
+
+      if (counterEl) {
+        counterEl.textContent = `Displaying ${totalCount} of ${rawAlerts.length} threat incident${rawAlerts.length !== 1 ? 's' : ''}`;
+      }
+
+      // Update feed pagination bar
+      const infoEl = document.getElementById('feedPaginationInfo');
+      const pageNumEl = document.getElementById('feedPageNum');
+      const btnPrev = document.getElementById('feedBtnPrev');
+      const btnNext = document.getElementById('feedBtnNext');
+
+      const startIdx = (feedCurrentPage - 1) * feedPageSize;
+      const endIdx = Math.min(startIdx + feedPageSize, totalCount);
+
+      if (infoEl) {
+        infoEl.textContent = totalCount === 0 ? 'Showing 0 alerts' : `Showing ${startIdx + 1}–${endIdx} of ${totalCount} active alerts`;
+      }
+      if (pageNumEl) pageNumEl.textContent = `${feedCurrentPage} / ${totalPages}`;
+      if (btnPrev) btnPrev.disabled = feedCurrentPage <= 1;
+      if (btnNext) btnNext.disabled = feedCurrentPage >= totalPages;
+
+      if (totalCount === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="icon">✅</div>
+            <h4 style="color:#34d399;font-weight:700;">All Clear — No Active Threats</h4>
+            <p style="font-size:13px;margin-top:4px;">No matching policy violations detected for the selected filter criteria.</p>
+          </div>
+        `;
+        return;
+      }
+
+      const pageAlerts = filteredFeedAlerts.slice(startIdx, endIdx);
+      container.innerHTML = pageAlerts.map(a => {
+        const isHigh = a.risk_level === 'HIGH';
+        const riskBadge = isHigh ? 'badge-rose' : 'badge-amber';
+        const riskClass = isHigh ? 'risk-high' : 'risk-medium';
+        const sev = a.severity || a.severity_score || (isHigh ? 9 : 5);
+        const alertKey = a.alert_key || `${a.trno}|${a.domain}|${a.visit_time}`;
+        
+        // Detect if process executable vs web URL
+        const isProc = (a.domain || '').toLowerCase().endsWith('.exe');
+        const targetIcon = isProc ? '💻' : '🌐';
+        const initials = (a.name || 'Student').split(' ').map(p => p[0]).filter(Boolean).slice(0, 2).join('').toUpperCase();
+
+        return `
+          <div class="alert-item ${riskClass}" id="alert-${btoa(alertKey).replace(/=/g,'')}" onclick="showThreatDetails('${escapeJs(alertKey)}')">
+            <div class="alert-top-row">
+              <div class="alert-tags-left">
+                <span class="badge-count ${riskBadge}">${isHigh ? '🚨 CRITICAL' : '⚠️ WARNING'}</span>
+                <span class="sev-meter ${isHigh ? 'high' : 'med'}">SEV ${sev}/10</span>
+                <span class="time-stamp">${escapeHtml(a.visit_time || 'Recent')}</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <span class="station-badge">🖥️ ${escapeHtml(a.station && a.station !== 'N/A' && a.station !== 'Lab-PC' ? a.station : 'Unassigned')}</span>
+                <span class="badge-count badge-purple">${escapeHtml(a.group || 'Talabaat')}</span>
+              </div>
+            </div>
+
+            <div class="alert-student-section">
+              <div class="student-avatar">${initials}</div>
+              <div class="student-details">
+                <div class="student-header-line">
+                  <span class="student-name-text">${escapeHtml(a.name || 'Student')}</span>
+                  <span class="student-trno-tag">#${escapeHtml(a.trno)}</span>
+                  <span style="font-size:12px;color:var(--text-sub);">•</span>
+                  <span style="font-size:12px;color:var(--text-muted);font-weight:600;">🏛️ ${escapeHtml(a.class || 'Unknown Class')}</span>
+                </div>
+                
+                <div class="target-callout" style="margin-top:4px;">
+                  <div class="target-info">
+                    <span class="target-icon">${targetIcon}</span>
+                    <span class="target-name ${isProc ? 'proc' : ''}" title="${escapeHtml(a.url || a.domain)}">${escapeHtml(a.domain)}</span>
+                  </div>
+                  <span class="category-tag ${isHigh ? 'badge-rose' : 'badge-amber'}">${escapeHtml(a.category || 'Restricted')}</span>
+                </div>
+
+                <div class="alert-reason-banner" style="margin-top:6px;">
+                  ${escapeHtml(a.reason || 'Safety policy trigger recorded on workstation.')}
+                </div>
+              </div>
+            </div>
+
+            <div class="alert-actions-bar" onclick="event.stopPropagation();" style="display:flex;flex-wrap:wrap;gap:6px;">
+              <button class="btn-action btn-action-ack" onclick="acknowledgeAlert('${escapeJs(alertKey)}')">
+                ✅ Reviewed
+              </button>
+              <button class="btn-action" style="background:rgba(56,189,248,0.12);color:#7dd3fc;border:1px solid rgba(56,189,248,0.35);font-size:11px;padding:4px 9px;border-radius:6px;cursor:pointer;" onclick="adminLockStation('${escapeJs(a.station)}', '${escapeJs(a.trno)}')">
+                🔒 Lock PC
+              </button>
+              <button class="btn-action" style="background:rgba(244,63,94,0.15);color:#fca5a5;border:1px solid rgba(244,63,94,0.4);font-size:11px;padding:4px 9px;border-radius:6px;cursor:pointer;" onclick="adminDisableAccount('${escapeJs(a.trno)}', '${escapeJs(a.station)}', '${escapeJs(a.category)}')">
+                ⛔ Disable
+              </button>
+              <a href="/report/${encodeURIComponent(a.trno)}" class="btn-action btn-action-dossier" target="_blank">
+                🔍 Dossier
+              </a>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Populate Darajah dropdown options
+    let populatedDarajahs = false;
+    function populateDarajahOptions() {
+      if (populatedDarajahs) return;
+      const darajahSet = new Set();
+      rawAlerts.forEach(a => {
+        if (a.darajah) darajahSet.add(a.darajah);
+        else if (a.class) darajahSet.add(a.class);
+      });
+      if (darajahSet.size > 0) {
+        const sel = document.getElementById('selDarajah');
+        const sorted = Array.from(darajahSet).sort();
+        sorted.forEach(d => {
+          const opt = document.createElement('option');
+          opt.value = d;
+          opt.textContent = d;
+          sel.appendChild(opt);
+        });
+        populatedDarajahs = true;
+      }
+    }
+
+    let currentModalAlert = null;
+
+    // Inspect Details Modal
+    function showThreatDetails(alertKey) {
+      const a = rawAlerts.find(item => (item.alert_key || `${item.trno}|${item.domain}|${item.visit_time}`) === alertKey);
+      if (!a) return;
+      currentModalAlert = a;
+      
+      document.getElementById('modStudent').textContent = `${a.name || 'Unknown'} (#${a.trno || 'N/A'})`;
+      document.getElementById('modClass').textContent = `${a.class || 'General'} · ${a.group || 'Talabaat'}`;
+      document.getElementById('modTime').textContent = a.visit_time || 'Recent';
+      document.getElementById('modDomain').textContent = a.url || a.domain || 'N/A';
+      
+      const isHigh = a.risk_level === 'HIGH';
+      document.getElementById('modRisk').innerHTML = `
+        <span class="badge-count ${isHigh ? 'badge-rose' : 'badge-amber'}">${isHigh ? '🚨 CRITICAL' : '⚠️ WARNING'}</span>
+        <span style="margin-left:8px;font-size:13px;font-weight:600;color:#fff;">${a.category || 'Restricted'}</span>
+      `;
+      
+      document.getElementById('modIP').textContent = a.station && a.station !== 'N/A' ? `Station ${a.station}` : (a.client_ip || 'Lab Terminal');
+      document.getElementById('modAction').textContent = a.action || 'Warning logged. Monitored under 14-day institutional policy.';
+      
+      document.getElementById('threatModal').classList.add('active');
+    }
+
+    function closeThreatModal() {
+      document.getElementById('threatModal').classList.remove('active');
+      currentModalAlert = null;
+    }
+
+    // ─── Active Remote Enforcement Controls ─────────────────────────
+    async function adminDisableAccount(trno, station, category) {
+      if (!trno) { alert('No student TRNO associated with this incident.'); return; }
+      const reason = prompt(`Enter suspension / disable reason for Student #${trno}:`, `Critical policy violation: ${category || 'Security breach'}`);
+      if (reason === null) return;
+      try {
+        const res = await fetch('/enforce/admin/disable-account', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ trno: String(trno), reason: reason, station: station || '' })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          alert(`⛔ Student #${trno} account has been DISABLED. Lab session terminated.`);
+          closeThreatModal();
+          fetchThreatData();
+        } else {
+          alert('Error: ' + (data.error || 'Failed to disable account'));
+        }
+      } catch (e) {
+        alert('Network error: ' + e.message);
+      }
+    }
+
+    async function adminLockStation(station, trno) {
+      if (!station || station === 'N/A' || station === 'Lab-PC' || station === 'Unassigned') {
+        const customStation = prompt('Enter Station / PC name to lock (e.g. MK-50, RB-43):', station && station !== 'Lab-PC' && station !== 'Unassigned' ? station : 'MK-01');
+        if (!customStation) return;
+        station = customStation;
+      }
+      if (!confirm(`Send immediate LOCK WORKSTATION command to ${station}?`)) return;
+      try {
+        const res = await fetch('/enforce/admin/station/lock', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ station: station, trno: trno ? String(trno) : '' })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          alert(`🔒 Remote Lock command issued for ${station}. Active session ended.`);
+        } else {
+          alert('Error: ' + (data.error || 'Failed to lock station'));
+        }
+      } catch (e) {
+        alert('Network error: ' + e.message);
+      }
+    }
+
+    async function adminForceLogout(trno, station) {
+      if (!trno) { alert('No student TRNO specified.'); return; }
+      if (!confirm(`Force logout active session for Student #${trno} at ${station || 'workstation'}?`)) return;
+      try {
+        const res = await fetch('/enforce/admin/station/logout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ trno: String(trno), station: station || '' })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          alert(`🚪 Session for Student #${trno} terminated.`);
+          closeThreatModal();
+        } else {
+          alert(data.message || data.error || 'Failed to logout student');
+        }
+      } catch (e) {
+        alert('Network error: ' + e.message);
+      }
+    }
+
+    function adminModalLockStation() {
+      if (!currentModalAlert) return;
+      adminLockStation(currentModalAlert.station, currentModalAlert.trno);
+    }
+
+    function adminModalForceLogout() {
+      if (!currentModalAlert) return;
+      adminForceLogout(currentModalAlert.trno, currentModalAlert.station);
+    }
+
+    function adminModalDisableAccount() {
+      if (!currentModalAlert) return;
+      adminDisableAccount(currentModalAlert.trno, currentModalAlert.station, currentModalAlert.category);
+    }
+
+    // Acknowledge single alert
+    async function acknowledgeAlert(alertKey) {
+      try {
+        const res = await fetch('/api/analytics/acknowledge_alert', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ alert_key: alertKey })
+        });
+        if (res.ok) {
+          acknowledgedCount++;
+          document.getElementById('kpiAckCount').textContent = acknowledgedCount;
+          rawAlerts = rawAlerts.filter(a => (a.alert_key || `${a.trno}|${a.domain}|${a.visit_time}`) !== alertKey);
+          filterLocalFeed();
+        }
+      } catch (e) {
+        console.error('Error acknowledging alert:', e);
+      }
+    }
+
+    // Reset Review Queue
+    async function resetAllAcknowledged() {
+      if (!confirm('Reset the reviewed alert queue and restore all suppressed alerts?')) return;
+      try {
+        const res = await fetch('/api/analytics/unacknowledge_all', { method: 'POST' });
+        if (res.ok) {
+          acknowledgedCount = 0;
+          document.getElementById('kpiAckCount').textContent = '0';
+          fetchThreatData();
+        }
+      } catch (e) {
+        console.error('Error resetting queue:', e);
+      }
+    }
+
+    // ── Threat Composition View Switcher (Severity vs Policy Mix) ──
+    function switchThreatCompView(view) {
+      const isSev = view === 'severity';
+      const elSev = document.getElementById('viewSeveritySplit');
+      const elCat = document.getElementById('viewCategoryMix');
+      if (elSev) elSev.style.display = isSev ? 'flex' : 'none';
+      if (elCat) elCat.style.display = isSev ? 'none' : 'flex';
+
+      const btnSev = document.getElementById('btnToggleSeverity');
+      const btnCat = document.getElementById('btnToggleCategory');
+      if (btnSev) btnSev.className = 'chart-toggle-btn' + (isSev ? ' active' : '');
+      if (btnCat) btnCat.className = 'chart-toggle-btn' + (!isSev ? ' active' : '');
+
+      const badge = document.getElementById('threatCompBadge');
+      if (badge) badge.textContent = isSev ? 'Severity Split' : 'Policy Mix';
+
+      if (!isSev && chartCategoryInst) {
+        chartCategoryInst.resize();
+      } else if (isSev && chartRiskDistInst) {
+        chartRiskDistInst.resize();
+      }
+    }
+
+    // Render Charts
+    function updateSummaryCharts(data) {
+      // 1. Risk Distribution Donut & Summary Metrics
+      const high = data.high_count || 0;
+      const med = data.medium_count || 0;
+      const total = high + med;
+
+      if (document.getElementById('compStatHigh')) document.getElementById('compStatHigh').textContent = high;
+      if (document.getElementById('compStatMed')) document.getElementById('compStatMed').textContent = med;
+      if (document.getElementById('severityRatioText')) {
+        if (total > 0) {
+          const highPct = Math.round((high / total) * 100);
+          document.getElementById('severityRatioText').textContent = `${highPct}% Critical · ${100 - highPct}% Warnings`;
+        } else {
+          document.getElementById('severityRatioText').textContent = 'Zero active threats';
+        }
+      }
+
+      const ctxRisk = document.getElementById('chartRiskDist').getContext('2d');
+      if (chartRiskDistInst) chartRiskDistInst.destroy();
+      chartRiskDistInst = new Chart(ctxRisk, {
+        type: 'doughnut',
+        data: {
+          labels: ['Critical (High Risk)', 'Warning (Medium Risk)'],
+          datasets: [{
+            data: [high, med],
+            backgroundColor: ['#f43f5e', '#f59e0b'],
+            borderColor: '#0f172a',
+            borderWidth: 3,
+            hoverOffset: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '72%',
+          plugins: {
+            legend: { position: 'bottom', labels: { color: '#94a3b8', font: { family: 'Inter', size: 11 }, padding: 10 } }
+          }
+        }
+      });
+
+      // 2. Top Flagged Targets (Domains & Software Executables)
+      const domains = (data.top_domains || []).slice(0, 5);
+      const ctxDom = document.getElementById('chartTopDomains').getContext('2d');
+      if (chartTopDomainsInst) chartTopDomainsInst.destroy();
+
+      chartTopDomainsInst = new Chart(ctxDom, {
+        type: 'bar',
+        data: {
+          labels: domains.map(d => d.domain.length > 15 ? d.domain.substring(0, 15) + '…' : d.domain),
+          datasets: [{
+            label: 'Intercepts',
+            data: domains.map(d => d.count),
+            backgroundColor: domains.map(d => (d.domain.endsWith('.exe') ? '#c084fc' : '#fb7185')),
+            borderRadius: 5
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          indexAxis: 'y',
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: ctx => ` ${ctx.raw} flagged requests`
+              }
+            }
+          },
+          scales: {
+            x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { family: 'Inter', size: 10 } } },
+            y: { grid: { display: false }, ticks: { color: '#f1f5f9', font: { family: 'JetBrains Mono', size: 11 } } }
+          }
+        }
+      });
+
+      // 3. Flagged Events by Darajah
+      const darajahRiskArr = Array.isArray(data.risk_by_darajah)
+        ? data.risk_by_darajah.slice(0, 7)
+        : Object.entries(data.risk_by_darajah || {}).map(([k,v]) => ({darajah: k, count: typeof v === 'object' ? ((v.HIGH||0)+(v.MEDIUM||0)) : v})).slice(0, 7);
+
+      const darajahLabels = darajahRiskArr.map(d => d.darajah);
+      const darajahCounts = darajahRiskArr.map(d => d.count);
+
+      const ctxDar = document.getElementById('chartDarajahRisk').getContext('2d');
+      if (chartDarajahRiskInst) chartDarajahRiskInst.destroy();
+
+      chartDarajahRiskInst = new Chart(ctxDar, {
+        type: 'bar',
+        data: {
+          labels: darajahLabels,
+          datasets: [{
+            label: 'Flagged Events',
+            data: darajahCounts,
+            backgroundColor: darajahCounts.map((_, i) => i % 2 === 0 ? '#f43f5e' : '#f59e0b'),
+            borderRadius: 5
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { display: false }, ticks: { color: '#f1f5f9', font: { family: 'Inter', size: 10 }, maxRotation: 45 } },
+            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', stepSize: 1, font: { size: 10 } }, beginAtZero: true }
+          }
+        }
+      });
+
+      // 4. Top Offending Students Leaderboard
+      const topStudents = data.top_students || [];
+      const listEl = document.getElementById('topStudentsList');
+      if (listEl) {
+        if (topStudents.length === 0) {
+          listEl.innerHTML = `<div style="text-align:center;color:var(--text-sub);font-size:12px;padding:24px;">✓ No high-risk student dossiers detected.</div>`;
+        } else {
+          listEl.innerHTML = topStudents.slice(0, 5).map((s, i) => {
+            const rankClass = i === 0 ? 'gold' : (i === 1 ? 'silver' : (i === 2 ? 'bronze' : 'silver'));
+            return `
+              <div class="student-rank-item">
+                <div style="display:flex;align-items:center;gap:10px;overflow:hidden;">
+                  <span class="rank-num ${rankClass}">#${i+1}</span>
+                  <div style="display:flex;flex-direction:column;overflow:hidden;">
+                    <a href="/report/${encodeURIComponent(s.trno)}" target="_blank" style="font-size:12px;font-weight:700;color:#fff;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                      ${escapeHtml(s.name || s.trno)}
+                    </a>
+                    <span style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--sky);">#${escapeHtml(s.trno)}</span>
+                  </div>
+                </div>
+                <span class="badge-count badge-rose" style="font-size:11px;padding:2px 8px;">${s.count} strikes</span>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+
+      if (data.category_dist) {
+        renderCategoryBreakdown(data.category_dist);
+      }
+    }
+
+    // 14-Day Daily Trend & Category Mix
+    async function fetchDailyTrend() {
+      try {
+        const res = await fetch('/api/analytics/threat_daily_trend');
+        if (!res.ok) return;
+        const data = await res.json();
+        renderDailyTrendChart(data);
+        renderCategoryBreakdown(data.category_dist || {});
+      } catch (e) {
+        console.warn('Daily trend fetch failed:', e);
+      }
+    }
+
+    function renderDailyTrendChart(data) {
+      const ctx = document.getElementById('chartDailyTrend');
+      if (!ctx) return;
+      if (chartDailyTrendInst) chartDailyTrendInst.destroy();
+
+      const highArr = data.high || [];
+      const medArr = data.medium || [];
+      const labels = data.labels || [];
+
+      // Calculate peak day and total
+      let peakVal = 0, peakDate = '', totalEvents = 0;
+      for (let i = 0; i < labels.length; i++) {
+        const sum = (highArr[i] || 0) + (medArr[i] || 0);
+        totalEvents += sum;
+        if (sum > peakVal) {
+          peakVal = sum;
+          peakDate = labels[i];
+        }
+      }
+
+      if (document.getElementById('trajectoryPeakBadge')) {
+        document.getElementById('trajectoryPeakBadge').textContent = peakVal > 0 ? `⚡ Peak: ${peakDate} (${peakVal})` : '⚡ Trend Stable';
+      }
+      if (document.getElementById('trajectoryTotalBadge')) {
+        document.getElementById('trajectoryTotalBadge').textContent = `Total 14d: ${totalEvents} events`;
+      }
+
+      chartDailyTrendInst = new Chart(ctx.getContext('2d'), {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: '🚨 High Risk (Critical)',
+              data: highArr,
+              borderColor: '#f43f5e',
+              backgroundColor: 'rgba(244,63,94,0.12)',
+              fill: true,
+              tension: 0.35,
+              pointBackgroundColor: '#f43f5e',
+              pointRadius: 3,
+              borderWidth: 2
+            },
+            {
+              label: '⚠️ Medium Risk (Warnings)',
+              data: medArr,
+              borderColor: '#f59e0b',
+              backgroundColor: 'rgba(245,158,11,0.08)',
+              fill: true,
+              tension: 0.35,
+              pointBackgroundColor: '#f59e0b',
+              pointRadius: 3,
+              borderWidth: 2
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: { position: 'top', labels: { color: '#94a3b8', font: { family: 'Inter', size: 11 }, boxWidth: 12, padding: 10 } }
+          },
+          scales: {
+            x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#94a3b8', font: { family: 'Inter', size: 10 } } },
+            y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#94a3b8', stepSize: 1, font: { size: 10 } }, beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    function renderCategoryBreakdown(catDist) {
+      const ctx = document.getElementById('chartCategoryBreakdown');
+      if (!ctx) return;
+      if (chartCategoryInst) chartCategoryInst.destroy();
+
+      const catColors = {
+        'Educational': '#10b981',
+        'Institutional': '#a855f7',
+        'Search Engine': '#38bdf8',
+        'Communication & Mail': '#6366f1',
+        'Video & Media': '#f59e0b',
+        'Social Media': '#fb923c',
+        'Gaming': '#ef4444',
+        'Proxy / VPN': '#f43f5e',
+        'Movie / Media Piracy': '#e11d48',
+        'Adult Content': '#dc2626',
+        'General Web': '#64748b',
+        'News & Media': '#fbbf24',
+        'Distracting': '#f97316'
+      };
+
+      const entries = Object.entries(catDist).sort((a,b) => b[1]-a[1]).slice(0, 8);
+      const labels = entries.map(([k]) => k);
+      const values = entries.map(([,v]) => v);
+      const colors = labels.map(l => catColors[l] || '#475569');
+
+      if (document.getElementById('topCategoryText') && entries.length > 0) {
+        document.getElementById('topCategoryText').textContent = `Top Trigger: ${entries[0][0]} (${entries[0][1]})`;
+      }
+
+      chartCategoryInst = new Chart(ctx.getContext('2d'), {
+        type: 'doughnut',
+        data: {
+          labels,
+          datasets: [{ data: values, backgroundColor: colors, borderColor: '#0f172a', borderWidth: 2 }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '66%',
+          plugins: {
+            legend: { position: 'right', labels: { color: '#94a3b8', font: { family: 'Inter', size: 10 }, boxWidth: 10, padding: 6 } }
+          }
+        }
+      });
+    }
+
+    // Export CSV
+    function exportThreatCSV() {
+      if (!rawAlerts || rawAlerts.length === 0) {
+        alert('No threat alerts available to export.');
+        return;
+      }
+      const headers = ['Timestamp', 'TRNO', 'Student Name', 'Class', 'Group', 'Risk Level', 'Severity', 'Domain', 'Category', 'Station', 'Reason'];
+      const rows = rawAlerts.map(a => [
+        `"${(a.visit_time || '').replace(/"/g, '""')}"`,
+        `"${(a.trno || '').replace(/"/g, '""')}"`,
+        `"${(a.name || '').replace(/"/g, '""')}"`,
+        `"${(a.class || '').replace(/"/g, '""')}"`,
+        `"${(a.group || '').replace(/"/g, '""')}"`,
+        `"${(a.risk_level || '').replace(/"/g, '""')}"`,
+        `"${a.severity || ''}"`,
+        `"${(a.domain || '').replace(/"/g, '""')}"`,
+        `"${(a.category || '').replace(/"/g, '""')}"`,
+        `"${(a.station || '').replace(/"/g, '""')}"`,
+        `"${(a.reason || '').replace(/"/g, '""')}"`
+      ]);
+
+      const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', `mamalbrowse_sentinel_threat_report_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+    function escapeJs(str) {
+      if (!str) return '';
+      return String(str).replace(/'/g, "\\'").replace(/"/g, '\\"');
+    }
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // 🏛️ Active Directory & Account Governance JavaScript Controller (Paginated)
+    // ══════════════════════════════════════════════════════════════════════════
+    let currentGovFilter = 'disabled';
+    let cachedGovRecords = [];
+    let filteredGovRecords = [];
+    let govCurrentPage = 1;
+    let govPageSize = 15;
+
+    function setGovPageSize(size) {
+      govPageSize = parseInt(size, 10) || 15;
+      govCurrentPage = 1;
+      renderGovPage();
+    }
+
+    function changeGovPage(page) {
+      const totalPages = Math.ceil(filteredGovRecords.length / govPageSize) || 1;
+      govCurrentPage = Math.min(Math.max(1, page), totalPages);
+      renderGovPage();
+      const wrap = document.querySelector('.gov-table-wrap');
+      if (wrap) wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function switchGovTab(tab) {
+      currentGovFilter = tab;
+      govCurrentPage = 1;
+      document.getElementById('tabGovDisabled').className = 'gov-tab' + (tab === 'disabled' ? ' active-danger' : '');
+      document.getElementById('tabGovActive').className = 'gov-tab' + (tab === 'active' ? ' active' : '');
+      document.getElementById('tabGovViolations').className = 'gov-tab' + (tab === 'violations' ? ' active' : '');
+      document.getElementById('tabGovAll').className = 'gov-tab' + (tab === 'all' ? ' active' : '');
+      fetchGovAccounts();
+    }
+
+    async function fetchGovAccounts(force = false) {
+      const darajah = document.getElementById('selGovDarajah') ? document.getElementById('selGovDarajah').value : '';
+      const tbody = document.getElementById('govTableBody');
+
+      try {
+        // Fetch summary KPI counters
+        fetch('/enforce/admin/governance/summary')
+          .then(r => r.json())
+          .then(data => {
+            if (data.ok && data.ad) {
+              const disCount = data.ad.ad_disabled_count || 0;
+              const actCount = data.ad.ad_active_count || 0;
+              if (document.getElementById('govKpiDisabledCount')) document.getElementById('govKpiDisabledCount').textContent = disCount.toLocaleString();
+              if (document.getElementById('govKpiActiveCount')) document.getElementById('govKpiActiveCount').textContent = actCount.toLocaleString();
+              if (document.getElementById('tabCountDisabled')) document.getElementById('tabCountDisabled').textContent = disCount.toLocaleString();
+            }
+          })
+          .catch(() => {});
+
+        // Fetch accounts for current tab & class filter
+        const res = await fetch(`/enforce/admin/governance/accounts?filter=${currentGovFilter}&darajah=${encodeURIComponent(darajah)}`);
+        const data = await res.json();
+
+        if (!data.ok) {
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:24px;color:#fca5a5;">Error loading accounts: ${data.error || 'Server error'}</td></tr>`;
+          return;
+        }
+
+        cachedGovRecords = data.records || [];
+        applyGovFilterAndRender();
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:24px;color:#fca5a5;">Network error querying Active Directory: ${e.message}</td></tr>`;
+      }
+    }
+
+    function filterGovLocalTable() {
+      govCurrentPage = 1;
+      applyGovFilterAndRender();
+    }
+
+    function applyGovFilterAndRender() {
+      const q = (document.getElementById('inpGovSearch').value || '').trim().toLowerCase();
+      if (!q) {
+        filteredGovRecords = cachedGovRecords;
+      } else {
+        filteredGovRecords = cachedGovRecords.filter(r => {
+          const haystack = `${r.trno} ${r.name} ${r.darajah} ${r.reason} ${r.station} ${r.disabled_by}`.toLowerCase();
+          return haystack.includes(q);
+        });
+      }
+      renderGovPage();
+    }
+
+    function renderGovPage() {
+      const totalRecords = filteredGovRecords.length;
+      const totalPages = Math.ceil(totalRecords / govPageSize) || 1;
+      if (govCurrentPage > totalPages) govCurrentPage = totalPages;
+      if (govCurrentPage < 1) govCurrentPage = 1;
+
+      const startIdx = (govCurrentPage - 1) * govPageSize;
+      const endIdx = Math.min(startIdx + govPageSize, totalRecords);
+      const pageRecords = filteredGovRecords.slice(startIdx, endIdx);
+
+      renderGovTableRows(pageRecords);
+
+      // Status text in pagination bar
+      const infoEl = document.getElementById('govPaginationInfo');
+      if (infoEl) {
+        if (totalRecords === 0) {
+          infoEl.innerHTML = `<span>Showing <strong>0</strong> accounts (${currentGovFilter.toUpperCase()} view)</span>`;
+        } else {
+          infoEl.innerHTML = `<span>Showing <strong>${startIdx + 1}</strong>–<strong>${endIdx}</strong> of <strong>${totalRecords.toLocaleString()}</strong> student accounts (${currentGovFilter.toUpperCase()} view)</span>`;
+        }
+      }
+
+      // Render pagination buttons
+      renderGovPaginationNav(totalPages);
+    }
+
+    function renderGovPaginationNav(totalPages) {
+      const navEl = document.getElementById('govPaginationNav');
+      if (!navEl) return;
+      if (totalPages <= 1) {
+        navEl.innerHTML = '';
+        return;
+      }
+
+      let html = '';
+      // First & Prev buttons
+      html += `<button class="pg-btn" onclick="changeGovPage(1)" ${govCurrentPage === 1 ? 'disabled' : ''} title="First Page">« First</button>`;
+      html += `<button class="pg-btn" onclick="changeGovPage(${govCurrentPage - 1})" ${govCurrentPage === 1 ? 'disabled' : ''} title="Previous Page">‹ Prev</button>`;
+
+      // Page numbers with ellipsis
+      const pageRange = [];
+      const delta = 2;
+      for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= govCurrentPage - delta && i <= govCurrentPage + delta)) {
+          pageRange.push(i);
+        }
+      }
+
+      let lastP = 0;
+      for (const p of pageRange) {
+        if (lastP && p - lastP > 1) {
+          html += `<span class="pg-ellipsis">…</span>`;
+        }
+        html += `<button class="pg-btn ${p === govCurrentPage ? 'active' : ''}" onclick="changeGovPage(${p})">${p}</button>`;
+        lastP = p;
+      }
+
+      // Next & Last buttons
+      html += `<button class="pg-btn" onclick="changeGovPage(${govCurrentPage + 1})" ${govCurrentPage === totalPages ? 'disabled' : ''} title="Next Page">Next ›</button>`;
+      html += `<button class="pg-btn" onclick="changeGovPage(${totalPages})" ${govCurrentPage === totalPages ? 'disabled' : ''} title="Last Page">Last »</button>`;
+
+      navEl.innerHTML = html;
+    }
+
+    // ── Compute days remaining under 14-day institutional policy ──
+    function computeDaysRemaining(disabledAtStr) {
+      if (!disabledAtStr || disabledAtStr === '—') return null;
+      try {
+        let d;
+        if (disabledAtStr.match(/^\d{4}-\d{2}-\d{2}/)) {
+          d = new Date(disabledAtStr);
+        } else if (disabledAtStr.match(/^\d{2}\/\d{2}\/\d{4}/)) {
+          const [dd, mm, yyyy] = disabledAtStr.split('/');
+          d = new Date(`${yyyy}-${mm}-${dd}`);
+        } else {
+          d = new Date(disabledAtStr);
+        }
+        if (isNaN(d.getTime())) return null;
+        const expiryDate = new Date(d.getTime() + 14 * 24 * 60 * 60 * 1000);
+        const now = new Date();
+        const diffMs = expiryDate - now;
+        return Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+      } catch (e) { return null; }
+    }
+
+    function renderDaysPill(daysLeft, isAdDisabled) {
+      if (!isAdDisabled) {
+        return `<span class="days-pill indefinite">— Active</span>`;
+      }
+      if (daysLeft === null) {
+        return `<span class="days-pill indefinite">⏳ Indefinite</span>`;
+      }
+      if (daysLeft === 0) {
+        return `<span class="days-pill urgent">🔴 Expired — Re-enable now</span>`;
+      }
+      if (daysLeft <= 2) {
+        return `<span class="days-pill urgent">🔴 ${daysLeft}d left</span>`;
+      }
+      if (daysLeft <= 5) {
+        return `<span class="days-pill warning">🟡 ${daysLeft}d left</span>`;
+      }
+      return `<span class="days-pill ok">🔵 ${daysLeft}d left</span>`;
+    }
+
+    function renderGovTableRows(records) {
+      const tbody = document.getElementById('govTableBody');
+      if (!records || records.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align:center;padding:36px;color:var(--text-muted);">
+              <div style="font-size:26px;margin-bottom:6px;">🍃</div>
+              <strong>No student accounts matching filter '${currentGovFilter.toUpperCase()}'</strong>
+              <p style="font-size:12px;margin-top:4px;">Try selecting another filter tab or clearing search.</p>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = records.map(r => {
+        const trno     = escapeHtml(r.trno);
+        const name     = escapeHtml(r.name);
+        const darajah  = escapeHtml(r.darajah);
+        const gender   = escapeHtml(r.gender || 'Boys');
+        const reason   = escapeHtml(r.reason || 'Good standing');
+        const disabledBy  = escapeHtml(r.disabled_by || 'System / Domain Administrator');
+        const rawDate     = r.disabled_at || r.last_incident || '';
+        const station     = escapeHtml(r.station ? `🖥️ ${r.station}` : '');
+        const isAdDisabled = !!r.ad_disabled;
+        const isSentinelBlocked = r.sentinel_status === 'blocked';
+
+        // Format display date
+        let disabledAtDisplay = '—';
+        if (rawDate && rawDate !== '—') {
+          try {
+            const d = new Date(rawDate);
+            if (!isNaN(d.getTime())) {
+              disabledAtDisplay = d.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })
+                + ' ' + d.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+            } else {
+              disabledAtDisplay = rawDate.slice(0, 16).replace('T',' ');
+            }
+          } catch(e) { disabledAtDisplay = rawDate.slice(0, 16); }
+        }
+
+        // AD Status badge
+        const adBadge = isAdDisabled
+          ? `<span class="gov-badge-disabled">⛔ Disabled in AD</span>`
+          : `<span class="gov-badge-active">🟢 Active in AD</span>`;
+
+        // Sentinel status badge (if any warnings)
+        let sentinelInfo = '';
+        if (isSentinelBlocked) {
+          sentinelInfo = `<div style="margin-top:3px;"><span style="font-size:10px;font-weight:700;color:#fda4af;background:rgba(244,63,94,0.12);padding:1px 5px;border-radius:4px;border:1px solid rgba(244,63,94,0.3);">SENTINEL BLOCKED</span></div>`;
+        } else if (r.warning_count > 0) {
+          sentinelInfo = `<div style="margin-top:3px;"><span style="font-size:10px;font-weight:700;color:#fcd34d;background:rgba(245,158,11,0.1);padding:1px 5px;border-radius:4px;border:1px solid rgba(245,158,11,0.25);">${r.warning_count} Strike${r.warning_count>1?'s':''}</span></div>`;
+        }
+
+        // Days remaining pill (based on 14-day institutional policy)
+        const daysLeft  = computeDaysRemaining(rawDate);
+        const daysPill  = renderDaysPill(isAdDisabled || isSentinelBlocked ? daysLeft : -1, isAdDisabled || isSentinelBlocked);
+
+        // Action buttons
+        const actionBtns = isAdDisabled
+          ? `<button class="btn-gov-enable" onclick="execGovEnable('${escapeJs(r.trno)}', '${escapeJs(r.name)}')">🟢 Re-Enable</button>`
+          : `<button class="btn-gov-disable" onclick="execGovDisable('${escapeJs(r.trno)}', '${escapeJs(r.name)}')">⛔ Disable</button>`;
+
+        // Photo: use img with fallback to initial-avatar
+        const photoHtml = `
+          <div class="gov-photo-wrap">
+            <img class="gov-photo" src="/photo/${encodeURIComponent(r.trno)}" alt="${name}"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+            />
+            <div class="gov-photo-fallback" style="display:none;">${name ? name[0].toUpperCase() : 'S'}</div>
+            <div class="gov-photo-badge ${isAdDisabled ? 'disabled' : 'active'}">${isAdDisabled ? '⛔' : '✓'}</div>
+          </div>
+        `;
+
+        // Reason with colour coding
+        const reasonColor = isAdDisabled ? '#fca5a5' : (r.warning_count > 0 ? '#fde68a' : '#94a3b8');
+
+        return `
+          <tr>
+            <td style="padding:10px 8px;">
+              ${photoHtml}
+            </td>
+            <td>
+              <div style="display:flex;flex-direction:column;gap:3px;">
+                <div style="font-weight:700;color:#fff;font-size:13.5px;line-height:1.2;">${name}</div>
+                <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-top:1px;">
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--sky);background:rgba(56,189,248,0.1);padding:1px 5px;border-radius:4px;">#${trno}</span>
+                  <span style="font-size:11px;color:var(--text-muted);">🎓 ${darajah}</span>
+                  <span style="font-size:11px;color:${gender==='Girls'?'#f472b6':'#93c5fd'};">${gender}</span>
+                </div>
+                ${sentinelInfo}
+              </div>
+            </td>
+            <td>
+              ${adBadge}
+            </td>
+            <td>
+              <div class="gov-date-cell">
+                <div class="gov-date-main">${disabledAtDisplay}</div>
+                <div class="gov-date-by">by ${disabledBy}</div>
+                ${station ? `<div style="font-size:10.5px;color:var(--sky);font-family:'JetBrains Mono',monospace;margin-top:1px;">${station}</div>` : ''}
+              </div>
+            </td>
+            <td>
+              <div class="gov-reason-text" title="${reason}">
+                <div style="color:${reasonColor};font-weight:${isAdDisabled?'600':'400'};">${reason}</div>
+              </div>
+            </td>
+            <td style="text-align:center;">
+              ${daysPill}
+            </td>
+            <td>
+              <div class="gov-actions" style="justify-content:flex-end;">
+                ${actionBtns}
+                <a href="/report/${trno}" target="_blank" class="btn-gov-dossier" title="Open full student dossier">🔍 Dossier</a>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function execGovEnable(trno, name) {
+      const note = prompt(`Enter reinstatement note to RE-ENABLE student #${trno} (${name}) in Active Directory:`, 'Restored by HOD / Administrator');
+      if (note === null) return;
+
+      try {
+        const res = await fetch('/enforce/admin/governance/enable', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ trno: String(trno), note: note, actor: 'HOD / Administrator' })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          alert(`✅ Student #${trno} (${name}) account has been RE-ENABLED in Windows Active Directory.`);
+          fetchGovAccounts(true);
+        } else {
+          alert('Error: ' + (data.error || 'Failed to re-enable account in Active Directory'));
+        }
+      } catch (e) {
+        alert('Network error: ' + e.message);
+      }
+    }
+
+    async function execGovDisable(trno, name) {
+      const reason = prompt(`Enter reason to DISABLE student #${trno} (${name}) in Windows Active Directory:`, 'Administrative policy enforcement');
+      if (reason === null) return;
+
+      try {
+        const res = await fetch('/enforce/admin/governance/disable', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ trno: String(trno), reason: reason, actor: 'HOD / Administrator', station: 'Management Console' })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          alert(`⛔ Student #${trno} (${name}) account has been DISABLED in Windows Active Directory. Lab PC login is blocked.`);
+          fetchGovAccounts(true);
+        } else {
+          alert('Error: ' + (data.error || 'Failed to disable account in Active Directory'));
+        }
+      } catch (e) {
+        alert('Network error: ' + e.message);
+      }
+    }
+
+    async function openGovAuditModal() {
+      const modal = document.getElementById('govAuditModal');
+      const list = document.getElementById('govAuditList');
+      modal.classList.add('active');
+      list.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:30px;">Loading audit trail from server…</div>';
+
+      try {
+        const res = await fetch('/enforce/admin/governance/audit-log');
+        const data = await res.json();
+        if (!data.ok || !data.events || data.events.length === 0) {
+          list.innerHTML = `
+            <div style="text-align:center;color:var(--text-muted);padding:30px;">
+              <div style="font-size:28px;margin-bottom:8px;">📜</div>
+              <strong>No governance actions recorded yet</strong>
+              <p style="font-size:12px;margin-top:4px;">Any manual or automated disable/enable actions will appear here with full timestamps and reasons.</p>
+            </div>
+          `;
+          return;
+        }
+
+        list.innerHTML = data.events.map(ev => {
+          const isDis = ev.action === 'DISABLE';
+          const badge = isDis
+            ? `<span style="background:rgba(244,63,94,0.18);color:#fca5a5;border:1px solid rgba(244,63,94,0.4);font-size:11px;font-weight:700;padding:2px 7px;border-radius:4px;">DISABLED</span>`
+            : `<span style="background:rgba(16,185,129,0.18);color:#6ee7b7;border:1px solid rgba(16,185,129,0.4);font-size:11px;font-weight:700;padding:2px 7px;border-radius:4px;">RE-ENABLED</span>`;
+
+          return `
+            <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+              <div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                  ${badge}
+                  <strong style="color:#fff;font-size:13px;">${escapeHtml(ev.name || 'Student')} (#${escapeHtml(ev.trno)})</strong>
+                  <span style="font-size:11px;color:var(--text-sub);">by ${escapeHtml(ev.actor || 'Administrator')}</span>
+                </div>
+                <div style="font-size:12px;color:#cbd5e1;line-height:1.4;">
+                  <strong>Reason:</strong> ${escapeHtml(ev.reason || 'None provided')}
+                </div>
+              </div>
+              <div style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text-sub);text-align:right;">
+                <div>${escapeHtml(ev.date_display || ev.timestamp || '')}</div>
+                ${ev.station ? `<div style="color:var(--sky);margin-top:2px;">🖥️ ${escapeHtml(ev.station)}</div>` : ''}
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (e) {
+        list.innerHTML = `<div style="text-align:center;color:#fca5a5;padding:20px;">Failed to load audit trail: ${e.message}</div>`;
+      }
+    }
+
+    function closeGovAuditModal() {
+      document.getElementById('govAuditModal').classList.remove('active');
+    }
+
+    // Mount lifecycle
+    window.addEventListener('DOMContentLoaded', () => {
+      initNotifButton();
+      fetchThreatData();
+      fetchDailyTrend();
+      fetchGovAccounts();
+      // Auto refresh feed every 5 seconds
+      setInterval(fetchThreatData, 5000);
+      // Auto refresh trend charts every 2 minutes
+      setInterval(fetchDailyTrend, 120000);
+    });
+  </script>
+</body>
+</html>

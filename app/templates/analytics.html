@@ -1,0 +1,2692 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Academic Intelligence — MamalBrowse Sentinel | Al-Jamea tus-Saifiyah</title>
+  <meta name="description" content="Department &amp; Darajah engagement intelligence for Al-Jamea tus-Saifiyah computer lab.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #0a1128;
+      --bg-elevated: #0f1a35;
+      --surface: #131c3a;
+      --surface-2: #1a2447;
+      --surface-3: #232e54;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.16);
+      --gold: #f5c842;
+      --gold-soft: #fbbf24;
+      --gold-deep: #d97706;
+      --royal: #1e3a8a;
+      --royal-light: #2563eb;
+      --sky: #38bdf8;
+      --emerald: #10b981;
+      --rose: #f43f5e;
+      --amber: #f59e0b;
+      --violet: #8b5cf6;
+      --pink: #ec4899;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --radius-sm: 8px;
+      --radius: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+      --gradient-gold: linear-gradient(135deg, #f5c842 0%, #fbbf24 50%, #d97706 100%);
+      --gradient-royal: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+      --shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 20px 48px -12px rgba(0, 0, 0, 0.6);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 14px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      background-image:
+        radial-gradient(ellipse 900px 600px at 10% -10%, rgba(30, 58, 138, 0.28), transparent),
+        radial-gradient(ellipse 700px 500px at 90% 5%, rgba(245, 200, 66, 0.06), transparent);
+      background-attachment: fixed;
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 17, 40, 0.88);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid var(--border);
+      padding: 0 28px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .nav-brand .crest {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--gradient-royal);
+      border: 1px solid rgba(245, 200, 66, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 4px 12px rgba(30, 58, 138, 0.4);
+    }
+
+    .nav-brand-text {
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: -0.01em;
+    }
+
+    .nav-brand-text .highlight {
+      background: var(--gradient-gold);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-brand-sub {
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .nav-link:hover {
+      color: var(--text);
+      background: var(--surface-2);
+    }
+
+    .nav-link.active {
+      color: var(--gold);
+      background: rgba(245, 200, 66, 0.08);
+      border: 1px solid rgba(245, 200, 66, 0.25);
+    }
+
+    .btn-logout {
+      background: rgba(244, 63, 94, 0.12);
+      color: #fca5a5;
+      border: 1px solid rgba(244, 63, 94, 0.25);
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 12.5px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      margin-left: 8px;
+    }
+
+    .btn-logout:hover {
+      background: rgba(244, 63, 94, 0.22);
+      color: #fff;
+    }
+
+    .container {
+      max-width: 1520px;
+      margin: 0 auto;
+      padding: 28px 28px 60px;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .page-title {
+      font-size: 30px;
+      font-weight: 900;
+      letter-spacing: -0.025em;
+      line-height: 1.15;
+      margin-bottom: 6px;
+    }
+
+    .page-title span {
+      background: var(--gradient-gold);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .page-subtitle {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      max-width: 720px;
+      line-height: 1.55;
+    }
+
+    .header-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .header-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .header-pill.gold {
+      color: var(--gold);
+      border-color: rgba(245, 200, 66, 0.3);
+      background: rgba(245, 200, 66, 0.06);
+    }
+
+    .header-pill.emerald {
+      color: #34d399;
+      border-color: rgba(16, 185, 129, 0.3);
+      background: rgba(16, 185, 129, 0.06);
+    }
+
+    .header-pill.royal {
+      color: #93c5fd;
+      border-color: rgba(37, 99, 235, 0.3);
+      background: rgba(37, 99, 235, 0.08);
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--emerald);
+      box-shadow: 0 0 10px var(--emerald);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.4;
+      }
+    }
+
+    .layer-divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 40px 0 24px;
+      scroll-margin-top: 80px;
+    }
+
+    .layer-divider-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-strong), transparent);
+    }
+
+    .layer-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      padding: 10px 20px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .layer-badge .num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: var(--gradient-gold);
+      color: #422006;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .layer-badge.executive {
+      color: var(--gold);
+      border-color: rgba(245, 200, 66, 0.35);
+    }
+
+    .layer-badge.marhala {
+      color: #34d399;
+      border-color: rgba(16, 185, 129, 0.35);
+    }
+
+    .layer-badge.darajah {
+      color: #93c5fd;
+      border-color: rgba(37, 99, 235, 0.35);
+    }
+
+    .layer-badge.compliance {
+      color: #fca5a5;
+      border-color: rgba(244, 63, 94, 0.35);
+    }
+
+    .layer-badge.temporal {
+      color: #c4b5fd;
+      border-color: rgba(139, 92, 246, 0.35);
+    }
+
+    .layer-badge.matrix {
+      color: #f9a8d4;
+      border-color: rgba(236, 72, 153, 0.35);
+    }
+
+    .insight-banner {
+      background: linear-gradient(135deg, rgba(30, 58, 138, 0.3), rgba(245, 200, 66, 0.05));
+      border: 1px solid rgba(245, 200, 66, 0.2);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: flex-start;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .insight-banner-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      background: rgba(245, 200, 66, 0.15);
+      border: 1px solid rgba(245, 200, 66, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .insight-banner-body {
+      flex: 1;
+      min-width: 260px;
+    }
+
+    .insight-banner-title {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+
+    .insight-banner-text {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text);
+    }
+
+    .insight-banner-text strong {
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    .insight-banner-text em {
+      color: #93c5fd;
+      font-style: normal;
+      font-weight: 600;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 1300px) {
+      .kpi-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 720px) {
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .kpi {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      position: relative;
+      overflow: hidden;
+      min-height: 130px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.22s, border-color 0.22s;
+    }
+
+    .kpi::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--kpi-accent, var(--royal-light));
+    }
+
+    .kpi:hover {
+      transform: translateY(-3px);
+      border-color: var(--kpi-accent, var(--royal-light));
+      box-shadow: var(--shadow-lg);
+    }
+
+    .kpi.gold {
+      --kpi-accent: var(--gold);
+    }
+
+    .kpi.royal {
+      --kpi-accent: var(--royal-light);
+    }
+
+    .kpi.sky {
+      --kpi-accent: var(--sky);
+    }
+
+    .kpi.emerald {
+      --kpi-accent: var(--emerald);
+    }
+
+    .kpi.violet {
+      --kpi-accent: var(--violet);
+    }
+
+    .kpi.rose {
+      --kpi-accent: var(--rose);
+    }
+
+    .kpi-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .kpi-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .kpi.gold .kpi-icon {
+      background: rgba(245, 200, 66, 0.12);
+      border-color: rgba(245, 200, 66, 0.28);
+    }
+
+    .kpi.emerald .kpi-icon {
+      background: rgba(16, 185, 129, 0.12);
+      border-color: rgba(16, 185, 129, 0.28);
+    }
+
+    .kpi.rose .kpi-icon {
+      background: rgba(244, 63, 94, 0.14);
+      border-color: rgba(244, 63, 94, 0.3);
+    }
+
+    .kpi-tag {
+      font-size: 9.5px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+
+    .kpi-label {
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 5px;
+    }
+
+    .kpi-value {
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      line-height: 1.05;
+    }
+
+    .kpi-value .unit {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-left: 2px;
+    }
+
+    .kpi-sub {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .section-head-left {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .section-title {
+      font-size: 17px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: -0.01em;
+    }
+
+    .section-title-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      font-size: 15px;
+    }
+
+    .section-desc {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      transition: border-color 0.2s;
+    }
+
+    .card:hover {
+      border-color: var(--border-strong);
+    }
+
+    .card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: -0.005em;
+    }
+
+    .card-subtitle {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-top: 3px;
+      line-height: 1.5;
+    }
+
+    .card-badge {
+      font-size: 10.5px;
+      padding: 3px 9px;
+      border-radius: 6px;
+      background: var(--surface-2);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, var(--royal-light), var(--violet));
+    }
+
+    .dot.gold {
+      background: var(--gradient-gold);
+    }
+
+    .dot.emerald {
+      background: linear-gradient(135deg, var(--emerald), #34d399);
+    }
+
+    .dot.rose {
+      background: linear-gradient(135deg, var(--rose), #ec4899);
+    }
+
+    .dot.sky {
+      background: linear-gradient(135deg, var(--sky), #22d3ee);
+    }
+
+    .dot.amber {
+      background: linear-gradient(135deg, var(--amber), #fcd34d);
+    }
+
+    .dot.violet {
+      background: linear-gradient(135deg, var(--violet), #a78bfa);
+    }
+
+    .chart-wrap {
+      position: relative;
+      height: 240px;
+    }
+
+    .chart-wrap.tall {
+      height: 300px;
+    }
+
+    .chart-wrap.xtall {
+      height: 340px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .grid-split-2-1 {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .grid-split-1-2 {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 1100px) {
+
+      .grid-2,
+      .grid-3,
+      .grid-split-2-1,
+      .grid-split-1-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .marhala-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    @media (max-width: 1000px) {
+      .marhala-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .marhala-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.25s;
+    }
+
+    .marhala-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: var(--mh-color, var(--royal-light));
+    }
+
+    .marhala-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--mh-color, var(--royal-light));
+    }
+
+    .marhala-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .marhala-name {
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: -0.015em;
+    }
+
+    .marhala-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      font-weight: 500;
+    }
+
+    .marhala-rank-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 900;
+      background: var(--mh-color, var(--royal-light));
+      color: #fff;
+      box-shadow: 0 4px 12px var(--mh-color, var(--royal-light));
+    }
+
+    .marhala-kpis {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin: 14px 0;
+    }
+
+    .marhala-kpi {
+      background: rgba(0, 0, 0, 0.22);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+    }
+
+    .marhala-kpi-label {
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 3px;
+    }
+
+    .marhala-kpi-value {
+      font-size: 18px;
+      font-weight: 900;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: -0.01em;
+    }
+
+    .marhala-kpi-value .unit {
+      font-size: 10.5px;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-left: 2px;
+    }
+
+    .marhala-progress-bar {
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.06);
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .marhala-progress-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: var(--mh-color, var(--royal-light));
+      transition: width 0.6s ease;
+    }
+
+    .marhala-action {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .marhala-action a {
+      color: var(--mh-color, var(--royal-light));
+      text-decoration: none;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .marhala-action a:hover {
+      text-decoration: underline;
+    }
+
+    /* ─── Darajah Snapshot Grid ─── */
+    .darajah-snapshot-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 14px;
+    }
+
+    .darajah-snap-card {
+      background: linear-gradient(160deg, rgba(255,255,255,0.04) 0%, rgba(0,0,0,0.22) 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px 14px 14px;
+      text-align: center;
+      transition: all 0.25s;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .darajah-snap-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--snap-color, var(--royal-light));
+      border-radius: 3px 3px 0 0;
+    }
+
+    .darajah-snap-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px -8px rgba(0,0,0,0.5);
+      border-color: var(--snap-color, var(--royal-light));
+    }
+
+    .darajah-snap-card.tier-1 {
+      --snap-color: #10b981;
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    .darajah-snap-card.tier-2 {
+      --snap-color: #2563eb;
+      border-color: rgba(37, 99, 235, 0.3);
+    }
+
+    .darajah-snap-card.tier-attention {
+      --snap-color: #f43f5e;
+      border-color: rgba(244, 63, 94, 0.35);
+      background: linear-gradient(160deg, rgba(244,63,94,0.06) 0%, rgba(0,0,0,0.22) 100%);
+    }
+
+    .snap-marhala-badge {
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--snap-color, var(--royal-light));
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 999px;
+      padding: 2px 8px;
+      margin-bottom: 2px;
+    }
+
+    .snap-name {
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+    }
+
+    .snap-hours {
+      font-size: 26px;
+      font-weight: 900;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: -0.025em;
+      line-height: 1;
+      color: var(--snap-color, var(--royal-light));
+    }
+
+    .snap-hours .unit {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-left: 1px;
+    }
+
+    .snap-students {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .snap-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 800;
+      margin-top: 2px;
+    }
+
+    .snap-status.good {
+      background: rgba(16, 185, 129, 0.16);
+      color: #34d399;
+      border: 1px solid rgba(16,185,129,0.25);
+    }
+
+    .snap-status.warn {
+      background: rgba(245, 158, 11, 0.16);
+      color: #fbbf24;
+      border: 1px solid rgba(245,158,11,0.25);
+    }
+
+    .snap-status.alert {
+      background: rgba(244, 63, 94, 0.16);
+      color: #fca5a5;
+      border: 1px solid rgba(244,63,94,0.25);
+    }
+
+    .snap-bar {
+      width: 100%;
+      height: 4px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+
+    .snap-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: var(--snap-color, var(--royal-light));
+      transition: width 0.6s ease;
+    }
+
+    /* ─── Pagination ─── */
+    .pagination-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0 4px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .pagination-info {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .pagination-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .page-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 32px;
+      height: 32px;
+      padding: 0 8px;
+      border-radius: 8px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .page-btn:hover {
+      background: var(--surface-3);
+      color: var(--text);
+      border-color: var(--border-strong);
+    }
+
+    .page-btn.active {
+      background: rgba(245, 200, 66, 0.14);
+      border-color: rgba(245, 200, 66, 0.4);
+      color: var(--gold);
+    }
+
+    .page-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead {
+      background: var(--surface-2);
+    }
+
+    th {
+      padding: 11px 16px;
+      text-align: left;
+      font-size: 10.5px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      vertical-align: middle;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .badge.gold {
+      background: rgba(245, 200, 66, 0.14);
+      color: var(--gold);
+      border: 1px solid rgba(245, 200, 66, 0.3);
+    }
+
+    .badge.emerald {
+      background: rgba(16, 185, 129, 0.14);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .badge.royal {
+      background: rgba(37, 99, 235, 0.14);
+      color: #93c5fd;
+      border: 1px solid rgba(37, 99, 235, 0.3);
+    }
+
+    .badge.sky {
+      background: rgba(56, 189, 248, 0.14);
+      color: var(--sky);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .badge.violet {
+      background: rgba(139, 92, 246, 0.14);
+      color: #c4b5fd;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+
+    .badge.amber {
+      background: rgba(245, 158, 11, 0.14);
+      color: #fcd34d;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .badge.rose {
+      background: rgba(244, 63, 94, 0.14);
+      color: #fca5a5;
+      border: 1px solid rgba(244, 63, 94, 0.3);
+    }
+
+    .badge.gray {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: linear-gradient(90deg, var(--royal-light), var(--violet));
+      transition: width 0.6s ease;
+    }
+
+    .progress-fill.gold {
+      background: var(--gradient-gold);
+    }
+
+    .progress-fill.emerald {
+      background: linear-gradient(90deg, var(--emerald), #34d399);
+    }
+
+    .progress-fill.rose {
+      background: linear-gradient(90deg, var(--rose), #fb7185);
+    }
+
+    .progress-fill.amber {
+      background: linear-gradient(90deg, var(--amber), #fcd34d);
+    }
+
+    .violation-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .violation-item:last-child {
+      border-bottom: none;
+    }
+
+    .violation-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: var(--rose);
+      box-shadow: 0 0 8px rgba(244, 63, 94, 0.6);
+    }
+
+    .violation-dot.medium {
+      background: var(--amber);
+      box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+    }
+
+    .empty-state {
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    .empty-state .empty-icon {
+      font-size: 36px;
+      opacity: 0.4;
+      margin-bottom: 10px;
+    }
+
+    .empty-state p {
+      font-size: 13px;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 24px 28px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    footer strong {
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    .quick-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .quick-action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 11.5px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .quick-action-btn:hover {
+      background: rgba(255, 255, 255, 0.09);
+      color: var(--text);
+      border-color: var(--border-strong);
+    }
+
+    .quick-action-btn.gold {
+      color: var(--gold);
+      border-color: rgba(245, 200, 66, 0.3);
+      background: rgba(245, 200, 66, 0.06);
+    }
+
+    .quick-action-btn.gold:hover {
+      background: rgba(245, 200, 66, 0.12);
+    }
+
+    .section-layer {
+      padding: 24px;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.015) 0%, transparent 40%);
+      margin-bottom: 32px;
+    }
+
+    .section-layer.executive {
+      border-color: rgba(245, 200, 66, 0.15);
+    }
+
+    .section-layer.marhala {
+      border-color: rgba(16, 185, 129, 0.15);
+    }
+
+    .section-layer.darajah {
+      border-color: rgba(37, 99, 235, 0.15);
+    }
+
+    .section-layer.compliance {
+      border-color: rgba(244, 63, 94, 0.15);
+    }
+
+    .section-layer.temporal {
+      border-color: rgba(139, 92, 246, 0.15);
+    }
+
+    .section-layer.matrix {
+      border-color: rgba(236, 72, 153, 0.15);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!--                        NAVBAR                         -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <nav>
+    <a href="/home" class="nav-brand">
+      <div class="crest">🛡️</div>
+      <div>
+        <div class="nav-brand-text">MamalBrowse <span class="highlight">Sentinel</span></div>
+        <div class="nav-brand-sub">Al-Jamea tus-Saifiyah · Nairobi</div>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="/home" class="nav-link">Dashboard</a>
+      <a href="/darajah" class="nav-link">Darajah Matrix</a>
+      <a href="/students" class="nav-link">Students</a>
+      <a href="/analytics" class="nav-link active">Academic Intelligence</a>
+      <a href="/security" class="nav-link">🛡️ Security</a>
+      <a href="/logout" class="btn-logout">Sign Out</a>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!--                       PAGE HEADER                      -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Academic <span>Intelligence Center</span></h1>
+        <p class="page-subtitle">
+          Department &amp; Darajah engagement analytics for <strong>Al-Jamea tus-Saifiyah Nairobi</strong> —
+          live data from Lab Manager (10.10.117.76), structured for Heads of Department and Administrators.
+        </p>
+      </div>
+      <div class="header-pills">
+        <span class="header-pill emerald">
+          <span class="live-dot"></span>
+          <span>Live · <span id="currentTime">--:--:--</span></span>
+        </span>
+        <span class="header-pill gold">
+          🌙 {{ hijri_date }} <span style="opacity:0.6;">· {{ current_ay }}</span>
+        </span>
+        <a href="/download_csv?mode=analytics" class="header-pill royal" style="text-decoration:none;cursor:pointer;">
+          ↓ Export CSV
+        </a>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!--                  LAYER 1: EXECUTIVE SNAPSHOT           -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div class="layer-divider" id="layer-executive">
+      <div class="layer-badge executive"><span class="num">1</span>Executive Snapshot</div>
+      <div class="layer-divider-line"></div>
+    </div>
+
+    <div class="section-layer executive">
+      <div class="insight-banner">
+        <div class="insight-banner-icon">💡</div>
+        <div class="insight-banner-body">
+          <div class="insight-banner-title">Executive Summary · Auto-Generated</div>
+          <div class="insight-banner-text" id="executive-insight">
+            Loading intelligent insights from live telemetry…
+          </div>
+        </div>
+        <div class="quick-actions">
+          <a href="#layer-marhala" class="quick-action-btn gold">↓ Department Analysis</a>
+          <a href="#layer-darajah" class="quick-action-btn">↓ Darajah Detail</a>
+          <a href="#layer-compliance" class="quick-action-btn">↓ Compliance</a>
+        </div>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi gold">
+          <div class="kpi-head">
+            <div class="kpi-icon">🖱️</div>
+            <span class="kpi-tag">Total</span>
+          </div>
+          <div>
+            <div class="kpi-label">Browsing Visits</div>
+            <div class="kpi-value">{{ "{:,}".format(total_visits) }}</div>
+            <div class="kpi-sub">Across all student sessions</div>
+          </div>
+        </div>
+
+        <div class="kpi royal">
+          <div class="kpi-head">
+            <div class="kpi-icon">👤</div>
+            <span class="kpi-tag">Roster</span>
+          </div>
+          <div>
+            <div class="kpi-label">Unique Students</div>
+            <div class="kpi-value">{{ "{:,}".format(unique_students) }}</div>
+            <div class="kpi-sub">Active in the lab this cycle</div>
+          </div>
+        </div>
+
+        <div class="kpi sky">
+          <div class="kpi-head">
+            <div class="kpi-icon">⏱️</div>
+            <span class="kpi-tag">Lab</span>
+          </div>
+          <div>
+            <div class="kpi-label">Lab Hours Logged</div>
+            <div class="kpi-value">{{ hijri_trend.total_lab_hours if hijri_trend else total_hours }}<span
+                class="unit">h</span></div>
+            <div class="kpi-sub">From Lab Manager server</div>
+          </div>
+        </div>
+
+        <div class="kpi violet">
+          <div class="kpi-head">
+            <div class="kpi-icon">🌐</div>
+            <span class="kpi-tag">Domains</span>
+          </div>
+          <div>
+            <div class="kpi-label">Unique Websites</div>
+            <div class="kpi-value">{{ "{:,}".format(unique_domains) }}</div>
+            <div class="kpi-sub">Distinct destinations logged</div>
+          </div>
+        </div>
+
+        <div class="kpi emerald">
+          <div class="kpi-head">
+            <div class="kpi-icon">📈</div>
+            <span class="kpi-tag">Avg</span>
+          </div>
+          <div>
+            <div class="kpi-label">Avg Session Duration</div>
+            <div class="kpi-value">{{ avg_duration }}</div>
+            <div class="kpi-sub">Per student per visit</div>
+          </div>
+        </div>
+
+        <div class="kpi rose">
+          <div class="kpi-head">
+            <div class="kpi-icon">🛡️</div>
+            <span class="kpi-tag">Policy</span>
+          </div>
+          <div>
+            <div class="kpi-label">Compliance Rate</div>
+            <div class="kpi-value" id="kpi-compliance">—<span class="unit">%</span></div>
+            <div class="kpi-sub" id="kpi-compliance-sub">Loading…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!--         LAYER 2: TEMPORAL & BEHAVIORAL PATTERNS        -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div class="layer-divider" id="layer-temporal">
+      <div class="layer-badge temporal"><span class="num">2</span>Temporal &amp; Behavioral Patterns</div>
+      <div class="layer-divider-line"></div>
+    </div>
+
+    <div class="section-layer temporal">
+      <div class="section-head">
+        <div class="section-head-left">
+          <div class="section-title">
+            <span class="section-title-icon">🕐</span>
+            When and how do students use the lab?
+          </div>
+          <div class="section-desc">
+            Hijri academic cycle trends, daily patterns, and heatmap insights to plan lab scheduling.
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-head">
+          <div>
+            <div class="card-title">
+              <div class="dot gold"></div> Hijri Academic Cycle — Monthly Lab Hours &amp; Browsing
+            </div>
+            <div class="card-subtitle">Dual-axis trend across the Fatemi Hijri year (1st Shawwāl → Sha'bān)</div>
+          </div>
+          <span class="card-badge">🌙 {{ current_ay }}</span>
+        </div>
+        <div class="chart-wrap xtall">
+          <canvas id="hijriTrendChart"></canvas>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">
+                <div class="dot sky"></div> Hourly Activity
+              </div>
+              <div class="card-subtitle">Peak hours of the day</div>
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="hourlyChart"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">
+                <div class="dot emerald"></div> Weekday Activity
+              </div>
+              <div class="card-subtitle">Busiest days of the week</div>
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="weekdayChart"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">
+                <div class="dot violet"></div> New vs Returning
+              </div>
+              <div class="card-subtitle">First-time vs repeat visitors</div>
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="newVsReturningChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:20px;">
+        <div class="card-head">
+          <div>
+            <div class="card-title">
+              <div class="dot gold"></div> Lab Occupancy Heatmap — Last 90 Days
+            </div>
+            <div class="card-subtitle">Each cell = one day; hover for Hijri date &amp; hours logged</div>
+          </div>
+          <span class="card-badge">{{ daily_occupancy.total_days_active if daily_occupancy else 0 }} Active Days</span>
+        </div>
+        <div style="padding: 8px 0;">
+          <div
+            style="display:flex;align-items:center;gap:8px;margin-bottom:14px;font-size:11px;color:var(--text-muted);">
+            <span>Less</span>
+            <div style="display:flex;gap:3px;">
+              <div style="width:14px;height:14px;border-radius:3px;background:rgba(245,200,66,0.12);"></div>
+              <div style="width:14px;height:14px;border-radius:3px;background:rgba(245,200,66,0.28);"></div>
+              <div style="width:14px;height:14px;border-radius:3px;background:rgba(245,200,66,0.44);"></div>
+              <div style="width:14px;height:14px;border-radius:3px;background:rgba(245,200,66,0.60);"></div>
+              <div style="width:14px;height:14px;border-radius:3px;background:rgba(245,200,66,0.78);"></div>
+              <div style="width:14px;height:14px;border-radius:3px;background:rgba(245,200,66,1.0);"></div>
+            </div>
+            <span>More</span>
+            <span style="margin-left:auto;">Each cell = 1 day</span>
+          </div>
+          <div id="occupancyCalendar" style="display:flex;flex-wrap:wrap;gap:3px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!--           LAYER 3: DEPARTMENT COMPARISON               -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div class="layer-divider" id="layer-marhala">
+      <div class="layer-badge marhala"><span class="num">3</span>Department Comparative Analysis</div>
+      <div class="layer-divider-line"></div>
+    </div>
+
+    <div class="section-layer marhala">
+      <div class="section-head">
+        <div class="section-head-left">
+          <div class="section-title">
+            <span class="section-title-icon">🏫</span>
+            How are the Institutional Departments performing?
+          </div>
+          <div class="section-desc">
+            Side-by-side comparison of Culture Générale (Std 1-2, Std 3-4), Collegiate I (5-7), Collegiate II &amp; Higher Studies (Std 8-11), and Dars Burhani —
+            engagement, lab quota utilization and compliance.
+          </div>
+        </div>
+        <span class="card-badge">Institutional Departments</span>
+      </div>
+
+      <div class="marhala-grid" id="marhala-cards">
+        {% for m in marhala_distribution %}
+        <div class="marhala-card" style="--mh-color: {{ m.color }};">
+          <div class="marhala-head">
+            <div>
+              <div class="marhala-name">{{ m.label }}</div>
+              <div class="marhala-sub">{{ m.sub }}</div>
+            </div>
+            <div class="marhala-rank-badge">#{{ loop.index }}</div>
+          </div>
+
+          <div class="marhala-kpis">
+            <div class="marhala-kpi">
+              <div class="marhala-kpi-label">Enrolled</div>
+              <div class="marhala-kpi-value">{{ m.enrolled }}<span class="unit">students</span></div>
+            </div>
+            <div class="marhala-kpi">
+              <div class="marhala-kpi-label">Lab Hours</div>
+              <div class="marhala-kpi-value" style="color: var(--sky);">{{ m.lab_hours }}<span class="unit">h</span>
+              </div>
+            </div>
+            <div class="marhala-kpi">
+              <div class="marhala-kpi-label">Active in Lab</div>
+              <div class="marhala-kpi-value" style="color: var(--emerald);">{{ m.active_lab }}</div>
+            </div>
+            <div class="marhala-kpi">
+              <div class="marhala-kpi-label">Web Visits</div>
+              <div class="marhala-kpi-value" style="color: var(--gold);">{{ "{:,}".format(m.browsing_visits) }}</div>
+            </div>
+          </div>
+
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+              <span style="font-size:11px;color:var(--text-muted);font-weight:600;">Enrollment Share</span>
+              <span style="font-size:12px;font-weight:800;color:var(--mh-color);">{{ m.pct }}%</span>
+            </div>
+            <div class="marhala-progress-bar">
+              <div class="marhala-progress-fill" data-progress="{{ m.pct }}"></div>
+            </div>
+          </div>
+
+          <div class="marhala-action">
+            <span>{{ m.darajah_keys|length }} Darajah cohort{{ 's' if m.darajah_keys|length > 1 else '' }}</span>
+            <a href="#layer-darajah">View Darajahs →</a>
+          </div>
+        </div>
+        {% else %}
+        <div class="card" style="grid-column:1/-1;">
+          <div class="empty-state">
+            <div class="empty-icon">📋</div>
+            <p>No Department enrollment data available. Ensure student roster is loaded.</p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="grid-split-2-1">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">
+                <div class="dot gold"></div> Department Engagement Radar
+              </div>
+              <div class="card-subtitle">Multi-dimensional comparison across 5 key metrics — 100% scale</div>
+            </div>
+            <span class="card-badge">Normalized</span>
+          </div>
+          <div class="chart-wrap xtall">
+            <canvas id="marhalaRadarChart"></canvas>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">
+                <div class="dot emerald"></div> Department Distribution
+              </div>
+              <div class="card-subtitle">Student enrollment by institutional department</div>
+            </div>
+          </div>
+          <div class="chart-wrap tall">
+            <canvas id="marhalaDoughnutChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!--             LAYER 3: DARAJAH RANKING & TRENDS          -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div class="layer-divider" id="layer-darajah">
+      <div class="layer-badge darajah"><span class="num">4</span>Darajah-Level Drill-Down</div>
+      <div class="layer-divider-line"></div>
+    </div>
+
+    <div class="section-layer darajah">
+      <div class="section-head">
+        <div class="section-head-left">
+          <div class="section-title">
+            <span class="section-title-icon">📊</span>
+            Which specific Darajah requires attention?
+          </div>
+          <div class="section-desc">
+            Ranked engagement and specialized cohort analysis — perfect for HOD meetings.
+          </div>
+        </div>
+        <span class="card-badge">Specialized Cohorts Only</span>
+      </div>
+
+      <!-- Top chart: full width -->
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-head">
+          <div>
+            <div class="card-title">
+              <div class="dot sky"></div> Top Darajah by Total Lab Hours
+            </div>
+            <div class="card-subtitle">Which classes log the most time on lab computers</div>
+          </div>
+          <span class="card-badge">Ranked ↓</span>
+        </div>
+        <div class="chart-wrap xtall">
+          <canvas id="darajahRankChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Compliance Snapshot — full-width premium card -->
+      <div class="card" style="border-color:rgba(37,99,235,0.3);background:linear-gradient(160deg,rgba(37,99,235,0.06) 0%,rgba(0,0,0,0.22) 100%);">
+        <div class="card-head" style="margin-bottom:20px;">
+          <div>
+            <div class="card-title" style="font-size:16px;">
+              <span style="font-size:20px;">🔍</span>
+              Compliance Snapshot
+            </div>
+            <div class="card-subtitle" style="margin-top:4px;">Every specialized Darajah cohort at a glance — click any card to drill into that class</div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+            <span class="badge emerald" style="font-size:11px;">🟢 Strong ≥60%</span>
+            <span class="badge amber" style="font-size:11px;">🟡 Moderate ≥30%</span>
+            <span class="badge rose" style="font-size:11px;">🔴 Low &lt;30%</span>
+          </div>
+        </div>
+        <div class="darajah-snapshot-grid" id="darajah-snap-grid">
+          {% for d in darajah_analytics %}
+          {% if d.darajah_name and d.darajah_name|lower not in ['darajah 1','darajah 2','darajah 3','darajah 4','darajah 5','darajah 6','darajah 7','darajah 8','darajah 9','darajah 10','darajah 11'] %}
+          {% if d.participation_rate >= 60 %}
+          {% set tier = 'good' %}
+          {% set tile_class = 'tier-1' %}
+          {% set status_text = 'Strong' %}
+          {% elif d.participation_rate >= 30 %}
+          {% set tier = 'warn' %}
+          {% set tile_class = 'tier-2' %}
+          {% set status_text = 'Moderate' %}
+          {% else %}
+          {% set tier = 'alert' %}
+          {% set tile_class = 'tier-attention' %}
+          {% set status_text = 'Low' %}
+          {% endif %}
+          <a href="/darajah/{{ d.darajah_key }}/dashboard" class="darajah-snap-card {{ tile_class }}">
+            <div class="snap-marhala-badge">{{ d.department or d.marhala }}</div>
+            <div class="snap-name">{{ d.darajah_name }}</div>
+            <div class="snap-hours">{{ d.total_lab_hours }}<span class="unit">h</span></div>
+            <div class="snap-students">{{ d.active_students }} / {{ d.enrolled_students }} active</div>
+            <div class="snap-status {{ tier }}">
+              {% if tier == 'good' %}🟢{% elif tier == 'warn' %}🟡{% else %}🔴{% endif %} {{ status_text }}
+            </div>
+            <div class="snap-bar"><div class="snap-bar-fill" data-progress="{{ d.participation_rate }}"></div></div>
+          </a>
+          {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!--             LAYER 5: COMPLIANCE & RISK                 -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div class="layer-divider" id="layer-compliance">
+      <div class="layer-badge compliance"><span class="num">5</span>Compliance &amp; Risk Intelligence</div>
+      <div class="layer-divider-line"></div>
+    </div>
+
+    <div class="section-layer compliance">
+      <div class="section-head">
+        <div class="section-head-left">
+          <div class="section-title">
+            <span class="section-title-icon">🛡️</span>
+            Is any student violating policy?
+          </div>
+          <div class="section-desc">
+            Live policy violations, domain risk breakdown, and the highest-risk students in the last 14 days.
+          </div>
+        </div>
+        <a href="/security" class="card-badge" style="text-decoration:none;cursor:pointer;">Full Security Center →</a>
+      </div>
+
+      <div class="grid-split-2-1">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">
+                <div class="dot rose"></div> Recent Policy Violations
+              </div>
+              <div class="card-subtitle">Last 8 incidents from the 14-day retention window</div>
+            </div>
+            <a href="/security" class="badge rose" style="text-decoration:none;">View All</a>
+          </div>
+          <div id="violations-panel">
+            <div class="empty-state">
+              <div class="empty-icon">⏳</div>
+              <p>Loading violations…</p>
+            </div>
+          </div>
+          <div
+            style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);display:flex;gap:24px;flex-wrap:wrap;">
+            <div>
+              <div
+                style="font-size:10px;color:var(--text-dim);text-transform:uppercase;font-weight:700;letter-spacing:0.06em;">
+                High Risk</div>
+              <div style="font-size:22px;font-weight:900;color:var(--rose);" id="viol-high-count">—</div>
+            </div>
+            <div>
+              <div
+                style="font-size:10px;color:var(--text-dim);text-transform:uppercase;font-weight:700;letter-spacing:0.06em;">
+                Medium</div>
+              <div style="font-size:22px;font-weight:900;color:var(--amber);" id="viol-medium-count">—</div>
+            </div>
+            <div style="margin-left:auto;align-self:center;">
+              <div style="font-size:11px;color:var(--text-muted);" id="viol-window-label">Loading…</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">
+                <div class="dot amber"></div> Domain Risk Breakdown
+              </div>
+              <div class="card-subtitle">Top domains by safety classification</div>
+            </div>
+          </div>
+          <div class="chart-wrap tall">
+            <canvas id="domainRiskChart"></canvas>
+          </div>
+          <div id="risk-legend" style="display:flex;flex-direction:column;gap:6px;margin-top:14px;font-size:11.5px;">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!--     LAYER 6: COMPLETE DARAJAH ENGAGEMENT MATRIX       -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div class="layer-divider" id="layer-matrix">
+      <div class="layer-badge matrix"><span class="num">6</span>Complete Darajah Engagement Matrix</div>
+      <div class="layer-divider-line"></div>
+    </div>
+
+    <div class="section-layer matrix">
+      <div class="section-head">
+        <div class="section-head-left">
+          <div class="section-title">
+            <span class="section-title-icon">🏛️</span>
+            Complete Darajah Engagement Matrix
+          </div>
+          <div class="section-desc">
+            Granular breakdown of lab hours, participation rates, and browsing activity across all Darajah cohorts.
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <span class="card-badge" id="matrix-count-badge">{{ darajah_analytics|length }} Total</span>
+          <a href="/darajah" class="card-badge" style="text-decoration:none;cursor:pointer;">View Department Directory →</a>
+        </div>
+      </div>
+
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Darajah</th>
+                <th>Department</th>
+                <th style="text-align:right;">Enrolled</th>
+                <th style="text-align:right;">Active</th>
+                <th>Participation</th>
+                <th style="text-align:right;">Total Hours</th>
+                <th style="text-align:right;">Avg / Student</th>
+                <th style="text-align:right;">Browsing Hits</th>
+                <th>Top Domain</th>
+                <th style="text-align:center;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="darajah-matrix-body">
+              {% for d in darajah_analytics %}
+              <tr data-matrix-row>
+                <td>
+                  <strong style="color:var(--text);font-size:13.5px;">{{ d.darajah_name }}</strong>
+                </td>
+                <td>
+                  <span class="badge" style="background:{{ d.department_color or '#2563eb' }}22;border:1px solid {{ d.department_color or '#2563eb' }}66;color:{{ d.department_color or '#93c5fd' }};font-weight:600;font-size:11px;padding:3px 8px;border-radius:6px;">
+                    {{ d.department or d.marhala }}
+                  </span>
+                </td>
+                <td style="text-align:right;font-family:var(--font-mono, monospace);">{{ d.enrolled_students }}</td>
+                <td style="text-align:right;font-family:var(--font-mono, monospace);color:var(--sky);">{{ d.active_students }}</td>
+                <td style="min-width:140px;">
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <div class="progress-bar" style="flex:1;">
+                      <div class="progress-fill {% if d.participation_rate >= 60 %}emerald{% elif d.participation_rate >= 30 %}amber{% else %}rose{% endif %}" data-progress="{{ d.participation_rate }}"></div>
+                    </div>
+                    <span style="font-size:11.5px;font-weight:700;color:var(--text-muted);min-width:35px;">{{ d.participation_rate }}%</span>
+                  </div>
+                </td>
+                <td style="text-align:right;font-weight:700;color:var(--gold);">{{ d.total_lab_hours }}h</td>
+                <td style="text-align:right;color:var(--text-muted);">{{ d.avg_hours_per_student }}h</td>
+                <td style="text-align:right;font-family:var(--font-mono, monospace);">{{ d.total_browsing or 0 }}</td>
+                <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-dim);font-size:12px;">{{ d.top_domain or '—' }}</td>
+                <td style="text-align:center;">
+                  <a href="/darajah/{{ d.darajah_key }}/dashboard" class="quick-action-btn gold" style="padding:4px 8px;font-size:11px;">
+                    Drill In →
+                  </a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination-bar" style="padding:14px 20px;border-top:1px solid var(--border);">
+          <div class="pagination-info" id="matrix-page-info">Showing 1–10 of {{ darajah_analytics|length }} Darajahs</div>
+          <div class="pagination-controls" id="matrix-page-controls"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /container -->
+
+  <footer>
+    &copy;
+    <script>document.write(new Date().getFullYear())</script>
+    <strong>MamalBrowse Sentinel</strong> · Al-Jamea tus-Saifiyah Nairobi ·
+    Live data: Lab Manager 10.10.117.76 ·
+    Academic Year: <strong>{{ current_ay }}</strong>
+  </footer>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!--                    CHART SCRIPTS                        -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <script id="analytics-data-payload" type="application/json">
+  {
+    "rosterSize": {{ (students or 1460) | tojson }},
+    "uniqueStudents": {{ (unique_students or 0) | tojson }},
+    "totalLabHours": {{ ((hijri_trend.total_lab_hours if hijri_trend else total_hours) or 0) | tojson }},
+    "topMarhalaLabel": {{ ((marhala_distribution[0].label if marhala_distribution else 'Culture Générale (Std 1-2)')) | tojson }},
+    "topMarhalaHours": {{ ((marhala_distribution[0].lab_hours if marhala_distribution else 0)) | tojson }},
+    "marhalaDist": {{ (marhala_distribution or []) | tojson }},
+    "darajahData": {{ (darajah_analytics or []) | tojson }},
+    "mostVisited": {{ (most_visited_sites or []) | tojson }},
+    "hijriTrend": {{ (hijri_trend or {}) | tojson }},
+    "hourlyActivity": {{ (hourly_activity or []) | tojson }},
+    "weekdayActivity": {{ (weekday_activity or []) | tojson }},
+    "newVsReturning": {{ (new_vs_returning or {}) | tojson }},
+    "dailyOccupancy": {{ (daily_occupancy or {}) | tojson }}
+  }
+  </script>
+
+  <script>
+    // ─── Apply data-progress widths ─────────────────────────
+    document.querySelectorAll('[data-progress]').forEach(function (el) {
+      el.style.width = el.getAttribute('data-progress') + '%';
+    });
+
+    // ─── Shared chart config ────────────────────────────────
+    const FONT = "'Inter', sans-serif";
+    const MONO = "'JetBrains Mono', monospace";
+    const GRID = { color: 'rgba(255, 255, 255, 0.05)' };
+    const TICK = { color: '#7b8fa6', font: { size: 11, family: FONT } };
+
+    const BASE_OPTS = {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 750, easing: 'easeOutQuart' },
+      plugins: {
+        legend: { labels: { color: '#e8eef7', font: { size: 12, family: FONT } } },
+        tooltip: {
+          backgroundColor: 'rgba(19, 28, 58, 0.98)',
+          borderColor: 'rgba(245, 200, 66, 0.4)',
+          borderWidth: 1,
+          titleColor: '#f5c842',
+          bodyColor: '#f8fafc',
+          padding: 12,
+          cornerRadius: 8,
+          titleFont: { family: FONT, size: 12, weight: '700' },
+          bodyFont: { family: FONT, size: 12 },
+        }
+      }
+    };
+
+    // ─── Clock ──────────────────────────────────────────────
+    function updateClock() {
+      const t = new Date().toLocaleTimeString('en-GB', { hour12: false });
+      const el = document.getElementById('currentTime');
+      if (el) el.textContent = t;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // ─── Server data payload parsing ─────────────────────────
+    const _analyticsPayloadEl = document.getElementById('analytics-data-payload');
+    const _analyticsPayload = _analyticsPayloadEl ? JSON.parse(_analyticsPayloadEl.textContent || '{}') : {};
+    const ROSTER_SIZE = Number(_analyticsPayload.rosterSize || 1460);
+    const UNIQUE_STUDENTS = Number(_analyticsPayload.uniqueStudents || 0);
+    const TOTAL_LAB_HOURS = Number(_analyticsPayload.totalLabHours || 0);
+    const TOP_MARHALA_LABEL = String(_analyticsPayload.topMarhalaLabel || 'Culture Générale (Std 1-2)');
+    const TOP_MARHALA_HOURS = Number(_analyticsPayload.topMarhalaHours || 0);
+    const MARHALA_DIST = _analyticsPayload.marhalaDist || [];
+    const DARAJAH_DATA = _analyticsPayload.darajahData || [];
+    const MOST_VISITED = _analyticsPayload.mostVisited || [];
+    const HIJRI_TREND = _analyticsPayload.hijriTrend || {};
+    const HOURLY_ACTIVITY = _analyticsPayload.hourlyActivity || [];
+    const WEEKDAY_ACTIVITY = _analyticsPayload.weekdayActivity || [];
+    const NEW_VS_RETURNING = _analyticsPayload.newVsReturning || {};
+    const DAILY_OCCUPANCY = _analyticsPayload.dailyOccupancy || {};
+
+    // ══════════════════════════════════════════════════════
+    //  LAYER 1: EXECUTIVE INSIGHT (auto-generated)
+    // ══════════════════════════════════════════════════════
+    (async function generateExecutiveInsight() {
+      const el = document.getElementById('executive-insight');
+      const blockedEl = document.getElementById('kpi-compliance');
+      const blockedSub = document.getElementById('kpi-compliance-sub');
+      try {
+        const res = await fetch('/enforce/admin/retention-policy.json');
+        const data = await res.json();
+        const blocked = data.total_blocked || 0;
+        const expiring = data.expiring_within_48h || 0;
+
+        const compliance = ROSTER_SIZE > 0 ? Math.max(0, 100 - (blocked / ROSTER_SIZE) * 100) : 100;
+        blockedEl.innerHTML = `${compliance.toFixed(1)}<span class="unit">%</span>`;
+        if (blocked === 0) {
+          blockedSub.textContent = 'Zero active suspensions';
+        } else {
+          blockedSub.textContent = `${blocked} active suspension${blocked > 1 ? 's' : ''} · ${expiring} expiring soon`;
+        }
+
+        let msg = `Campus-wide, <strong>${TOTAL_LAB_HOURS.toLocaleString()} lab hours</strong> have been logged across <strong>${UNIQUE_STUDENTS} students</strong>. `;
+        msg += `<em>${TOP_MARHALA_LABEL}</em> leads engagement with <strong>${TOP_MARHALA_HOURS}h</strong> total. `;
+        if (blocked === 0) {
+          msg += `<strong>Zero policy violations</strong> — all sessions clean. `;
+        } else if (blocked < 5) {
+          msg += `<strong>${blocked} student${blocked > 1 ? 's' : ''}</strong> currently suspended. `;
+        } else {
+          msg += `<strong style="color:#fca5a5;">${blocked} students suspended</strong> — elevated attention required. `;
+        }
+        if (expiring > 0) {
+          msg += `<em>${expiring}</em> auto-unblock within 48h.`;
+        }
+        el.innerHTML = msg;
+      } catch (e) {
+        el.innerHTML = 'Live telemetry available from Lab Manager. Explore the layers below for detailed insights.';
+        blockedEl.innerHTML = '—<span class="unit">%</span>';
+        blockedSub.textContent = 'Live data pending';
+      }
+    })();
+
+    // ══════════════════════════════════════════════════════
+    //  LAYER 2: MARHALA ANALYTICS
+    // ══════════════════════════════════════════════════════
+
+    // Radar — normalized to 100 scale across 5 dimensions
+    (function buildMarhalaRadar() {
+      const ctx = document.getElementById('marhalaRadarChart');
+      if (!ctx || MARHALA_DIST.length === 0) return;
+
+      const dims = {
+        'Enrollment': MARHALA_DIST.map(m => m.enrolled),
+        'Lab Hours': MARHALA_DIST.map(m => m.lab_hours),
+        'Web Visits': MARHALA_DIST.map(m => m.browsing_visits),
+        'Active in Lab': MARHALA_DIST.map(m => m.active_lab),
+        'Participation %': MARHALA_DIST.map(m => m.pct),
+      };
+      const maxPerDim = {};
+      for (const [k, arr] of Object.entries(dims)) {
+        maxPerDim[k] = Math.max(...arr, 1);
+      }
+
+      const datasets = MARHALA_DIST.map(m => ({
+        label: m.label,
+        data: [
+          (m.enrolled / maxPerDim['Enrollment']) * 100,
+          (m.lab_hours / maxPerDim['Lab Hours']) * 100,
+          (m.browsing_visits / maxPerDim['Web Visits']) * 100,
+          (m.active_lab / maxPerDim['Active in Lab']) * 100,
+          (m.pct / maxPerDim['Participation %']) * 100,
+        ],
+        borderColor: m.color,
+        backgroundColor: m.color + '22',
+        pointBackgroundColor: m.color,
+        pointBorderColor: '#0a1128',
+        pointBorderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        borderWidth: 2.5,
+      }));
+
+      new Chart(ctx, {
+        type: 'radar',
+        data: { labels: Object.keys(dims), datasets },
+        options: {
+          ...BASE_OPTS,
+          scales: {
+            r: {
+              angleLines: { color: 'rgba(255,255,255,0.07)' },
+              grid: { color: 'rgba(255,255,255,0.07)' },
+              pointLabels: { color: '#94a3b8', font: { size: 11, family: FONT, weight: '600' } },
+              ticks: { color: '#475569', backdropColor: 'transparent', font: { size: 9 }, stepSize: 25 },
+              beginAtZero: true,
+              max: 100,
+            }
+          },
+          plugins: {
+            ...BASE_OPTS.plugins,
+            legend: { position: 'bottom', labels: { color: '#e8eef7', font: { size: 11 }, boxWidth: 10, padding: 12 } },
+          }
+        }
+      });
+    })();
+
+    // Doughnut
+    (function buildMarhalaDoughnut() {
+      const ctx = document.getElementById('marhalaDoughnutChart');
+      if (!ctx || MARHALA_DIST.length === 0) return;
+
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: MARHALA_DIST.map(m => m.label),
+          datasets: [{
+            data: MARHALA_DIST.map(m => m.enrolled),
+            backgroundColor: MARHALA_DIST.map(m => m.color + 'cc'),
+            borderColor: MARHALA_DIST.map(m => m.color),
+            borderWidth: 2,
+            hoverOffset: 10,
+          }]
+        },
+        options: {
+          ...BASE_OPTS,
+          cutout: '62%',
+          plugins: {
+            ...BASE_OPTS.plugins,
+            legend: {
+              position: 'bottom',
+              labels: {
+                color: '#e8eef7', font: { size: 11 }, boxWidth: 12, padding: 12,
+                generateLabels: chart => chart.data.labels.map((lbl, i) => ({
+                  text: `${lbl} (${MARHALA_DIST[i].pct}%)`,
+                  fillStyle: chart.data.datasets[0].backgroundColor[i],
+                  strokeStyle: chart.data.datasets[0].borderColor[i],
+                  lineWidth: 2, hidden: false, index: i,
+                }))
+              }
+            }
+          }
+        }
+      });
+    })();
+
+    // ══════════════════════════════════════════════════════
+    //  LAYER 3: DARAJAH RANKING
+    // ══════════════════════════════════════════════════════
+    (function buildDarajahRank() {
+      const ctx = document.getElementById('darajahRankChart');
+      if (!ctx || DARAJAH_DATA.length === 0) return;
+
+      const sorted = [...DARAJAH_DATA]
+        .filter(d => d.total_lab_hours > 0)
+        .sort((a, b) => b.total_lab_hours - a.total_lab_hours)
+        .slice(0, 12);
+
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: sorted.map(d => d.darajah_name),
+          datasets: [{
+            label: 'Lab Hours',
+            data: sorted.map(d => d.total_lab_hours),
+            backgroundColor: sorted.map((d) => {
+              if (d.participation_rate >= 60) return '#10b981cc';
+              if (d.participation_rate >= 30) return '#2563ebcc';
+              return '#f59e0bcc';
+            }),
+            borderColor: sorted.map((d) => {
+              if (d.participation_rate >= 60) return '#10b981';
+              if (d.participation_rate >= 30) return '#2563eb';
+              return '#f59e0b';
+            }),
+            borderWidth: 2,
+            borderRadius: 6,
+          }]
+        },
+        options: {
+          ...BASE_OPTS,
+          indexAxis: 'y',
+          plugins: {
+            ...BASE_OPTS.plugins,
+            legend: { display: false },
+            tooltip: {
+              ...BASE_OPTS.plugins.tooltip,
+              callbacks: {
+                label: ctx => {
+                  const d = sorted[ctx.dataIndex];
+                  return [
+                    ` Lab Hours: ${d.total_lab_hours}h`,
+                    ` Active: ${d.active_students}/${d.enrolled_students} (${d.participation_rate}%)`,
+                    ` Avg/Student: ${d.avg_hours_per_student}h`,
+                  ];
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: { ...TICK, callback: v => v + 'h' },
+              grid: GRID,
+              beginAtZero: true,
+            },
+            y: {
+              ticks: { color: '#e8eef7', font: { size: 11.5, weight: '600', family: FONT } },
+              grid: { display: false },
+            }
+          }
+        }
+      });
+    })();
+
+    // ══════════════════════════════════════════════════════
+    //  LAYER 4: COMPLIANCE & VIOLATIONS
+    // ══════════════════════════════════════════════════════
+    (async function loadViolations() {
+      try {
+        const res = await fetch('/enforce/admin/weekly-violation-log.json');
+        const data = await res.json();
+        const panel = document.getElementById('violations-panel');
+        panel.innerHTML = '';
+
+        const students = data.students || [];
+        if (students.length === 0) {
+          panel.innerHTML = `<div class="empty-state">
+            <div class="empty-icon">✅</div>
+            <p>No policy violations recorded in the 14-day window. All sessions clean.</p>
+          </div>`;
+          document.getElementById('viol-high-count').textContent = '0';
+          document.getElementById('viol-medium-count').textContent = '0';
+          document.getElementById('viol-window-label').textContent = `${data.week_start || ''} → ${data.week_end || ''}`;
+          return;
+        }
+
+        const allViolations = [];
+        let highCount = 0, medCount = 0;
+        students.forEach(s => {
+          (s.violations || []).forEach(v => {
+            const sev = (v.severity || 'LOW').toUpperCase();
+            if (sev === 'HIGH') highCount++;
+            else if (sev === 'MEDIUM') medCount++;
+            allViolations.push({
+              ...v,
+              student_name: s.student_name,
+              trno: s.trno,
+              darajah: s.darajah,
+              account_status: s.account_status,
+            });
+          });
+        });
+
+        allViolations.sort((a, b) => {
+          const sevOrder = { HIGH: 0, MEDIUM: 1, LOW: 2 };
+          const sA = sevOrder[(a.severity || 'LOW').toUpperCase()] ?? 3;
+          const sB = sevOrder[(b.severity || 'LOW').toUpperCase()] ?? 3;
+          if (sA !== sB) return sA - sB;
+          return String(b.timestamp || '').localeCompare(String(a.timestamp || ''));
+        });
+
+        allViolations.slice(0, 8).forEach(v => {
+          const sev = (v.severity || 'LOW').toUpperCase();
+          const isHigh = sev === 'HIGH';
+          const item = document.createElement('div');
+          item.className = 'violation-item';
+          item.innerHTML = `
+            <div class="violation-dot ${isHigh ? '' : 'medium'}"></div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-weight:700;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                ${v.student_name || 'Unknown'}
+              </div>
+              <div style="font-size:11px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                TRNO ${v.trno || '—'} · <span style="font-family:${MONO};">${v.domain || v.url || '—'}</span>
+              </div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;">
+              <span class="badge ${isHigh ? 'rose' : 'amber'}">${sev}</span>
+              <div style="font-size:10px;color:var(--text-dim);margin-top:3px;font-family:${MONO};">
+                ${(v.timestamp || '').substring(0, 16).replace('T', ' ')}
+              </div>
+            </div>
+          `;
+          panel.appendChild(item);
+        });
+
+        document.getElementById('viol-high-count').textContent = highCount;
+        document.getElementById('viol-medium-count').textContent = medCount;
+        document.getElementById('viol-window-label').textContent =
+          `${data.week_start || ''} → ${data.week_end || ''} · ${data.retention_days || 14}-day window`;
+      } catch (e) {
+        document.getElementById('violations-panel').innerHTML =
+          '<div class="empty-state"><div class="empty-icon">⚠️</div><p>Could not load violation data.</p></div>';
+      }
+    })();
+
+    // Domain risk doughnut
+    (function buildDomainRiskChart() {
+      const ctx = document.getElementById('domainRiskChart');
+      if (!ctx || !MOST_VISITED || MOST_VISITED.length === 0) return;
+
+      const catTotals = {};
+      MOST_VISITED.forEach(s => { catTotals[s.category] = (catTotals[s.category] || 0) + s.visits; });
+
+      const COLORS = {
+        'Institutional': '#8b5cf6',
+        'Educational': '#10b981',
+        'Search Engine': '#38bdf8',
+        'News & Media': '#f59e0b',
+        'General Web': '#64748b',
+        'High Risk / Unsafe': '#f43f5e',
+        'Distracting': '#fb923c',
+        'Social Media': '#f43f5e',
+        'Gaming': '#fb923c',
+        'Streaming': '#ec4899',
+        'Adult Content': '#dc2626',
+        'Proxy / VPN Evasion': '#f59e0b',
+        'Torrent / P2P': '#dc2626',
+      };
+
+      const labels = Object.keys(catTotals);
+      const vals = Object.values(catTotals);
+      const colors = labels.map(l => COLORS[l] || '#6366f1');
+      const total = vals.reduce((a, b) => a + b, 0);
+
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels,
+          datasets: [{
+            data: vals,
+            backgroundColor: colors.map(c => c + 'bb'),
+            borderColor: colors,
+            borderWidth: 2,
+            hoverOffset: 10,
+          }]
+        },
+        options: {
+          ...BASE_OPTS,
+          cutout: '58%',
+          plugins: {
+            ...BASE_OPTS.plugins,
+            legend: { display: false },
+            tooltip: {
+              ...BASE_OPTS.plugins.tooltip,
+              callbacks: {
+                label: ctx => {
+                  const pct = total > 0 ? Math.round(ctx.raw / total * 100) : 0;
+                  return ` ${ctx.raw.toLocaleString()} visits (${pct}%)`;
+                }
+              }
+            }
+          }
+        }
+      });
+
+      const legendEl = document.getElementById('risk-legend');
+      labels.forEach((l, i) => {
+        const pct = total > 0 ? Math.round(vals[i] / total * 100) : 0;
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;gap:8px;';
+        row.innerHTML = `
+          <div style="width:11px;height:11px;border-radius:3px;background:${colors[i]};flex-shrink:0;"></div>
+          <span style="flex:1;color:var(--text-muted);">${l}</span>
+          <span style="font-weight:700;color:var(--text);">${vals[i].toLocaleString()}</span>
+          <span style="color:var(--text-muted);width:36px;text-align:right;font-family:${MONO};">${pct}%</span>
+        `;
+        legendEl.appendChild(row);
+      });
+    })();
+
+    // ══════════════════════════════════════════════════════
+    //  TEMPORAL & BEHAVIORAL (now Layer 2)
+    // ══════════════════════════════════════════════════════
+
+    // Hijri trend
+    (function buildHijriTrend() {
+      const ctx = document.getElementById('hijriTrendChart');
+      if (!ctx || !HIJRI_TREND || !HIJRI_TREND.labels) return;
+
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: HIJRI_TREND.short_labels || HIJRI_TREND.labels,
+          datasets: [
+            {
+              label: 'Computer Lab Hours',
+              data: HIJRI_TREND.lab_hours || [],
+              borderColor: '#f5c842',
+              backgroundColor: 'rgba(245, 200, 66, 0.12)',
+              fill: true, tension: 0.4, borderWidth: 3,
+              pointRadius: 5, pointBackgroundColor: '#f5c842',
+              pointBorderColor: '#0a1128', pointBorderWidth: 2,
+              pointHoverRadius: 8,
+              yAxisID: 'y',
+            },
+            {
+              label: 'Web Browsing Visits',
+              data: HIJRI_TREND.browsing_visits || [],
+              borderColor: '#a855f7',
+              backgroundColor: 'transparent',
+              borderDash: [6, 4], tension: 0.35, borderWidth: 2.5,
+              pointRadius: 4, pointBackgroundColor: '#a855f7',
+              pointBorderColor: '#0a1128', pointBorderWidth: 2,
+              pointHoverRadius: 7,
+              yAxisID: 'y1',
+            }
+          ]
+        },
+        options: {
+          ...BASE_OPTS,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            ...BASE_OPTS.plugins,
+            tooltip: {
+              ...BASE_OPTS.plugins.tooltip,
+              callbacks: {
+                title: items => HIJRI_TREND.labels[items[0].dataIndex] || items[0].label,
+                afterBody: items => {
+                  const i = items[0].dataIndex;
+                  const sessions = (HIJRI_TREND.lab_sessions || [])[i] || 0;
+                  const students = (HIJRI_TREND.lab_unique_students || [])[i] || 0;
+                  return `\nLab Sessions: ${sessions}\nUnique Students: ${students}`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: { ticks: TICK, grid: GRID },
+            y: {
+              type: 'linear', position: 'left',
+              ticks: { ...TICK, callback: v => v + 'h' },
+              grid: GRID, beginAtZero: true,
+              title: { display: true, text: 'Lab Hours', color: '#f5c842', font: { size: 11, weight: '700' } }
+            },
+            y1: {
+              type: 'linear', position: 'right',
+              ticks: { color: '#c4b5fd' },
+              grid: { drawOnChartArea: false }, beginAtZero: true,
+              title: { display: true, text: 'Browsing Visits', color: '#a855f7', font: { size: 11, weight: '700' } }
+            }
+          }
+        }
+      });
+    })();
+
+    // Hourly
+    (function buildHourly() {
+      const ctx = document.getElementById('hourlyChart');
+      if (!ctx || !HOURLY_ACTIVITY || HOURLY_ACTIVITY.length === 0) return;
+      const maxVal = Math.max(...HOURLY_ACTIVITY.map(h => h.Visits), 1);
+
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: HOURLY_ACTIVITY.map(d => `${String(d.Hour).padStart(2, '0')}h`),
+          datasets: [{
+            label: 'Visits',
+            data: HOURLY_ACTIVITY.map(d => d.Visits),
+            backgroundColor: HOURLY_ACTIVITY.map(d => `rgba(56, 189, 248, ${0.3 + (d.Visits / maxVal) * 0.65})`),
+            borderColor: '#38bdf8',
+            borderWidth: 1, borderRadius: 5,
+          }]
+        },
+        options: {
+          ...BASE_OPTS,
+          plugins: { ...BASE_OPTS.plugins, legend: { display: false } },
+          scales: {
+            x: { ticks: { ...TICK, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 }, grid: { display: false } },
+            y: { ticks: TICK, grid: GRID, beginAtZero: true },
+          }
+        }
+      });
+    })();
+
+    // Weekday
+    (function buildWeekday() {
+      const ctx = document.getElementById('weekdayChart');
+      if (!ctx || !WEEKDAY_ACTIVITY || WEEKDAY_ACTIVITY.length === 0) return;
+      const maxVal = Math.max(...WEEKDAY_ACTIVITY.map(d => d.Visits), 1);
+
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: WEEKDAY_ACTIVITY.map(d => d.Day.substring(0, 3)),
+          datasets: [{
+            label: 'Visits',
+            data: WEEKDAY_ACTIVITY.map(d => d.Visits),
+            backgroundColor: WEEKDAY_ACTIVITY.map(d => `rgba(16, 185, 129, ${0.3 + (d.Visits / maxVal) * 0.65})`),
+            borderColor: '#10b981',
+            borderWidth: 1, borderRadius: 5,
+          }]
+        },
+        options: {
+          ...BASE_OPTS,
+          plugins: { ...BASE_OPTS.plugins, legend: { display: false } },
+          scales: { x: { ticks: TICK, grid: { display: false } }, y: { ticks: TICK, grid: GRID, beginAtZero: true } }
+        }
+      });
+    })();
+
+    // New vs Returning
+    (function buildNewVsReturning() {
+      const ctx = document.getElementById('newVsReturningChart');
+      if (!ctx || !NEW_VS_RETURNING || !NEW_VS_RETURNING.labels) return;
+
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: NEW_VS_RETURNING.short_labels || NEW_VS_RETURNING.labels,
+          datasets: [
+            {
+              label: '🆕 First-Time',
+              data: NEW_VS_RETURNING.new_visitors || [],
+              backgroundColor: 'rgba(16, 185, 129, 0.75)',
+              borderColor: '#10b981',
+              borderWidth: 1, borderRadius: 4, stack: 'a',
+            },
+            {
+              label: '🔄 Returning',
+              data: NEW_VS_RETURNING.returning_visitors || [],
+              backgroundColor: 'rgba(37, 99, 235, 0.75)',
+              borderColor: '#2563eb',
+              borderWidth: 1, borderRadius: 4, stack: 'a',
+            }
+          ]
+        },
+        options: {
+          ...BASE_OPTS,
+          plugins: {
+            ...BASE_OPTS.plugins,
+            legend: { position: 'bottom', labels: { color: '#e8eef7', font: { size: 11 }, boxWidth: 10, padding: 10 } }
+          },
+          scales: {
+            x: { stacked: true, ticks: { ...TICK, maxRotation: 0 }, grid: { display: false } },
+            y: { stacked: true, ticks: TICK, grid: GRID, beginAtZero: true },
+          }
+        }
+      });
+    })();
+
+    // Occupancy heatmap
+    (function buildOccupancy() {
+      const cal = document.getElementById('occupancyCalendar');
+      if (!cal || !DAILY_OCCUPANCY || !DAILY_OCCUPANCY.calendar) return;
+
+      DAILY_OCCUPANCY.calendar.forEach(day => {
+        const cell = document.createElement('div');
+        const alpha = day.intensity > 0 ? Math.max(0.15, day.intensity) : 0;
+        cell.style.cssText = `
+          width:14px;height:14px;border-radius:3px;cursor:pointer;
+          background:${alpha > 0 ? `rgba(245, 200, 66, ${alpha})` : 'rgba(255, 255, 255, 0.04)'};
+          border:1px solid rgba(245, 200, 66, ${alpha > 0 ? 0.4 : 0.06});
+          transition: transform 0.15s;
+        `;
+        cell.title = `${day.date}\n${day.hijri_label || ''}\n${day.hours}h lab time`;
+        cell.onmouseenter = () => { cell.style.transform = 'scale(1.8)'; cell.style.zIndex = '10'; };
+        cell.onmouseleave = () => { cell.style.transform = 'scale(1)'; cell.style.zIndex = ''; };
+        cal.appendChild(cell);
+      });
+    })();
+
+    // ══════════════════════════════════════════════════════
+    //  COMPLETE DARAJAH ENGAGEMENT MATRIX — PAGINATION
+    // ══════════════════════════════════════════════════════
+    (function initMatrixPagination() {
+      const ROWS_PER_PAGE = 10;
+      const tbody = document.getElementById('darajah-matrix-body');
+      if (!tbody) return;
+
+      const allRows = Array.from(tbody.querySelectorAll('tr[data-matrix-row]'));
+      const totalRows = allRows.length;
+      const totalPages = Math.ceil(totalRows / ROWS_PER_PAGE);
+      let currentPage = 1;
+
+      function showPage(page) {
+        currentPage = Math.max(1, Math.min(page, totalPages));
+        const start = (currentPage - 1) * ROWS_PER_PAGE;
+        const end = start + ROWS_PER_PAGE;
+        allRows.forEach((row, i) => {
+          row.style.display = (i >= start && i < end) ? '' : 'none';
+        });
+        renderPagination();
+      }
+
+      function renderPagination() {
+        const info = document.getElementById('matrix-page-info');
+        const controls = document.getElementById('matrix-page-controls');
+        if (!info || !controls) return;
+
+        const start = Math.min((currentPage - 1) * ROWS_PER_PAGE + 1, totalRows);
+        const end = Math.min(currentPage * ROWS_PER_PAGE, totalRows);
+        info.textContent = `Showing ${start}–${end} of ${totalRows} Darajahs`;
+
+        // Update badge
+        const badge = document.getElementById('matrix-count-badge');
+        if (badge) badge.textContent = `${totalRows} Total · Page ${currentPage}/${totalPages}`;
+
+        controls.innerHTML = '';
+
+        // Prev button
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'page-btn';
+        prevBtn.textContent = '← Prev';
+        prevBtn.disabled = currentPage === 1;
+        prevBtn.onclick = () => showPage(currentPage - 1);
+        controls.appendChild(prevBtn);
+
+        // Page number buttons (show up to 7)
+        const range = [];
+        const delta = 2;
+        for (let i = Math.max(1, currentPage - delta); i <= Math.min(totalPages, currentPage + delta); i++) {
+          range.push(i);
+        }
+        if (range[0] > 1) {
+          const b = document.createElement('button');
+          b.className = 'page-btn'; b.textContent = '1';
+          b.onclick = () => showPage(1);
+          controls.appendChild(b);
+          if (range[0] > 2) {
+            const dots = document.createElement('span');
+            dots.className = 'page-btn'; dots.textContent = '…'; dots.style.cursor = 'default';
+            controls.appendChild(dots);
+          }
+        }
+        range.forEach(p => {
+          const b = document.createElement('button');
+          b.className = 'page-btn' + (p === currentPage ? ' active' : '');
+          b.textContent = p;
+          b.onclick = () => showPage(p);
+          controls.appendChild(b);
+        });
+        if (range[range.length - 1] < totalPages) {
+          if (range[range.length - 1] < totalPages - 1) {
+            const dots = document.createElement('span');
+            dots.className = 'page-btn'; dots.textContent = '…'; dots.style.cursor = 'default';
+            controls.appendChild(dots);
+          }
+          const b = document.createElement('button');
+          b.className = 'page-btn'; b.textContent = totalPages;
+          b.onclick = () => showPage(totalPages);
+          controls.appendChild(b);
+        }
+
+        // Next button
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'page-btn';
+        nextBtn.textContent = 'Next →';
+        nextBtn.disabled = currentPage === totalPages;
+        nextBtn.onclick = () => showPage(currentPage + 1);
+        controls.appendChild(nextBtn);
+      }
+
+      if (totalRows > 0) showPage(1);
+      else {
+        const info = document.getElementById('matrix-page-info');
+        if (info) info.textContent = 'No Darajah data available.';
+      }
+    })();
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Darajah {{ darajah_id }} Matrix — MamalBrowse Sentinel | Al-Jamea tus-Saifiyah</title>
+  <meta name="description" content="Student 360° Analytics Matrix for Darajah {{ darajah_id }} — Al-Jamea tus-Saifiyah Computer Lab.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* ── Institutional Deep Royal Blue & Gold Palette ── */
+      --bg:       #0a1128;
+      --bg-elevated: #0f1a35;
+      --surface:  #131c3a;
+      --surface2: #1a2447;
+      --surface3: #232e54;
+      --border:   rgba(255, 255, 255, 0.09);
+      --border-strong: rgba(255, 255, 255, 0.16);
+      --gold:     #f5c842;
+      --gold-soft: #fbbf24;
+      --gold-deep: #d97706;
+      --royal:    #1e3a8a;
+      --royal-light: #2563eb;
+      --sky:      #38bdf8;
+      --green:    #10b981;
+      --amber:    #f59e0b;
+      --rose:     #f43f5e;
+      --violet:   #8b5cf6;
+      --accent:   #2563eb;
+      --accent2:  #1e3a8a;
+      --text:     #f8fafc;
+      --muted:    #94a3b8;
+      --subtle:   #64748b;
+      --radius:   14px;
+      --radius-lg: 18px;
+      --gradient-gold: linear-gradient(135deg, #f5c842 0%, #fbbf24 50%, #d97706 100%);
+      --gradient-royal: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+      --shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.4);
+    }
+
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 14px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      background-image:
+        radial-gradient(ellipse 900px 600px at 20% -10%, rgba(30, 58, 138, 0.28), transparent),
+        radial-gradient(ellipse 700px 500px at 90% 10%, rgba(245, 200, 66, 0.07), transparent);
+      background-attachment: fixed;
+    }
+
+    /* ── Navbar ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10, 17, 40, 0.88);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid var(--border);
+      padding: 0 28px; height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .nav-brand {
+      display: flex; align-items: center; gap: 12px;
+      font-weight: 800; font-size: 15px;
+      letter-spacing: -0.01em; text-decoration: none;
+    }
+
+    .nav-brand .crest {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: var(--gradient-royal);
+      border: 1px solid rgba(245, 200, 66, 0.35);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 4px 12px rgba(30, 58, 138, 0.4);
+    }
+
+    .nav-brand .brand-text {
+      background: var(--gradient-gold);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-brand .brand-sub {
+      font-size: 10px; font-weight: 500; color: var(--subtle);
+      letter-spacing: 0.08em; text-transform: uppercase;
+      -webkit-text-fill-color: var(--subtle);
+    }
+
+    .nav-links { display: flex; align-items: center; gap: 4px; }
+
+    .nav-link {
+      color: var(--muted); text-decoration: none;
+      padding: 8px 14px; border-radius: 8px;
+      font-size: 13px; font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .nav-link:hover { color: var(--text); background: var(--surface2); }
+
+    .nav-link.active {
+      color: var(--gold);
+      background: rgba(245, 200, 66, 0.08);
+      border: 1px solid rgba(245, 200, 66, 0.2);
+    }
+
+    .btn-logout {
+      background: rgba(244, 63, 94, 0.12); color: #fca5a5;
+      border: 1px solid rgba(244, 63, 94, 0.25); border-radius: 8px;
+      padding: 8px 16px; font-size: 12.5px; font-weight: 600;
+      cursor: pointer; text-decoration: none; transition: all 0.2s; margin-left: 8px;
+    }
+    .btn-logout:hover { background: rgba(244, 63, 94, 0.22); color: #fff; }
+
+    .container {
+      max-width: 1340px;
+      margin: 0 auto;
+      padding: 32px 24px 60px;
+    }
+
+    /* ── Header ── */
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .header-left h1 {
+      font-size: 26px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-left h1 span.badge {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: rgba(245, 200, 66, 0.12);
+      border: 1px solid rgba(245, 200, 66, 0.3);
+      color: var(--gold);
+    }
+
+    .header-left p {
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 9px 18px; border-radius: 9px;
+      font-size: 13px; font-weight: 600;
+      text-decoration: none; cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: var(--gradient-royal);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(30, 58, 138, 0.35);
+    }
+    .btn-primary:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(30, 58, 138, 0.45);
+    }
+
+    .btn-outline {
+      background: var(--surface);
+      border-color: var(--border);
+      color: var(--text);
+    }
+    .btn-outline:hover {
+      background: var(--surface2);
+      border-color: rgba(255,255,255,0.15);
+    }
+
+    /* ── Metrics Grid ── */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 30px;
+    }
+
+    .metric-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .metric-card:hover {
+      border-color: rgba(245, 200, 66, 0.2);
+      transform: translateY(-1px);
+    }
+
+    .metric-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: var(--gradient-royal);
+    }
+
+    .metric-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+    }
+
+    .metric-val {
+      font-size: 28px;
+      font-weight: 800;
+      margin: 8px 0 4px;
+    }
+
+    .metric-sub {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* ── Risk Filter Bar ── */
+    .filter-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 20px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .search-input {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 14px;
+      color: var(--text);
+      font-size: 13px;
+      width: 260px;
+      outline: none;
+    }
+    .search-input:focus {
+      border-color: rgba(245, 200, 66, 0.4);
+      box-shadow: 0 0 0 2px rgba(245, 200, 66, 0.12);
+    }
+
+    .pill-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    .pill-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .pill-btn:hover { color: var(--text); }
+    .pill-btn.active {
+      background: rgba(245, 200, 66, 0.12);
+      border-color: rgba(245, 200, 66, 0.4);
+      color: var(--gold);
+    }
+
+    /* ── Table Container ── */
+    .table-container {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    th {
+      background: rgba(255,255,255,0.02);
+      padding: 14px 18px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      color: var(--text);
+      vertical-align: middle;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.015); }
+
+    .student-cell {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .student-name {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .student-trno {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* Score Badge */
+    .score-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .score-meter {
+      width: 48px;
+      height: 6px;
+      background: var(--surface2);
+      border-radius: 4px;
+      overflow: hidden;
+      display: inline-block;
+    }
+
+    .score-meter-fill {
+      height: 100%;
+      border-radius: 4px;
+    }
+
+    /* Risk Badges */
+    .risk-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 12px;
+      text-transform: uppercase;
+    }
+
+    .risk-low {
+      background: rgba(16,185,129,0.12);
+      color: var(--green);
+      border: 1px solid rgba(16,185,129,0.25);
+    }
+
+    .risk-medium {
+      background: rgba(245,158,11,0.12);
+      color: var(--amber);
+      border: 1px solid rgba(245,158,11,0.25);
+    }
+
+    .risk-high {
+      background: rgba(244,63,94,0.12);
+      color: var(--rose);
+      border: 1px solid rgba(244,63,94,0.25);
+    }
+
+    .action-link {
+      color: var(--sky);
+      text-decoration: none;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .action-link:hover { text-decoration: underline; }
+
+    /* Empty state */
+    .empty-row {
+      text-align: center;
+      padding: 40px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav>
+    <a href="/home" class="nav-brand">
+      <div class="crest">🛡️</div>
+      <div>
+        <div class="brand-text">MamalBrowse Sentinel</div>
+        <div class="brand-sub">Al-Jamea tus-Saifiyah</div>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="/home" class="nav-link">Home</a>
+      <a href="/darajah" class="nav-link active">Darajah Matrix</a>
+      <a href="/analytics" class="nav-link">Analytics</a>
+      <a href="/students" class="nav-link">Students</a>
+      <a href="/security" class="nav-link">🛡️ Security</a>
+      <a href="/logout" class="btn-logout">Logout</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- Header -->
+    <!-- Breadcrumb Navigation -->
+    <div style="display:flex;align-items:center;gap:8px;font-size:13px;margin-bottom:16px;color:var(--muted);">
+      <a href="/darajah" style="color:var(--sky);text-decoration:none;display:inline-flex;align-items:center;gap:5px;font-weight:500;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Darajah Academic Intelligence Directory
+      </a>
+      <span>/</span>
+      <span style="color:var(--text);font-weight:600;">{{ display_title or ('Darajah ' + darajah_id) }}</span>
+    </div>
+
+    <div class="header-row">
+      <div class="header-left">
+        <h1>
+          {{ display_title or ('Darajah ' + darajah_id) }} Matrix
+          <span class="badge" style="background:rgba(245,200,66,0.12);border:1px solid rgba(245,200,66,0.3);color:var(--gold);">Live 360 Profile</span>
+        </h1>
+        <p>Unified academic intelligence combining Live Browsing Logs and Lab Time Management.</p>
+        {% if hijri_date %}
+        <div style="display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:4px 12px;border-radius:16px;background:rgba(217,119,6,0.12);border:1px solid rgba(245,158,11,0.3);color:#fbbf24;font-size:12px;font-weight:600;">
+          <span>🌙 {{ hijri_date }}</span>
+        </div>
+        {% endif %}
+      </div>
+      <div class="header-actions">
+        <a href="{{ url_for('darajah.print_darajah_report', darajah_id=darajah_id) }}" target="_blank" class="btn btn-outline" style="border-color:rgba(245,200,66,0.3);color:var(--gold-soft);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
+          Print PDF
+        </a>
+        <a href="{{ url_for('darajah.export_darajah_csv', darajah_id=darajah_id) }}" class="btn btn-primary">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+          </svg>
+          Export CSV
+        </a>
+        <a href="/darajah" class="btn btn-outline">
+          &larr; All Darajahs
+        </a>
+      </div>
+    </div>
+
+    <!-- Metrics Cards -->
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-label">Enrolled Students</div>
+        <div class="metric-val" style="color: var(--sky);">{{ student_count }}</div>
+        <div class="metric-sub">Active in this Darajah</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">Average Engagement</div>
+        <div class="metric-val" style="color: {% if avg_score >= 70 %}var(--green){% elif avg_score >= 40 %}var(--amber){% else %}var(--rose){% endif %};">
+          {{ avg_score }}<span style="font-size: 16px; font-weight: 500; color: var(--muted);">/100</span>
+        </div>
+        <div class="metric-sub">Browsing Quality + Lab Time</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">Lab Computer Time</div>
+        <div class="metric-val" style="color: var(--green);">{{ total_lab_hours }}h</div>
+        <div class="metric-sub">From usage_data.json</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">Attention Needed</div>
+        <div class="metric-val" style="color: var(--rose);">{{ risk_counts.high }}</div>
+        <div class="metric-sub">High Risk Students (&lt;40 Score)</div>
+      </div>
+
+      <div class="metric-card" style="border-color:{% if (ad_disabled_count|default(0)) > 0 %}rgba(244,63,94,0.4){% else %}rgba(16,185,129,0.3){% endif %};">
+        <div class="metric-label">AD Locked</div>
+        <div class="metric-val" style="color: {% if (ad_disabled_count|default(0)) > 0 %}var(--rose){% else %}var(--green){% endif %};">{{ ad_disabled_count|default(0) }}</div>
+        <div class="metric-sub">Disabled in mamal.nbi</div>
+      </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <input type="text" id="searchInput" class="search-input" placeholder="Search by TRNO or student name..." onkeyup="filterTable()">
+      
+      <div class="pill-group">
+        <button class="pill-btn active" onclick="setRiskFilter('all', this)">All ({{ student_count }})</button>
+        <button class="pill-btn" onclick="setRiskFilter('high', this)" style="border-color: rgba(244,63,94,0.3); color: var(--rose);">
+          High Risk ({{ risk_counts.high }})
+        </button>
+        <button class="pill-btn" onclick="setRiskFilter('medium', this)" style="border-color: rgba(245,158,11,0.3); color: var(--amber);">
+          Medium Risk ({{ risk_counts.medium }})
+        </button>
+        <button class="pill-btn" onclick="setRiskFilter('low', this)" style="border-color: rgba(16,185,129,0.3); color: var(--green);">
+          Low Risk ({{ risk_counts.low }})
+        </button>
+        {% if (ad_disabled_count|default(0)) > 0 %}
+        <button class="pill-btn" onclick="setAdFilter('disabled', this)" style="border-color: rgba(244,63,94,0.4); color: #fca5a5;">
+          ⛔ AD Disabled ({{ ad_disabled_count }})
+        </button>
+        {% endif %}
+        <button class="pill-btn" onclick="setAdFilter('all', this)" id="adClearBtn" style="display:none;border-color:rgba(16,185,129,0.4);color:#34d399;">
+          🟢 Show All
+        </button>
+      </div>
+    </div>
+
+    <!-- Student Table -->
+    <div class="table-container">
+      <table id="matrixTable">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Engagement Score</th>
+            <th>Risk Level</th>
+            <th>Browsing</th>
+            <th>Lab Duration</th>
+            <th>AD Domain</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for student in engagement_matrix %}
+          <tr class="student-row" data-risk="{{ student.risk_level }}" data-ad="{{ 'disabled' if student.ad_disabled else 'active' }}" data-search="{{ student.trno }} {{ student.name|lower }}" {% if student.ad_disabled %}style="border-left:3px solid rgba(244,63,94,0.6);"{% endif %}>
+            <td>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <div style="width:36px;height:36px;border-radius:50%;overflow:hidden;border:1.5px solid {% if student.ad_disabled %}rgba(244,63,94,0.5){% else %}rgba(30, 58, 138, 0.5){% endif %};flex-shrink:0;background:var(--surface2);">
+                  <img src="/photo/{{ student.trno }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;"
+                       onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                  <div style="width:100%;height:100%;border-radius:50%;background:var(--gradient-royal);display:none;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;">
+                    {{ (student.name[0] if student.name else '?')|upper }}
+                  </div>
+                </div>
+                <div class="student-cell">
+                  <span class="student-name">{{ student.name }}</span>
+                  <span class="student-trno">TRNO: {{ student.trno }}</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="score-badge">
+                <span style="color: {% if student.engagement_score >= 70 %}var(--green){% elif student.engagement_score >= 40 %}var(--amber){% else %}var(--rose){% endif %};">
+                  {{ student.engagement_score }}
+                </span>
+                <div class="score-meter">
+                  <div class="score-meter-fill" style="width: {{ student.engagement_score }}%; background: {% if student.engagement_score >= 70 %}var(--green){% elif student.engagement_score >= 40 %}var(--amber){% else %}var(--rose){% endif %};"></div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="risk-badge risk-{{ student.risk_level }}">
+                {{ student.risk_level }}
+              </span>
+            </td>
+            <td>
+              <div>
+                <strong>{{ student.total_visits }}</strong> visits
+                <span style="font-size: 11px; color: var(--muted); display: block;">{{ student.educational_ratio }}% educational</span>
+              </div>
+            </td>
+            <td>
+              <div>
+                <strong style="color: var(--green);">{{ student.lab_formatted }}</strong>
+                <span style="font-size: 11px; color: var(--muted); display: block;">Lab hours</span>
+              </div>
+            </td>
+            <td>
+              {% if student.ad_disabled %}
+              <span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:12px;font-size:10px;font-weight:700;background:rgba(244,63,94,0.15);color:#fca5a5;border:1px solid rgba(244,63,94,0.35);">⛔ DISABLED</span>
+              {% else %}
+              <span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:12px;font-size:10px;font-weight:700;background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.3);">🟢 ACTIVE</span>
+              {% endif %}
+            </td>
+            <td>
+              <a href="/report/{{ student.trno }}" class="action-link">
+                View Report &rarr;
+              </a>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="8" class="empty-row">No students found for Darajah {{ darajah_id }}.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    let activeRisk = 'all';
+    let activeAd = 'all';
+
+    function setRiskFilter(risk, btn) {
+      activeRisk = risk;
+      document.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      filterTable();
+    }
+
+    function setAdFilter(adState, btn) {
+      activeAd = adState;
+      document.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const clearBtn = document.getElementById('adClearBtn');
+      if (clearBtn) clearBtn.style.display = adState === 'disabled' ? '' : 'none';
+      filterTable();
+    }
+
+    function filterTable() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const rows = document.querySelectorAll('.student-row');
+
+      rows.forEach(row => {
+        const text = row.getAttribute('data-search');
+        const risk = row.getAttribute('data-risk');
+        const ad   = row.getAttribute('data-ad');
+
+        const matchesSearch = text.includes(search);
+        const matchesRisk   = (activeRisk === 'all' || risk === activeRisk);
+        const matchesAd     = (activeAd === 'all' || ad === activeAd);
+
+        row.style.display = (matchesSearch && matchesRisk && matchesAd) ? '' : 'none';
+      });
+    }
+  </script>
+</body>
+</html>
