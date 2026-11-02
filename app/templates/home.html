@@ -1,0 +1,3398 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MamalBrowse Sentinel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      /* ── Royal Blue + Gold Institutional Palette ── */
+      --bg: #0a1128;
+      --bg-elevated: #0f1a35;
+      --surface: #131c3a;
+      --surface-2: #1a2447;
+      --surface-3: #232e54;
+      --border: rgba(255, 255, 255, 0.09);
+      --border-strong: rgba(255, 255, 255, 0.16);
+
+      --gold: #f5c842;
+      --gold-soft: #fbbf24;
+      --gold-deep: #d97706;
+      --royal: #1e3a8a;
+      --royal-light: #2563eb;
+      --sky: #38bdf8;
+      --emerald: #10b981;
+      --rose: #f43f5e;
+      --amber: #f59e0b;
+      --violet: #8b5cf6;
+
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+
+      --radius-sm: 8px;
+      --radius: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+      --shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 20px 48px -12px rgba(0, 0, 0, 0.6);
+      --shadow-glow-gold: 0 0 24px rgba(245, 200, 66, 0.15);
+      --shadow-glow-royal: 0 0 24px rgba(37, 99, 235, 0.2);
+
+      --gradient-gold: linear-gradient(135deg, #f5c842 0%, #fbbf24 50%, #d97706 100%);
+      --gradient-royal: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+      --gradient-hero: linear-gradient(135deg, rgba(30, 58, 138, 0.4) 0%, rgba(245, 200, 66, 0.06) 100%);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 14px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      background-image:
+        radial-gradient(ellipse 800px 600px at 20% -10%, rgba(30, 58, 138, 0.25), transparent),
+        radial-gradient(ellipse 600px 500px at 90% 10%, rgba(245, 200, 66, 0.06), transparent);
+      background-attachment: fixed;
+    }
+
+    /* ══ NAVBAR ══ */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 17, 40, 0.85);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid var(--border);
+      padding: 0 28px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: -0.01em;
+    }
+
+    .nav-brand .crest {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--gradient-royal);
+      border: 1px solid rgba(245, 200, 66, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 4px 12px rgba(30, 58, 138, 0.4);
+    }
+
+    .nav-brand .brand-text {
+      background: var(--gradient-gold);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-brand .brand-sub {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      -webkit-text-fill-color: var(--text-dim);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .nav-link:hover {
+      color: var(--text);
+      background: var(--surface-2);
+    }
+
+    .nav-link.active {
+      color: var(--gold);
+      background: rgba(245, 200, 66, 0.08);
+      border: 1px solid rgba(245, 200, 66, 0.2);
+    }
+
+    .btn-logout {
+      background: rgba(244, 63, 94, 0.12);
+      color: #fca5a5;
+      border: 1px solid rgba(244, 63, 94, 0.25);
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      margin-left: 8px;
+    }
+
+    .btn-logout:hover {
+      background: rgba(244, 63, 94, 0.22);
+      color: #fff;
+    }
+
+    /* ══ LAYOUT ══ */
+    .container {
+      max-width: 1520px;
+      margin: 0 auto;
+      padding: 28px 28px 48px;
+    }
+
+
+    /* =========================================================
+   HERO SECTION — ADMINISTRATOR DASHBOARD
+   Design: Editorial · Light · Refined · Responsive
+========================================================= */
+
+    .hero {
+      --hero-ink: #193b2b;
+      --hero-green: #245b40;
+      --hero-green-light: #548300;
+      --hero-orange: #b45b32;
+      --hero-muted: #626b60;
+      --hero-paper: #f8f7f2;
+      --hero-border: #e5e4da;
+
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+
+      margin: 0 0 18px;
+      padding: 18px 24px;
+
+      color: var(--hero-ink);
+
+      background:
+        radial-gradient(ellipse at 95% 5%,
+          rgba(177, 195, 147, 0.15) 0%,
+          transparent 36%),
+        linear-gradient(125deg,
+          #fffefa 0%,
+          var(--hero-paper) 100%);
+
+      border: 1px solid var(--hero-border);
+      border-radius: 8px;
+
+      box-shadow:
+        0 2px 5px rgba(25, 59, 43, 0.025),
+        0 8px 20px rgba(25, 59, 43, 0.035);
+    }
+
+    /* Structural accent */
+
+    .hero::before {
+      content: "";
+
+      position: absolute;
+      z-index: -1;
+      top: 0;
+      left: 0;
+      bottom: 0;
+
+      width: 5px;
+
+      background: linear-gradient(180deg,
+          var(--hero-green-light) 0%,
+          var(--hero-green) 100%);
+
+      pointer-events: none;
+    }
+
+    /* Subtle background detailing */
+
+    .hero::after {
+      content: "";
+
+      position: absolute;
+      z-index: -1;
+      top: -90px;
+      right: -90px;
+
+      width: 240px;
+      height: 240px;
+
+      border: 1px solid rgba(36, 91, 64, 0.07);
+      border-radius: 50%;
+
+      box-shadow:
+        0 0 0 24px rgba(36, 91, 64, 0.025),
+        0 0 0 48px rgba(36, 91, 64, 0.018);
+
+      pointer-events: none;
+    }
+
+    /* Main composition */
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+
+      gap: 24px;
+
+      position: relative;
+    }
+
+    /* Heading */
+
+    .hero h1 {
+      max-width: 800px;
+      margin: 0;
+
+      color: var(--hero-ink);
+
+      font-size: clamp(1.2rem, 1.8vw, 1.45rem);
+      font-weight: 750;
+      line-height: 1.25;
+      letter-spacing: -0.025em;
+
+      text-wrap: balance;
+    }
+
+    .hero h1 span {
+      display: inline;
+      margin-top: 0;
+      margin-left: 4px;
+
+      color: var(--hero-green);
+
+      font-weight: 650;
+      letter-spacing: -0.02em;
+    }
+
+    /* Introductory copy */
+
+    .hero-sub {
+      max-width: 750px;
+      margin: 6px 0 0;
+
+      color: var(--hero-muted);
+
+      font-size: 0.85rem;
+      font-weight: 400;
+      line-height: 1.5;
+      letter-spacing: 0.005em;
+    }
+
+    .hero-sub strong {
+      color: var(--hero-ink);
+      font-weight: 700;
+    }
+
+    /* Information rail */
+
+    .hero-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+
+      min-width: 220px;
+      border-top: 0;
+      border-left: 1px solid #dcded3;
+      padding-left: 20px;
+    }
+
+    /* Information rows */
+
+    .hero-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      min-width: 0;
+      min-height: 28px;
+
+      padding: 4px 6px;
+
+      color: var(--hero-ink);
+      background: transparent;
+
+      border: 0;
+      border-radius: 6px;
+
+      box-shadow: none;
+
+      font-size: 0.8rem;
+      font-weight: 550;
+      line-height: 1.4;
+      white-space: nowrap;
+
+      transition:
+        padding-left 180ms ease,
+        background-color 180ms ease;
+    }
+
+    .hero-pill:hover {
+      padding-left: 10px;
+
+      background: rgba(36, 91, 64, 0.04);
+      box-shadow: none;
+    }
+
+    /* Live system status */
+
+    .hero-pill.emerald {
+      color: var(--hero-green);
+      background: transparent;
+    }
+
+    .live-dot {
+      position: relative;
+      flex: 0 0 7px;
+
+      width: 7px;
+      height: 7px;
+
+      border-radius: 50%;
+      background: #39834e;
+
+      box-shadow: 0 0 0 3px rgba(57, 131, 78, 0.12);
+    }
+
+    #currentTime {
+      color: var(--hero-muted);
+
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 0.78rem;
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    /* Academic date */
+
+    .hero-pill.gold {
+      color: #795a2d;
+      background: transparent;
+    }
+
+    .hero-pill.gold>span {
+      color: #898779;
+    }
+
+    /* Student enrollment */
+
+    .hero-pill.royal {
+      color: #4d4e7b;
+      background: transparent;
+    }
+
+    .hero-pill.royal strong {
+      color: var(--hero-ink);
+      font-weight: 750;
+    }
+
+    /* =========================================================
+   RESPONSIVE LAYOUT — TABLETS
+========================================================= */
+
+    @media (max-width: 920px) {
+      .hero-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+      }
+
+      .hero-meta {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 12px;
+        border-left: 0;
+        border-top: 1px solid #dcded3;
+        padding-left: 0;
+        padding-top: 10px;
+      }
+
+      .hero-pill {
+        min-height: auto;
+        padding: 4px 8px;
+      }
+    }
+
+    /* =========================================================
+   RESPONSIVE LAYOUT — MOBILE
+========================================================= */
+
+    @media (max-width: 600px) {
+      .hero {
+        margin-bottom: 16px;
+        padding: 14px 16px;
+        border-radius: 6px;
+      }
+
+      .hero h1 {
+        font-size: 1.15rem;
+        line-height: 1.25;
+        letter-spacing: -0.02em;
+      }
+
+      .hero h1 span {
+        margin-top: 0;
+      }
+
+      .hero-sub {
+        margin-top: 6px;
+        font-size: 0.8rem;
+        line-height: 1.45;
+      }
+
+      .hero-grid {
+        gap: 14px;
+      }
+
+      .hero-meta {
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .hero-pill,
+      .hero-pill:first-child {
+        align-items: center;
+        min-height: auto;
+        padding: 4px 0;
+        border-right: 0;
+        border-bottom: 0;
+      }
+
+      .hero-pill:last-child {
+        border-bottom: 0;
+      }
+
+      .hero::after {
+        top: -130px;
+        right: -150px;
+      }
+    }
+
+    /* =========================================================
+   ACCESSIBILITY
+========================================================= */
+
+    @media (prefers-reduced-motion: reduce) {
+      .hero-pill {
+        transition: none;
+      }
+    }
+
+
+
+    /* ══ POLICY BANNER ══ */
+    .policy-banner {
+      background: linear-gradient(135deg, rgba(245, 200, 66, 0.08), rgba(30, 58, 138, 0.12));
+      border: 1px solid rgba(245, 200, 66, 0.25);
+      border-left: 4px solid var(--gold);
+      border-radius: var(--radius);
+      padding: 16px 22px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .policy-banner-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: rgba(245, 200, 66, 0.15);
+      border: 1px solid rgba(245, 200, 66, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .policy-banner-content {
+      flex: 1;
+      min-width: 240px;
+    }
+
+    .policy-banner-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--gold);
+      letter-spacing: 0.02em;
+      margin-bottom: 2px;
+      text-transform: uppercase;
+    }
+
+    .policy-banner-text {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .policy-banner-text strong {
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    .policy-banner-stats {
+      display: flex;
+      gap: 20px;
+      padding-left: 20px;
+      border-left: 1px solid rgba(245, 200, 66, 0.2);
+    }
+
+    .policy-stat {
+      text-align: center;
+    }
+
+    .policy-stat-val {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--gold);
+      font-family: 'JetBrains Mono', monospace;
+      line-height: 1;
+    }
+
+    .policy-stat-lbl {
+      font-size: 10px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    /* ══ LAB OCCUPANCY PANEL ══ */
+    .lab-occupancy-banner {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 18px;
+      margin-bottom: 24px;
+      align-items: stretch;
+    }
+
+    .focus-index-card {
+      grid-column: span 2;
+    }
+
+    @media (max-width: 1100px) {
+      .lab-occupancy-banner {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .focus-index-card {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .lab-occupancy-banner {
+        grid-template-columns: 1fr;
+      }
+
+      .focus-index-card {
+        grid-column: 1;
+      }
+    }
+
+    .lab-gauge-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: all 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .lab-gauge-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--lab-accent, var(--sky));
+    }
+
+    .lab-gauge-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .lab-gauge-card.mk {
+      --lab-accent: #3b82f6;
+    }
+
+    .lab-gauge-card.rb {
+      --lab-accent: #10b981;
+    }
+
+    .lab-gauge-card.m {
+      --lab-accent: #f59e0b;
+    }
+
+    .lab-gauge-card.f {
+      --lab-accent: #ec4899;
+    }
+
+    .gauge-ring-wrap {
+      position: relative;
+      width: 88px;
+      height: 88px;
+      flex-shrink: 0;
+    }
+
+    .gauge-ring-wrap svg {
+      transform: rotate(-90deg);
+    }
+
+    .gauge-center-text {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .gauge-pct {
+      font-size: 17px;
+      font-weight: 900;
+      font-family: 'JetBrains Mono', monospace;
+      line-height: 1;
+      color: var(--text);
+    }
+
+    .gauge-pct-sub {
+      font-size: 9px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-top: 2px;
+    }
+
+    .lab-gauge-info {
+      flex: 1;
+    }
+
+    .lab-gauge-name {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+    }
+
+    .lab-gauge-count {
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+
+    .lab-gauge-sub {
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
+
+    .lab-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 6px;
+    }
+
+    .lab-status-badge.available {
+      background: rgba(16, 185, 129, 0.12);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .lab-status-badge.moderate {
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--sky);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .lab-status-badge.near_capacity {
+      background: rgba(245, 158, 11, 0.12);
+      color: #fcd34d;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+    }
+
+    .lab-status-badge.full {
+      background: rgba(244, 63, 94, 0.12);
+      color: #fca5a5;
+      border: 1px solid rgba(244, 63, 94, 0.3);
+    }
+
+    /* Focus Index Card (in occupancy banner) */
+    .focus-index-card {
+      background: linear-gradient(135deg, rgba(245, 200, 66, 0.08), rgba(30, 58, 138, 0.12));
+      border: 1px solid rgba(245, 200, 66, 0.25);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .focus-index-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--gold), var(--amber));
+    }
+
+    .focus-bar-wrap {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .focus-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--emerald), var(--sky));
+      transition: width 1s ease;
+    }
+
+    /* ══ KPI GRID ══ */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    @media (max-width: 1200px) {
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .kpi-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .kpi {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      min-height: 148px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .kpi::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--kpi-accent, var(--royal-light));
+      opacity: 0.9;
+    }
+
+    .kpi:hover {
+      transform: translateY(-3px);
+      border-color: var(--kpi-accent, var(--royal-light));
+      box-shadow: var(--shadow-lg), 0 0 24px var(--kpi-glow, rgba(37, 99, 235, 0.15));
+    }
+
+    .kpi.gold {
+      --kpi-accent: var(--gold);
+      --kpi-glow: rgba(245, 200, 66, 0.2);
+    }
+
+    .kpi.royal {
+      --kpi-accent: var(--royal-light);
+      --kpi-glow: rgba(37, 99, 235, 0.2);
+    }
+
+    .kpi.sky {
+      --kpi-accent: var(--sky);
+      --kpi-glow: rgba(56, 189, 248, 0.2);
+    }
+
+    .kpi.emerald {
+      --kpi-accent: var(--emerald);
+      --kpi-glow: rgba(16, 185, 129, 0.2);
+    }
+
+    .kpi.rose {
+      --kpi-accent: var(--rose);
+      --kpi-glow: rgba(244, 63, 94, 0.2);
+    }
+
+    .kpi.violet {
+      --kpi-accent: var(--violet);
+      --kpi-glow: rgba(139, 92, 246, 0.2);
+    }
+
+    .kpi.amber {
+      --kpi-accent: var(--amber);
+      --kpi-glow: rgba(245, 158, 11, 0.2);
+    }
+
+    .kpi-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .kpi-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 19px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .kpi.gold .kpi-icon {
+      background: rgba(245, 200, 66, 0.12);
+      border-color: rgba(245, 200, 66, 0.28);
+    }
+
+    .kpi.royal .kpi-icon {
+      background: rgba(37, 99, 235, 0.14);
+      border-color: rgba(37, 99, 235, 0.3);
+    }
+
+    .kpi.sky .kpi-icon {
+      background: rgba(56, 189, 248, 0.12);
+      border-color: rgba(56, 189, 248, 0.28);
+    }
+
+    .kpi.emerald .kpi-icon {
+      background: rgba(16, 185, 129, 0.12);
+      border-color: rgba(16, 185, 129, 0.28);
+    }
+
+    .kpi.rose .kpi-icon {
+      background: rgba(244, 63, 94, 0.14);
+      border-color: rgba(244, 63, 94, 0.3);
+    }
+
+    .kpi.violet .kpi-icon {
+      background: rgba(139, 92, 246, 0.12);
+      border-color: rgba(139, 92, 246, 0.28);
+    }
+
+    .kpi.amber .kpi-icon {
+      background: rgba(245, 158, 11, 0.12);
+      border-color: rgba(245, 158, 11, 0.28);
+    }
+
+    .kpi-tag {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+
+    .kpi-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+    }
+
+    .kpi-value {
+      font-size: 30px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      line-height: 1.05;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .kpi-value.small {
+      font-size: 22px;
+    }
+
+    .kpi-sub {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .kpi-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      font-size: 10.5px;
+      color: var(--text-dim);
+      font-weight: 600;
+    }
+
+    .kpi-trend {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 700;
+    }
+
+    .kpi-trend.up {
+      color: var(--emerald);
+    }
+
+    .kpi-trend.down {
+      color: var(--rose);
+    }
+
+    /* ══ SECTIONS ══ */
+    .section {
+      margin-bottom: 32px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .section-title {
+      font-size: 17px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: -0.01em;
+    }
+
+    .section-title::before {
+      content: '';
+      width: 4px;
+      height: 20px;
+      background: var(--gradient-gold);
+      border-radius: 2px;
+    }
+
+    .section-desc {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ══ CHARTS ══ */
+    .charts-2 {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .charts-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    @media (max-width: 1100px) {
+
+      .charts-2,
+      .charts-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+    }
+
+    .card-hero {
+      padding: 22px 24px;
+      background: linear-gradient(145deg, var(--surface), rgba(30, 58, 138, 0.08));
+      border-color: rgba(37, 99, 235, 0.25);
+    }
+
+    .card-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .card-title-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .card-title-left .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--gradient-royal);
+    }
+
+    .chart-wrap {
+      position: relative;
+      height: 240px;
+    }
+
+    .chart-wrap.tall {
+      height: 280px;
+    }
+
+    /* ══ INSIGHTS PANEL ══ */
+    .insights-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+    }
+
+    .insight-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--insight-accent, var(--sky));
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      transition: all 0.2s;
+    }
+
+    .insight-card:hover {
+      background: var(--surface-2);
+      transform: translateX(2px);
+    }
+
+    .insight-card.critical {
+      --insight-accent: var(--rose);
+    }
+
+    .insight-card.warning {
+      --insight-accent: var(--amber);
+    }
+
+    .insight-card.success {
+      --insight-accent: var(--emerald);
+    }
+
+    .insight-card.info {
+      --insight-accent: var(--sky);
+    }
+
+    .insight-card.gold {
+      --insight-accent: var(--gold);
+    }
+
+    .insight-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .insight-icon {
+      font-size: 18px;
+    }
+
+    .insight-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.005em;
+    }
+
+    .insight-body {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    .insight-body strong {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .insight-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-muted);
+      margin-left: auto;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* ══ VIOLATION TABLE ══ */
+    .wl-container {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .wl-meta {
+      padding: 16px 20px;
+      background: linear-gradient(90deg, rgba(30, 58, 138, 0.15), rgba(245, 200, 66, 0.04));
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .wl-window-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(245, 200, 66, 0.12);
+      border: 1px solid rgba(245, 200, 66, 0.35);
+      color: var(--gold);
+      font-size: 11.5px;
+      font-weight: 800;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .wl-filters {
+      padding: 14px 20px;
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .wl-filters input,
+    .wl-filters select {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      color: var(--text);
+      font-size: 12.5px;
+      outline: none;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+
+    .wl-filters input:focus,
+    .wl-filters select:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(245, 200, 66, 0.15);
+    }
+
+    .wl-filters input[type="text"] {
+      min-width: 220px;
+    }
+
+    .wl-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .wl-table thead {
+      background: var(--surface-2);
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    .wl-table th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 10.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-dim);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .wl-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      vertical-align: middle;
+    }
+
+    .wl-student-row {
+      transition: background 0.15s;
+    }
+
+    .wl-student-row:hover {
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    .wl-student-row.blocked {
+      border-left: 3px solid var(--rose);
+    }
+
+    .wl-student-row.warned {
+      border-left: 3px solid var(--amber);
+    }
+
+    .wl-student-row.active {
+      border-left: 3px solid var(--emerald);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .badge.gold {
+      background: rgba(245, 200, 66, 0.14);
+      color: var(--gold);
+      border: 1px solid rgba(245, 200, 66, 0.3);
+    }
+
+    .badge.royal {
+      background: rgba(37, 99, 235, 0.14);
+      color: #93c5fd;
+      border: 1px solid rgba(37, 99, 235, 0.3);
+    }
+
+    .badge.sky {
+      background: rgba(56, 189, 248, 0.14);
+      color: var(--sky);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .badge.emerald {
+      background: rgba(16, 185, 129, 0.14);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .badge.rose {
+      background: rgba(244, 63, 94, 0.14);
+      color: #fca5a5;
+      border: 1px solid rgba(244, 63, 94, 0.3);
+    }
+
+    .badge.amber {
+      background: rgba(245, 158, 11, 0.14);
+      color: #fcd34d;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .badge.violet {
+      background: rgba(139, 92, 246, 0.14);
+      color: #c4b5fd;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+      text-decoration: none;
+      letter-spacing: 0.01em;
+    }
+
+    .btn-primary {
+      background: var(--gradient-royal);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 22px rgba(37, 99, 235, 0.45);
+    }
+
+    .btn-gold {
+      background: var(--gradient-gold);
+      color: #422006;
+      box-shadow: 0 4px 14px rgba(245, 200, 66, 0.35);
+    }
+
+    .btn-gold:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 22px rgba(245, 200, 66, 0.45);
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-strong);
+      color: var(--text-muted);
+    }
+
+    .btn-ghost:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.09);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .btn-danger {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+      color: #fca5a5;
+    }
+
+    .btn-danger:hover {
+      background: rgba(244, 63, 94, 0.22);
+      color: #fff;
+    }
+
+    .btn-success {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #34d399;
+    }
+
+    .btn-success:hover {
+      background: rgba(16, 185, 129, 0.22);
+      color: #fff;
+    }
+
+    /* ══ EMPTY STATE ══ */
+    .empty-state {
+      padding: 56px 24px;
+      text-align: center;
+    }
+
+    .empty-icon {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 16px;
+      border-radius: 20px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+    }
+
+    .empty-title {
+      font-size: 17px;
+      font-weight: 800;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    .empty-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      max-width: 460px;
+      margin: 0 auto 20px;
+      line-height: 1.6;
+    }
+
+    /* ══ REINSTATEMENT QUEUE ══ */
+    .reinstatement-panel {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.06), rgba(10, 17, 40, 0.8));
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      border-left: 4px solid var(--amber);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: 32px;
+    }
+
+    .reinstatement-header {
+      padding: 14px 20px;
+      background: rgba(245, 158, 11, 0.06);
+      border-bottom: 1px solid rgba(245, 158, 11, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .reinstatement-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--amber);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .reinstatement-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      transition: background 0.15s;
+    }
+
+    .reinstatement-row:hover {
+      background: rgba(245, 158, 11, 0.04);
+    }
+
+    .reinstatement-row:last-child {
+      border-bottom: none;
+    }
+
+    .reinstate-urgency-badge {
+      font-size: 9.5px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .reinstate-urgency-badge.critical {
+      background: rgba(244, 63, 94, 0.18);
+      color: #fca5a5;
+      border: 1px solid rgba(244, 63, 94, 0.35);
+    }
+
+    .reinstate-urgency-badge.high {
+      background: rgba(245, 158, 11, 0.18);
+      color: #fcd34d;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+    }
+
+    .reinstate-urgency-badge.medium {
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--sky);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    /* ══ FOOTER ══ */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 24px 28px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    footer strong {
+      color: var(--gold);
+      font-weight: 700;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ══ NAVBAR ══ -->
+  <nav>
+    <div class="nav-brand">
+      <div>
+        <div class="brand-text">MamalBrowse Sentinel</div>
+        <div class="brand-sub">Al-Jamea tus-Saifiyah · Nairobi</div>
+      </div>
+    </div>
+    <div class="nav-links">
+      <a href="/home" class="nav-link active">Dashboard</a>
+      <a href="/darajah" class="nav-link">Darajah Matrix</a>
+      <a href="/students" class="nav-link">Students</a>
+      <a href="/analytics" class="nav-link">Analytics</a>
+      <a href="/security" class="nav-link">Security</a>
+      <a href="/reports/executive" class="nav-link" style="color: var(--gold-soft);">Executive Report</a>
+      <button id="notifBellBtn" onclick="toggleNotifDrawer()" style="background: rgba(244, 63, 94, 0.12); color: #fca5a5; border: 1px solid rgba(244, 63, 94, 0.3); border-radius: 8px; padding: 7px 12px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
+        <span style="font-size:12px;">Alerts</span>
+        <span id="notifBadge" style="display:none; background:#f43f5e; color:#fff; font-size:10px; font-weight:800; padding:1px 6px; border-radius:10px;">0</span>
+      </button>
+      <a href="/logout" class="btn-logout">Sign Out</a>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <!-- ══ HERO ══ -->
+
+    <div class="hero">
+      <div class="hero-grid">
+        <div>
+          <h1>Access Students Lab Activities <span> From One Dashboard</span></h1>
+
+          <p class="hero-sub">
+            A clear view of your computer labs, student activity, and system status.
+            Use <strong>Lab Manager</strong> and MamalBrowse Sentinel to monitor
+            lab usage, review browsing activity, and check that school computers
+            follow your settings — all in one place.
+          </p>
+        </div>
+
+        <div class="hero-meta">
+          <div class="hero-pill emerald">
+            <span class="live-dot"></span>
+            <span>Live · <span id="currentTime">--:--:--</span></span>
+          </div>
+
+          <div class="hero-pill gold">
+            🌙 {{ hijri_date }}
+            <span style="opacity: 0.6;">· {{ current_ay }}</span>
+          </div>
+
+          <div class="hero-pill royal">
+            🎓 <strong>{{ students }} enrolled students</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ══ POLICY BANNER ══ -->
+    <div class="policy-banner">
+      <div class="policy-banner-icon">⚖️</div>
+      <div class="policy-banner-content">
+        <div class="policy-banner-title">Institutional Violation Retention Policy</div>
+        <div class="policy-banner-text">
+          Students who access <strong>prohibited sites</strong> are <strong>suspended for 14 days</strong>. After 14
+          days,
+          accounts are <strong>flagged for manual admin review</strong> — they are <strong>not auto-restored</strong>.
+          All audit records are retained for <strong>14 days</strong> for supervisor review,
+          then archived for compliance. Darajah 8–11 accounts remain disabled until admin action.
+        </div>
+      </div>
+      <div class="policy-banner-stats">
+        <div class="policy-stat">
+          <div class="policy-stat-val" id="policyBlockedCount">—</div>
+          <div class="policy-stat-lbl">Active Suspensions</div>
+        </div>
+        <div class="policy-stat">
+          <div class="policy-stat-val" id="policyExpiringCount">—</div>
+          <div class="policy-stat-lbl">Expiring Soon</div>
+        </div>
+        <div class="policy-stat">
+          <div class="policy-stat-val" style="color:var(--emerald);">14d</div>
+          <div class="policy-stat-lbl">Policy Window</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ KPI GRID ══ -->
+    <div class="kpi-grid">
+      <div class="kpi gold">
+        <div>
+          <div class="kpi-head">
+            <div class="kpi-icon">📚</div>
+            <div class="kpi-tag">Active Directory OUs</div>
+          </div>
+          <div class="kpi-label">Enrolled Students</div>
+          <div class="kpi-value" id="kpiStudents">{{ students }}</div>
+          <div class="kpi-sub">{{ talabaat_count | default(806) }} Talabaat · {{ talebaat_count | default(591) }}
+            Talebaat</div>
+        </div>
+        <div class="kpi-footer">
+          <span>📖 Academic Year {{ current_ay }}</span>
+          <span class="kpi-trend up">↑ Live OUs</span>
+        </div>
+      </div>
+
+      <div class="kpi royal">
+        <div>
+          <div class="kpi-head">
+            <div class="kpi-icon">📊</div>
+            <div class="kpi-tag">Browsing</div>
+          </div>
+          <div class="kpi-label">Total Web Requests</div>
+          <div class="kpi-value" id="kpiVisits">{{ "{:,}".format(total_visits) if total_visits else '0' }}</div>
+          <div class="kpi-sub">Recorded HTTP/DNS events</div>
+        </div>
+        <div class="kpi-footer">
+          <span>🌐 {{ domains }} unique domains</span>
+          <span class="kpi-trend up">● Syncing</span>
+        </div>
+      </div>
+
+      <div class="kpi sky">
+        <div>
+          <div class="kpi-head">
+            <div class="kpi-icon">⏱️</div>
+            <div class="kpi-tag">Lab Manager</div>
+          </div>
+          <div class="kpi-label">Computer Lab Hours</div>
+          <div class="kpi-value" id="kpiLabHours">{{ total_lab_hours | round(1) }}<span
+              style="font-size:16px;color:var(--text-muted);font-weight:600;">h</span></div>
+          <div class="kpi-sub">Workstation session duration</div>
+        </div>
+        <div class="kpi-footer">
+          <span>🖥️ {{ live_sessions | length }} active sessions</span>
+          <span class="kpi-trend up">● Live</span>
+        </div>
+      </div>
+
+      <div class="kpi rose">
+        <div>
+          <div class="kpi-head">
+            <div class="kpi-icon">🚨</div>
+            <div class="kpi-tag" id="kpiAlertTag">All Clear</div>
+          </div>
+          <div class="kpi-label">Policy Violations</div>
+          <div class="kpi-value" id="kpiViolations">—</div>
+          <div class="kpi-sub" id="kpiViolationsSub">Loading incident data…</div>
+        </div>
+        <div class="kpi-footer">
+          <span id="kpiViolationsMeta">🔄 Auto-sync 5s</span>
+          <span style="color:var(--gold);font-weight:800;" id="kpiPolicyWindow">14d window</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ LAB SEAT OCCUPANCY GAUGES & ACADEMIC FOCUS INDEX (IMMEDIATELY AFTER KPI CARDS) ══ -->
+    <div class="lab-occupancy-banner" id="labOccupancyBanner">
+
+      <!-- MK Masakin Lab Gauge (20 seats) -->
+      <div class="lab-gauge-card mk">
+        <div class="gauge-ring-wrap">
+          <svg width="88" height="88" viewBox="0 0 88 88">
+            <circle cx="44" cy="44" r="36" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10" />
+            <circle id="mkGaugeCircle" cx="44" cy="44" r="36" fill="none" stroke="#3b82f6" stroke-width="10"
+              stroke-dasharray="226.2" stroke-dashoffset="226.2" stroke-linecap="round"
+              style="transition: stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1);" />
+          </svg>
+          <div class="gauge-center-text">
+            <div class="gauge-pct" id="mkGaugePct">—%</div>
+            <div class="gauge-pct-sub">Seats</div>
+          </div>
+        </div>
+        <div class="lab-gauge-info">
+          <div class="lab-gauge-name">🖥️ Masakin Lab (MK)</div>
+          <div class="lab-gauge-count">
+            <span id="mkActive">—</span>
+            <span style="font-size:14px;color:var(--text-muted);font-weight:500;"> / 20</span>
+          </div>
+          <div class="lab-gauge-sub"><span id="mkAvailable">—</span> seats available</div>
+          <div id="mkStatusBadge" class="lab-status-badge available" style="margin-top:6px;">⬤ Available</div>
+        </div>
+      </div>
+
+      <!-- RB Rabwaat Lab Gauge (20 seats) -->
+      <div class="lab-gauge-card rb">
+        <div class="gauge-ring-wrap">
+          <svg width="88" height="88" viewBox="0 0 88 88">
+            <circle cx="44" cy="44" r="36" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10" />
+            <circle id="rbGaugeCircle" cx="44" cy="44" r="36" fill="none" stroke="#10b981" stroke-width="10"
+              stroke-dasharray="226.2" stroke-dashoffset="226.2" stroke-linecap="round"
+              style="transition: stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1);" />
+          </svg>
+          <div class="gauge-center-text">
+            <div class="gauge-pct" id="rbGaugePct">—%</div>
+            <div class="gauge-pct-sub">Seats</div>
+          </div>
+        </div>
+        <div class="lab-gauge-info">
+          <div class="lab-gauge-name">🖥️ Rabwaat Lab (RB)</div>
+          <div class="lab-gauge-count">
+            <span id="rbActive">—</span>
+            <span style="font-size:14px;color:var(--text-muted);font-weight:500;"> / 20</span>
+          </div>
+          <div class="lab-gauge-sub"><span id="rbAvailable">—</span> seats available</div>
+          <div id="rbStatusBadge" class="lab-status-badge available" style="margin-top:6px;">⬤ Available</div>
+        </div>
+      </div>
+
+      <!-- M Mamal Boys Lab Gauge (40 seats) -->
+      <div class="lab-gauge-card m">
+        <div class="gauge-ring-wrap">
+          <svg width="88" height="88" viewBox="0 0 88 88">
+            <circle cx="44" cy="44" r="36" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10" />
+            <circle id="mGaugeCircle" cx="44" cy="44" r="36" fill="none" stroke="#f59e0b" stroke-width="10"
+              stroke-dasharray="226.2" stroke-dashoffset="226.2" stroke-linecap="round"
+              style="transition: stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1);" />
+          </svg>
+          <div class="gauge-center-text">
+            <div class="gauge-pct" id="mGaugePct">—%</div>
+            <div class="gauge-pct-sub">Seats</div>
+          </div>
+        </div>
+        <div class="lab-gauge-info">
+          <div class="lab-gauge-name">🖥️ Mamal Boys Lab (M)</div>
+          <div class="lab-gauge-count">
+            <span id="mActive">—</span>
+            <span style="font-size:14px;color:var(--text-muted);font-weight:500;"> / 40</span>
+          </div>
+          <div class="lab-gauge-sub"><span id="mAvailable">—</span> seats available</div>
+          <div id="mStatusBadge" class="lab-status-badge available" style="margin-top:6px;">⬤ Available</div>
+        </div>
+      </div>
+
+      <!-- F Mamal Girls Lab Gauge (40 seats) -->
+      <div class="lab-gauge-card f">
+        <div class="gauge-ring-wrap">
+          <svg width="88" height="88" viewBox="0 0 88 88">
+            <circle cx="44" cy="44" r="36" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10" />
+            <circle id="fGaugeCircle" cx="44" cy="44" r="36" fill="none" stroke="#ec4899" stroke-width="10"
+              stroke-dasharray="226.2" stroke-dashoffset="226.2" stroke-linecap="round"
+              style="transition: stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1);" />
+          </svg>
+          <div class="gauge-center-text">
+            <div class="gauge-pct" id="fGaugePct">—%</div>
+            <div class="gauge-pct-sub">Seats</div>
+          </div>
+        </div>
+        <div class="lab-gauge-info">
+          <div class="lab-gauge-name">🖥️ Mamal Girls Lab (F)</div>
+          <div class="lab-gauge-count">
+            <span id="fActive">—</span>
+            <span style="font-size:14px;color:var(--text-muted);font-weight:500;"> / 40</span>
+          </div>
+          <div class="lab-gauge-sub"><span id="fAvailable">—</span> seats available</div>
+          <div id="fStatusBadge" class="lab-status-badge available" style="margin-top:6px;">⬤ Available</div>
+        </div>
+      </div>
+
+      <!-- Academic Focus Index -->
+      <div class="focus-index-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+          <div
+            style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-dim);">
+            🎯 Academic Focus Index</div>
+          <div style="font-size:10px;color:var(--text-dim);" id="focusRefreshTime">Loading…</div>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:10px;">
+          <div id="focusScore" style="font-size:36px;font-weight:900;letter-spacing:-0.02em;color:var(--gold);">—</div>
+          <div style="font-size:13px;color:var(--text-muted);">/100</div>
+          <div id="focusLabel" style="font-size:11px;font-weight:700;margin-left:4px;color:var(--emerald);">—</div>
+        </div>
+        <div class="focus-bar-wrap" style="margin-top:4px;">
+          <div class="focus-bar-fill" id="focusBarFill" style="width:0%;"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:8px;gap:8px;">
+          <div style="text-align:center;">
+            <div style="font-size:13px;font-weight:800;color:var(--emerald);" id="focusProductive">—</div>
+            <div style="font-size:9.5px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;">
+              Educational</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:13px;font-weight:800;color:var(--rose);" id="focusDistracting">—</div>
+            <div style="font-size:9.5px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;">
+              Distracting</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:13px;font-weight:800;color:var(--sky);" id="focusTotal">—</div>
+            <div style="font-size:9.5px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;">Total
+              Visits</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ INSIGHTS PANEL ══ -->
+    <div class="section">
+      <div class="section-head">
+        <div>
+          <div class="section-title">🧠 Intelligent Observations</div>
+          <div class="section-desc">AI-generated insights from live Lab Manager telemetry</div>
+        </div>
+      </div>
+      <div class="insights-grid" id="insightsGrid">
+        <div class="insight-card info">
+          <div class="insight-head">
+            <span class="insight-icon">📡</span>
+            <span class="insight-title">Telemetry Status</span>
+            <span class="insight-badge">Syncing</span>
+          </div>
+          <div class="insight-body">Loading live insight from Lab Manager…</div>
+        </div>
+        <div class="insight-card success">
+          <div class="insight-head">
+            <span class="insight-icon">✅</span>
+            <span class="insight-title">Policy Compliance</span>
+            <span class="insight-badge">Live</span>
+          </div>
+          <div class="insight-body">Calculating campus-wide compliance rate…</div>
+        </div>
+        <div class="insight-card warning">
+          <div class="insight-head">
+            <span class="insight-icon">⚠️</span>
+            <span class="insight-title">Attention Needed</span>
+            <span class="insight-badge">Loading</span>
+          </div>
+          <div class="insight-body">Scanning for elevated risk patterns…</div>
+        </div>
+        <div class="insight-card gold">
+          <div class="insight-head">
+            <span class="insight-icon">🏆</span>
+            <span class="insight-title">Top Engagement</span>
+            <span class="insight-badge">Leader</span>
+          </div>
+          <div class="insight-body">Identifying highest lab engagement cohort…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ CHARTS ══ -->
+    <div class="section">
+      <div class="section-head">
+        <div>
+          <div class="section-title">📈 Analytics &amp; Trend Intelligence</div>
+          <div class="section-desc">Live usage patterns across the academic cycle</div>
+        </div>
+        <a href="/analytics" class="btn btn-ghost">Full Analytics →</a>
+      </div>
+
+      <div class="card card-hero" style="margin-bottom:18px;">
+        <div class="card-title">
+          <div class="card-title-left">
+            <div class="dot" style="background:var(--gradient-gold);"></div>
+            <span>Monthly Lab Usage — Fatemi Hijri Academic Cycle</span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span class="badge gold">🌙 Shawwāl → Sha'bān</span>
+          </div>
+        </div>
+        <div class="chart-wrap tall">
+          <canvas id="hijriTrendChart"></canvas>
+        </div>
+      </div>
+
+      <div class="charts-2">
+        <div class="card">
+          <div class="card-title">
+            <div class="card-title-left">
+              <div class="dot" style="background:var(--sky);"></div>
+              <span>Top Domains by Traffic Volume</span>
+            </div>
+            <span style="font-size:11px;color:var(--text-dim);" id="domainsMonthLabel">This Month</span>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="topDomainsChart"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <div class="card-title-left">
+              <div class="dot" style="background:var(--violet);"></div>
+              <span>Hourly Lab Traffic Pattern</span>
+            </div>
+            <span style="font-size:11px;color:var(--text-dim);" id="hourlyMonthLabel">This Month</span>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="hourlyChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ 14-DAY VIOLATION LOG ══ -->
+    <div class="section">
+      <div class="section-head">
+        <div>
+          <div class="section-title">⚖️ 14-Day Violation Audit Log</div>
+          <div class="section-desc">Retention policy: 14 days · Auto-unblock after serving suspension · Supervisor & HOD
+            review</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <button class="btn" id="btnToggleExpiryQueue" onclick="toggleExpiryQueue()"
+            style="display:none;background:rgba(245,200,66,0.15);border:1px solid rgba(245,200,66,0.4);color:var(--gold);font-weight:700;font-size:12px;padding:6px 14px;border-radius:6px;cursor:pointer;">
+            ⏰ Suspension Expiry Queue (<span id="reinstatementCount">0</span>) ▾
+          </button>
+          <button class="btn btn-primary" id="btnSyncViolations" onclick="syncRealViolations()"
+            style="background:#2563eb;color:#fff;border-radius:6px;font-size:12px;padding:6px 12px;font-weight:700;">⚡
+            Ingest Real Violations</button>
+          <button class="btn btn-gold" onclick="loadViolationsLog()">⟳ Refresh Log</button>
+        </div>
+      </div>
+
+      <!-- ══ COLLAPSIBLE EXPIRY QUEUE (ON-DEMAND) ══ -->
+      <div id="reinstatementSection" style="display:none;margin-bottom:16px;">
+        <div class="reinstatement-panel"
+          style="background:rgba(245,200,66,0.04);border:1px solid rgba(245,200,66,0.3);border-radius:12px;padding:16px;">
+          <div class="reinstatement-header"
+            style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+            <div class="reinstatement-title" style="font-size:13.5px;font-weight:800;color:var(--gold);">⏰ Suspension
+              Expiry Queue — Reinstatement Review Required</div>
+            <span style="font-size:11px;color:var(--text-dim);">Students whose 14-day policy window expires within 3
+              days</span>
+            <div style="margin-left:auto;display:flex;gap:8px;">
+              <a href="/security" class="btn btn-ghost" style="font-size:11px;padding:4px 10px;">Security Console →</a>
+              <button class="btn btn-ghost" onclick="toggleExpiryQueue()"
+                style="font-size:11px;padding:4px 8px;color:var(--text-dim);">✕ Close</button>
+            </div>
+          </div>
+          <div id="reinstatementRows"></div>
+        </div>
+      </div>
+
+      <div class="wl-container">
+        <div class="wl-meta">
+          <span style="font-size:13.5px;font-weight:800;">
+            📅 <span id="wlWindowLabel">Loading retention window…</span>
+          </span>
+          <span class="wl-window-badge">⚖️ 14-Day Policy Window</span>
+          <span class="badge rose" id="wlBlockedBadge">— Blocked</span>
+          <span class="badge amber" id="wlWarnedBadge">— Warned</span>
+          <span class="badge emerald" id="wlActiveBadge">— Active</span>
+          <span style="margin-left:auto;font-size:11px;color:var(--text-dim);">
+            Generated <span id="wlGenTime">—</span>
+          </span>
+        </div>
+
+        <div class="wl-filters">
+          <input type="text" id="wlSearch" placeholder="🔍  Search TRNO, name, or URL…" oninput="wlApplyFilter()">
+          <select id="wlStatusFilter" onchange="wlApplyFilter()">
+            <option value="">All Statuses</option>
+            <option value="blocked">🔴 Currently Suspended</option>
+            <option value="warned">🟡 Warning Issued</option>
+            <option value="active">🟢 Active</option>
+          </select>
+          <select id="wlCategoryFilter" onchange="wlApplyFilter()">
+            <option value="">All Categories</option>
+            <option value="social_media">📱 Social Media</option>
+            <option value="streaming">📺 Streaming</option>
+            <option value="gaming">🎮 Gaming</option>
+            <option value="adult">🔞 Adult</option>
+            <option value="proxy">🛡️ Proxy / VPN</option>
+            <option value="torrent">⬇️ Torrent</option>
+            <option value="movie_download">🎬 Movie Download</option>
+          </select>
+          <!-- ══ DATE QUICK FILTERS ══ -->
+          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+            <span style="font-size:11px;color:var(--text-dim);font-weight:600;white-space:nowrap;">📅 Date:</span>
+            <button class="btn btn-ghost date-quick-btn" id="dateAll" onclick="wlSetDateFilter('all')"
+              style="padding:5px 10px;font-size:11px;border-color:rgba(245,200,66,0.4);color:var(--gold);">All</button>
+            <button class="btn btn-ghost date-quick-btn" id="dateToday" onclick="wlSetDateFilter('today')"
+              style="padding:5px 10px;font-size:11px;">Today</button>
+            <button class="btn btn-ghost date-quick-btn" id="dateYesterday" onclick="wlSetDateFilter('yesterday')"
+              style="padding:5px 10px;font-size:11px;">Yesterday</button>
+            <button class="btn btn-ghost date-quick-btn" id="dateWeek" onclick="wlSetDateFilter('week')"
+              style="padding:5px 10px;font-size:11px;">This Week</button>
+            <input type="date" id="wlDateFrom" onchange="wlSetDateFilter('custom')"
+              style="background:var(--surface-2);border:1px solid var(--border-strong);color:var(--text);border-radius:6px;padding:4px 8px;font-size:11px;font-family:inherit;">
+            <span style="font-size:11px;color:var(--text-dim);">→</span>
+            <input type="date" id="wlDateTo" onchange="wlSetDateFilter('custom')"
+              style="background:var(--surface-2);border:1px solid var(--border-strong);color:var(--text);border-radius:6px;padding:4px 8px;font-size:11px;font-family:inherit;">
+          </div>
+          <button class="btn btn-ghost" style="margin-left:auto;" onclick="wlExpandAll()">⊞ Expand All</button>
+          <button class="btn btn-ghost" onclick="wlCollapseAll()">⊟ Collapse</button>
+          <button class="btn btn-success" onclick="wlExportCSV()">⬇ Export CSV</button>
+        </div>
+        <script>
+          // ── Date filter state ──────────────────────────────────────
+          window._wlDateMode = 'all';
+          window._wlDateFrom = null;
+          window._wlDateTo = null;
+
+          function wlSetDateFilter(mode) {
+            window._wlDateMode = mode;
+            const today = new Date(); today.setHours(0, 0, 0, 0);
+            const yesterday = new Date(today); yesterday.setDate(today.getDate() - 1);
+            const weekStart = new Date(today); weekStart.setDate(today.getDate() - today.getDay());
+
+            document.querySelectorAll('.date-quick-btn').forEach(b => {
+              b.style.borderColor = 'rgba(255,255,255,0.16)';
+              b.style.color = 'var(--text-muted)';
+            });
+
+            if (mode === 'all') {
+              window._wlDateFrom = null; window._wlDateTo = null;
+              document.getElementById('dateAll').style.borderColor = 'rgba(245,200,66,0.5)';
+              document.getElementById('dateAll').style.color = 'var(--gold)';
+              document.getElementById('wlDateFrom').value = '';
+              document.getElementById('wlDateTo').value = '';
+            } else if (mode === 'today') {
+              window._wlDateFrom = new Date(today); window._wlDateTo = new Date(today);
+              document.getElementById('dateToday').style.borderColor = 'rgba(56,189,248,0.5)';
+              document.getElementById('dateToday').style.color = 'var(--sky)';
+            } else if (mode === 'yesterday') {
+              window._wlDateFrom = new Date(yesterday); window._wlDateTo = new Date(yesterday);
+              document.getElementById('dateYesterday').style.borderColor = 'rgba(139,92,246,0.5)';
+              document.getElementById('dateYesterday').style.color = 'var(--violet)';
+            } else if (mode === 'week') {
+              window._wlDateFrom = new Date(weekStart); window._wlDateTo = new Date(today);
+              document.getElementById('dateWeek').style.borderColor = 'rgba(16,185,129,0.5)';
+              document.getElementById('dateWeek').style.color = 'var(--emerald)';
+            } else if (mode === 'custom') {
+              const f = document.getElementById('wlDateFrom').value;
+              const t = document.getElementById('wlDateTo').value;
+              window._wlDateFrom = f ? new Date(f) : null;
+              window._wlDateTo = t ? new Date(t) : null;
+            }
+            wlApplyFilter();
+          }
+
+          // Auto-set all dates on load
+          window.addEventListener('load', () => { wlSetDateFilter('all'); });
+        </script>
+
+
+        <div style="overflow-x:auto;">
+          <table class="wl-table">
+            <thead>
+              <tr>
+                <th style="width:40px;"></th>
+                <th>Student</th>
+                <th>TRNO</th>
+                <th>Darajah</th>
+                <th>Group</th>
+                <th>Violations</th>
+                <th>Policy Window</th>
+                <th>Last Incident</th>
+                <th>Status</th>
+                <th style="width:90px;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="wlTableBody">
+              <tr>
+                <td colspan="10">
+                  <div class="empty-state">
+                    <div class="empty-icon">⏳</div>
+                    <div class="empty-title">Loading Violation Log</div>
+                    <div class="empty-desc">Fetching the 14-day retention window from the enforcement engine…</div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ══ 14-DAY AUDIT LOG PAGINATION BAR ══ -->
+        <div id="wlPaginationBar"
+          style="padding:10px 20px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;background:rgba(15,23,42,0.7);">
+          <div style="display:flex;align-items:center;gap:12px;font-size:12px;color:var(--text-muted);">
+            <span>Show:</span>
+            <select id="wlPageSize" onchange="wlChangePageSize(this.value)"
+              style="background:var(--surface-2);border:1px solid var(--border-strong);color:var(--text);border-radius:6px;padding:4px 8px;font-size:11px;font-family:inherit;cursor:pointer;">
+              <option value="10">10 per page</option>
+              <option value="20">20 per page</option>
+              <option value="50">50 per page</option>
+              <option value="100">100 per page</option>
+            </select>
+            <span id="wlPageInfo" style="color:var(--text);font-size:12px;font-weight:600;">Showing 0–0 of 0</span>
+          </div>
+
+          <div id="wlPaginationBtns" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+            <!-- Generated dynamically -->
+          </div>
+        </div>
+
+        <div
+          style="padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;background:var(--surface-2);">
+          <span style="font-size:12px;color:var(--text-muted);">
+            <strong style="color:var(--text);" id="wlTotalStudents">0</strong> students with violations
+            &nbsp;·&nbsp;
+            <strong style="color:var(--text);" id="wlTotalEvents">0</strong> total events
+          </span>
+          <span style="font-size:11px;color:var(--gold);font-weight:700;">
+            ⚖️ Institutional policy: 14-day suspension · Auto-restore
+          </span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <p>
+      © <span id="footerYear"></span> <strong>MamalBrowse Sentinel</strong> ·
+      Al-Jamea tus-Saifiyah Nairobi · Lab Manager Authoritative Source
+    </p>
+  </footer>
+
+  <script>
+    document.getElementById('footerYear').textContent = new Date().getFullYear();
+
+    let charts = {};
+    let _wlStudents = [];
+    let _wlExpanded = new Set();
+    let _wlPage = 1;
+    let _wlPageSize = 10;
+
+    // ══════════════════════════════════════════════════════════════
+    //  CLOCK
+    // ══════════════════════════════════════════════════════════════
+    function updateClock() {
+      const t = new Date().toLocaleTimeString('en-GB', { hour12: false });
+      document.getElementById('currentTime').textContent = t;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // ══════════════════════════════════════════════════════════════
+    //  14-DAY VIOLATION LOG
+    // ══════════════════════════════════════════════════════════════
+    async function loadViolationsLog() {
+      try {
+        const res = await fetch(`/enforce/admin/weekly-violation-log.json?_t=${Date.now()}`, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+
+        const windowLabel = document.getElementById('wlWindowLabel');
+        const retentionDays = data.retention_days || 14;
+        windowLabel.textContent = `${data.week_start || '—'} → ${data.week_end || '—'} (${retentionDays}-day window)`;
+
+        document.getElementById('wlGenTime').textContent = (data.generated_at || '').substring(11, 19) || '—';
+        document.getElementById('wlTotalStudents').textContent = data.total_students || 0;
+        document.getElementById('wlTotalEvents').textContent = data.total_events || 0;
+
+        _wlStudents = data.students || [];
+
+        // Darajah 8–11 accounts are security-page-only; exclude from home page counts
+        const seniorDarajahPattern = /\b(8|9|10|11)\b/;
+        const homeStudents = _wlStudents.filter(s => !seniorDarajahPattern.test(String(s.darajah || '')));
+        let blocked = 0, warned = 0, active = 0;
+        homeStudents.forEach(s => {
+          if (s.account_status === 'blocked') blocked++;
+          else if (s.account_status === 'warned') warned++;
+          else active++;
+        });
+
+        document.getElementById('wlBlockedBadge').textContent = `🔴 ${blocked} Blocked`;
+        document.getElementById('wlWarnedBadge').textContent = `🟡 ${warned} Warned`;
+        document.getElementById('wlActiveBadge').textContent = `🟢 ${active} Active`;
+
+        document.getElementById('policyBlockedCount').textContent = blocked;
+        const expiringSoon = homeStudents.filter(s => {
+          if (s.account_status !== 'blocked' || !s.blocked_at) return false;
+          const days = (Date.now() - new Date(s.blocked_at).getTime()) / 86400000;
+          return days >= 12;
+        }).length;
+        document.getElementById('policyExpiringCount').textContent = expiringSoon;
+
+        const total = blocked + warned;
+        document.getElementById('kpiViolations').textContent = total;
+        document.getElementById('kpiViolationsSub').textContent =
+          blocked > 0 ? `${blocked} suspended · ${warned} warned` :
+            (warned > 0 ? `${warned} students on warning` : 'All students compliant');
+        document.getElementById('kpiAlertTag').textContent = blocked > 0 ? 'Critical' : (warned > 0 ? 'Elevated' : 'All Clear');
+
+        renderViolationsTable();
+      } catch (err) {
+        console.warn('[Violations Log]', err);
+        document.getElementById('wlTableBody').innerHTML = `
+      <tr><td colspan="10">
+        <div class="empty-state">
+          <div class="empty-icon" style="background:rgba(244,63,94,0.1);border-color:rgba(244,63,94,0.3);">⚠️</div>
+          <div class="empty-title">Unable to Load Violation Log</div>
+          <div class="empty-desc">${err.message}. The retention policy service may not be running yet.</div>
+          <button class="btn btn-gold" onclick="loadViolationsLog()">Retry</button>
+        </div>
+      </td></tr>`;
+      }
+    }
+
+    function wlApplyFilter() {
+      _wlPage = 1;
+      renderViolationsTable();
+    }
+
+    function renderViolationsTable() {
+      const tbody = document.getElementById('wlTableBody');
+      const search = (document.getElementById('wlSearch').value || '').toLowerCase().trim();
+      const statusFilter = document.getElementById('wlStatusFilter').value;
+      const catFilter = document.getElementById('wlCategoryFilter').value;
+
+      // Exclude Darajah 8–11 from home page (security page shows those)
+      const seniorPattern = /\b(8|9|10|11)\b/;
+      let filtered = _wlStudents.filter(s => {
+        // Exclude senior darajah (8–11) from home page
+        if (seniorPattern.test(String(s.darajah || ''))) return false;
+        // Status filter
+        if (statusFilter) {
+          const accSt = (s.account_status || 'active').toLowerCase();
+          if (statusFilter === 'blocked' && accSt !== 'blocked' && accSt !== 'suspended') return false;
+          if (statusFilter === 'warned' && accSt !== 'warned') return false;
+          if (statusFilter === 'active' && accSt !== 'active') return false;
+        }
+
+        // Full search
+        if (search) {
+          const hay = [
+            s.student_name || '',
+            s.trno || '',
+            s.darajah || '',
+            s.group || '',
+            s.blocked_reason || '',
+            s.reason || ''
+          ];
+          (s.violations || []).forEach(v => {
+            hay.push(v.url || '', v.domain || '', v.category || '', v.reason || '', v.station || '');
+          });
+          if (!hay.join(' ').toLowerCase().includes(search)) return false;
+        }
+
+        // Category filter
+        if (catFilter) {
+          const cF = catFilter.toLowerCase();
+          const viols = s.violations || [];
+          const allCategories = viols.map(v => (v.category || '').toLowerCase());
+          const allText = [
+            s.blocked_reason || '',
+            s.reason || '',
+            ...allCategories,
+            ...viols.map(v => (v.url || '') + ' ' + (v.domain || '') + ' ' + (v.reason || ''))
+          ].join(' ').toLowerCase();
+
+          let match = false;
+          if (cF === 'social_media') {
+            match = allCategories.some(c => c.includes('social')) ||
+              /facebook|instagram|tiktok|twitter|snapchat|whatsapp|reddit|linkedin|social|threads/.test(allText);
+          } else if (cF === 'streaming') {
+            match = allCategories.some(c => c.includes('stream') || c.includes('video') || c.includes('youtube')) ||
+              /youtube|netflix|twitch|prime|hulu|disney|stream|watch|video/.test(allText);
+          } else if (cF === 'movie_download') {
+            match = allCategories.some(c => c.includes('movie') || c.includes('download') || c.includes('pirat') || c.includes('torrent') || c.includes('stream') || c.includes('video')) ||
+              /movie|film|download|pirat|torrent|123movies|fmovies|yts|\.mkv|\.mp4|\.avi|youtube|netflix|streaming/.test(allText);
+          } else if (cF === 'gaming') {
+            match = allCategories.some(c => c.includes('game') || c.includes('gaming')) ||
+              /roblox|steam|epicgames|minecraft|chess|game|poki/.test(allText);
+          } else if (cF === 'proxy') {
+            match = allCategories.some(c => c.includes('proxy') || c.includes('vpn') || c.includes('anonymizer')) ||
+              /proxy|vpn|psiphon|tor|tunnel|unblock/.test(allText);
+          } else if (cF === 'torrent') {
+            match = allCategories.some(c => c.includes('torrent') || c.includes('p2p')) ||
+              /torrent|utorrent|bittorrent|p2p|piratebay|seed/.test(allText);
+          } else if (cF === 'adult') {
+            match = allCategories.some(c => c.includes('adult') || c.includes('porn') || c.includes('nsfw')) ||
+              /adult|porn|xxx|nsfw|gambling/.test(allText);
+          } else {
+            match = allCategories.some(c => c.includes(cF)) || allText.includes(cF);
+          }
+          if (!match) return false;
+        }
+
+        // Date filter integration
+        if (window._wlDateFrom || window._wlDateTo) {
+          let sDateStr = (s.last_seen || '').substring(0, 10);
+          if (!sDateStr && (s.violations || []).length) {
+            sDateStr = (s.violations[s.violations.length - 1].timestamp || '').substring(0, 10);
+          }
+          if (sDateStr) {
+            const incDate = new Date(sDateStr);
+            incDate.setHours(0, 0, 0, 0);
+            if (window._wlDateFrom && incDate < window._wlDateFrom) return false;
+            if (window._wlDateTo && incDate > window._wlDateTo) return false;
+          }
+        }
+        return true;
+      });
+
+      // Sort: Suspended accounts first, with most recent incident at the very top
+      filtered.sort((a, b) => {
+        const order = { 'blocked': 0, 'warned': 1, 'active': 2 };
+        const stA = order[(a.account_status || 'active').toLowerCase()] ?? 9;
+        const stB = order[(b.account_status || 'active').toLowerCase()] ?? 9;
+        if (stA !== stB) return stA - stB;
+        const tsA = new Date(a.last_seen || a.blocked_at || 0).getTime() || 0;
+        const tsB = new Date(b.last_seen || b.blocked_at || 0).getTime() || 0;
+        return tsB - tsA;
+      });
+
+      const totalItems = filtered.length;
+      const totalPages = Math.max(1, Math.ceil(totalItems / _wlPageSize));
+      if (_wlPage > totalPages) _wlPage = totalPages;
+      if (_wlPage < 1) _wlPage = 1;
+
+      renderWlPagination(totalItems, totalPages);
+
+      if (!filtered.length) {
+        tbody.innerHTML = `
+      <tr><td colspan="10">
+        <div class="empty-state">
+          <div class="empty-icon">✅</div>
+          <div class="empty-title">No Policy Violations</div>
+          <div class="empty-desc">
+            No students match the current filter across the 14-day retention window.
+            This is a strong indicator of campus-wide policy compliance.
+          </div>
+        </div>
+      </td></tr>`;
+        return;
+      }
+
+      const startIdx = (_wlPage - 1) * _wlPageSize;
+      const paged = filtered.slice(startIdx, startIdx + _wlPageSize);
+
+      tbody.innerHTML = paged.map(s => {
+        const isExpanded = _wlExpanded.has(String(s.trno));
+        const status = s.account_status || 'active';
+        const statusBadge = status === 'blocked'
+          ? '<span class="badge rose">🔴 Suspended</span>'
+          : status === 'warned'
+            ? '<span class="badge amber">🟡 Warned</span>'
+            : '<span class="badge emerald">🟢 Active</span>';
+
+        const violations = s.violations || [];
+        const totalViolations = violations.length;
+        const worstSev = s.worst_severity || (violations.some(v => v.severity === 'HIGH') ? 'HIGH' : (violations.some(v => v.severity === 'MEDIUM') ? 'MEDIUM' : 'LOW'));
+
+        const blockedAt = s.blocked_at ? new Date(s.blocked_at) : null;
+        let daysRemaining = null;
+        if (blockedAt && status === 'blocked') {
+          const daysSince = Math.floor((Date.now() - blockedAt.getTime()) / 86400000);
+          daysRemaining = Math.max(0, 14 - daysSince);
+        }
+
+        const policyWindowCell = daysRemaining !== null
+          ? `<span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:700;color:${daysRemaining <= 2 ? 'var(--amber)' : 'var(--gold)'};">
+          <strong style="font-size:14px;">${daysRemaining}</strong> days remaining
+         </span>`
+          : `<span style="color:var(--text-dim);font-size:11.5px;">—</span>`;
+
+        const initials = (s.student_name || 'S').trim().split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+        const lastIncident = (s.last_seen || '').replace('T', ' ').substring(0, 16);
+
+        const subRows = violations.map((v, idx) => {
+          const sev = (v.severity || 'LOW').toUpperCase();
+          const sevBadge = sev === 'HIGH' ? 'rose' : (sev === 'MEDIUM' ? 'amber' : 'sky');
+          const displayStation = (!v.station || v.station.toLowerCase() === 'workstation' || v.station.toLowerCase() === 'unknown') ? '—' : v.station;
+          const displayDetail = v.reason || v.title || v.url || v.domain || '—';
+          return `<tr style="background:rgba(0,0,0,0.15);">
+        <td style="padding:8px 16px 8px 48px;color:var(--text-dim);font-size:11px;">#${idx + 1}</td>
+        <td style="padding:8px 16px;font-size:12px;">${(v.timestamp || '').replace('T', ' ').substring(0, 16)}</td>
+        <td style="padding:8px 16px;"><span class="badge ${sevBadge}" style="font-size:10px;">${sev}</span></td>
+        <td style="padding:8px 16px;"><span class="badge royal" style="font-family:'JetBrains Mono',monospace;font-size:10.5px;">${displayStation}</span></td>
+        <td style="padding:8px 16px;font-size:12px;">
+          <div style="color:var(--sky);font-weight:600;">${v.domain || '—'}</div>
+          ${v.reason ? `<div style="font-size:11px;color:#cbd5e1;margin-top:2px;">${v.reason}</div>` : (v.url ? `<div style="font-size:10.5px;color:var(--text-dim);margin-top:2px;max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${v.url.replace(/"/g, '&quot;')}">${v.url}</div>` : '')}
+        </td>
+        <td style="padding:8px 16px;"><span class="badge violet" style="font-size:10.5px;">${v.category || 'restricted'}</span></td>
+        <td style="padding:8px 16px;"><span class="badge ${v.action === 'block' ? 'rose' : 'amber'}" style="font-size:10px;">${(v.action || 'block').toUpperCase()}</span></td>
+      </tr>`;
+        }).join('');
+
+        const actionBtn = status === 'blocked'
+          ? `<button class="btn btn-success" style="font-size:11px;padding:4px 10px;" onclick="event.stopPropagation(); unblockStudent('${s.trno}')">Unblock</button>`
+          : `<div style="display:flex;gap:4px;justify-content:center;align-items:center;">
+              <a href="/report/${s.trno}" class="btn btn-ghost" style="font-size:11px;padding:4px 8px;">View 360</a>
+              <button class="btn" style="font-size:10.5px;padding:3px 7px;background:rgba(244,63,94,0.15);color:#fca5a5;border:1px solid rgba(244,63,94,0.35);border-radius:6px;cursor:pointer;" onclick="event.stopPropagation(); disableStudentAccount('${s.trno}', '${(s.student_name || '').replace(/'/g, '')}')">Disable</button>
+             </div>`;
+
+        return `
+      <tr class="wl-student-row ${status}" data-trno="${s.trno}" data-incident-date="${(s.last_seen || '').substring(0, 10)}" onclick="toggleRow('${s.trno}')" style="cursor:pointer;">
+        <td style="text-align:center;font-size:11px;color:var(--text-dim);">
+          <span style="display:inline-block;transform:rotate(${isExpanded ? '90' : '0'}deg);transition:transform 0.2s;">▶</span>
+        </td>
+        <td>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="position:relative;flex-shrink:0;">
+              <img src="/photo/${s.trno}" alt="" style="width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid ${status === 'blocked' ? 'rgba(244,63,94,0.5)' : (status === 'warned' ? 'rgba(245,158,11,0.4)' : 'rgba(16,185,129,0.3)')};" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+              <div style="width:34px;height:34px;border-radius:50%;background:${status === 'blocked' ? 'rgba(244,63,94,0.2)' : (status === 'warned' ? 'rgba(245,158,11,0.2)' : 'rgba(16,185,129,0.15)')};display:none;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:${status === 'blocked' ? '#fca5a5' : (status === 'warned' ? '#fcd34d' : '#34d399')};flex-shrink:0;position:absolute;top:0;left:0;">${initials}</div>
+            </div>
+            <div>
+              <div style="font-weight:700;font-size:13px;">${s.student_name || 'Unknown'}</div>
+              <div style="font-size:11px;color:var(--text-dim);">TRNO ${s.trno}</div>
+              ${s.blocked_reason ? `<div style="font-size:10.5px;color:#fca5a5;margin-top:2px;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${s.blocked_reason.replace(/"/g, '&quot;')}">&#x1F6AB; ${s.blocked_reason}</div>` : ''}
+            </div>
+          </div>
+        </td>
+        <td><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--sky);font-size:12px;">${s.trno}</span></td>
+        <td><span class="badge gold" style="font-size:11px;">${s.darajah || '—'}</span></td>
+        <td><span style="color:var(--text-muted);font-size:12px;">${s.group || 'Talabaat'}</span></td>
+        <td>
+          <span class="badge ${totalViolations >= 3 ? 'rose' : 'amber'}" style="font-weight:800;">
+            ⚠️ ${totalViolations} incident${totalViolations === 1 ? '' : 's'}
+          </span>
+          <div style="font-size:10.5px;color:var(--text-dim);margin-top:3px;">Worst: ${worstSev}</div>
+        </td>
+        <td>${policyWindowCell}</td>
+        <td data-incident-date="${(s.last_seen || '').substring(0, 10)}" style="color:var(--text-muted);font-size:11.5px;">${lastIncident || '—'}</td>
+        <td>${statusBadge}</td>
+        <td style="text-align:center;" onclick="event.stopPropagation();">${actionBtn}</td>
+      </tr>
+      <tr style="display:${isExpanded ? 'table-row' : 'none'};" id="panel-${s.trno}">
+        <td colspan="10" style="padding:0;background:rgba(10,17,40,0.5);">
+          <table style="width:100%;border-collapse:collapse;">
+            <thead>
+              <tr style="background:rgba(30,58,138,0.15);">
+                <th style="padding:8px 16px 8px 48px;text-align:left;font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;">#</th>
+                <th style="padding:8px 16px;text-align:left;font-size:10px;color:var(--text-dim);text-transform:uppercase;">Timestamp</th>
+                <th style="padding:8px 16px;text-align:left;font-size:10px;color:var(--text-dim);text-transform:uppercase;">Severity</th>
+                <th style="padding:8px 16px;text-align:left;font-size:10px;color:var(--text-dim);text-transform:uppercase;">Station</th>
+                <th style="padding:8px 16px;text-align:left;font-size:10px;color:var(--text-dim);text-transform:uppercase;">Domain</th>
+                <th style="padding:8px 16px;text-align:left;font-size:10px;color:var(--text-dim);text-transform:uppercase;">Category</th>
+                <th style="padding:8px 16px;text-align:left;font-size:10px;color:var(--text-dim);text-transform:uppercase;">Action</th>
+              </tr>
+            </thead>
+            <tbody>${subRows}</tbody>
+          </table>
+        </td>
+      </tr>`;
+      }).join('');
+    }
+
+    function renderWlPagination(totalItems, totalPages) {
+      const pageInfo = document.getElementById('wlPageInfo');
+      const btnsContainer = document.getElementById('wlPaginationBtns');
+      if (!pageInfo || !btnsContainer) return;
+
+      if (totalItems === 0) {
+        pageInfo.textContent = 'Showing 0–0 of 0';
+        btnsContainer.innerHTML = '';
+        return;
+      }
+
+      const start = (_wlPage - 1) * _wlPageSize + 1;
+      const end = Math.min(_wlPage * _wlPageSize, totalItems);
+      pageInfo.textContent = `Showing ${start}–${end} of ${totalItems} students (Page ${_wlPage} of ${totalPages})`;
+
+      let btnHtml = '';
+
+      // First & Prev
+      btnHtml += `<button class="btn btn-ghost" style="padding:4px 9px;font-size:11px;${_wlPage === 1 ? 'opacity:0.35;cursor:not-allowed;' : ''}" onclick="wlGoToPage(1)" ${_wlPage === 1 ? 'disabled' : ''}>« First</button>`;
+      btnHtml += `<button class="btn btn-ghost" style="padding:4px 9px;font-size:11px;${_wlPage === 1 ? 'opacity:0.35;cursor:not-allowed;' : ''}" onclick="wlGoToPage(${_wlPage - 1})" ${_wlPage === 1 ? 'disabled' : ''}>‹ Prev</button>`;
+
+      // Page numbers (smart window around current page)
+      let pStart = Math.max(1, _wlPage - 2);
+      let pEnd = Math.min(totalPages, pStart + 4);
+      if (pEnd - pStart < 4) pStart = Math.max(1, pEnd - 4);
+
+      if (pStart > 1) {
+        btnHtml += `<button class="btn btn-ghost" style="padding:4px 8px;font-size:11px;" onclick="wlGoToPage(1)">1</button>`;
+        if (pStart > 2) btnHtml += `<span style="color:var(--text-dim);font-size:11px;padding:0 2px;">…</span>`;
+      }
+
+      for (let p = pStart; p <= pEnd; p++) {
+        const isActive = p === _wlPage;
+        btnHtml += `<button class="btn" style="padding:4px 9px;font-size:11px;border-radius:5px;${isActive ? 'background:#2563eb;color:#fff;font-weight:700;border:1px solid #3b82f6;' : 'background:var(--surface-2);color:var(--text);border:1px solid var(--border-strong);'}" onclick="wlGoToPage(${p})">${p}</button>`;
+      }
+
+      if (pEnd < totalPages) {
+        if (pEnd < totalPages - 1) btnHtml += `<span style="color:var(--text-dim);font-size:11px;padding:0 2px;">…</span>`;
+        btnHtml += `<button class="btn btn-ghost" style="padding:4px 8px;font-size:11px;" onclick="wlGoToPage(${totalPages})">${totalPages}</button>`;
+      }
+
+      // Next & Last
+      btnHtml += `<button class="btn btn-ghost" style="padding:4px 9px;font-size:11px;${_wlPage === totalPages ? 'opacity:0.35;cursor:not-allowed;' : ''}" onclick="wlGoToPage(${_wlPage + 1})" ${_wlPage === totalPages ? 'disabled' : ''}>Next ›</button>`;
+      btnHtml += `<button class="btn btn-ghost" style="padding:4px 9px;font-size:11px;${_wlPage === totalPages ? 'opacity:0.35;cursor:not-allowed;' : ''}" onclick="wlGoToPage(${totalPages})" ${_wlPage === totalPages ? 'disabled' : ''}>Last »</button>`;
+
+      btnsContainer.innerHTML = btnHtml;
+    }
+
+    function wlGoToPage(page) {
+      _wlPage = page;
+      renderViolationsTable();
+    }
+
+    function wlChangePageSize(sz) {
+      _wlPageSize = parseInt(sz, 10) || 10;
+      _wlPage = 1;
+      renderViolationsTable();
+    }
+
+    function toggleRow(trno) {
+      const key = String(trno);
+      if (_wlExpanded.has(key)) _wlExpanded.delete(key);
+      else _wlExpanded.add(key);
+      renderViolationsTable();
+    }
+
+    function wlExpandAll() {
+      _wlStudents.forEach(s => _wlExpanded.add(String(s.trno)));
+      renderViolationsTable();
+    }
+
+    function wlCollapseAll() {
+      _wlExpanded.clear();
+      renderViolationsTable();
+    }
+
+    function wlExportCSV() {
+      const rows = [['Student', 'TRNO', 'Darajah', 'Group', 'Status', 'Violations', 'Worst Severity', 'Last Incident']];
+      _wlStudents.forEach(s => {
+        rows.push([
+          `"${(s.student_name || '').replace(/"/g, '""')}"`,
+          s.trno,
+          `"${s.darajah || ''}"`,
+          `"${s.group || ''}"`,
+          s.account_status || 'active',
+          (s.violations || []).length,
+          s.worst_severity || 'LOW',
+          `"${(s.last_seen || '').substring(0, 19)}"`
+        ]);
+      });
+      const csv = '\uFEFF' + rows.map(r => r.join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `MamalBrowse_Sentinel_14Day_Log_${new Date().toISOString().substring(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    async function syncRealViolations() {
+      const btn = document.getElementById('btnSyncViolations');
+      if (btn) { btn.disabled = true; btn.textContent = '⏳ Ingesting...'; }
+      try {
+        const res = await fetch('/enforce/admin/sync-violations', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const d = await res.json();
+        alert(`Real Violations Ingested!\nTotal Incidents: ${d.total_incidents || 0}\nSuspended: ${d.blocked || 0}\nWarned: ${d.warned || 0}`);
+        await loadViolationsLog();
+      } catch (e) {
+        alert('Ingestion error: ' + e.message);
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = '⚡ Ingest Real Violations'; }
+      }
+    }
+
+    async function unblockStudent(trno) {
+      if (!confirm(`Unblock student ${trno}? This will restore their lab access immediately.`)) return;
+      try {
+        const res = await fetch('/enforce/admin/unblock', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ trno: String(trno), note: 'Manual unblock from dashboard' })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          alert(`✓ Student ${trno} unblocked.`);
+          loadViolationsLog();
+        } else {
+          alert('Error: ' + (data.error || 'Unknown'));
+        }
+      } catch (e) {
+        alert('Network error: ' + e.message);
+      }
+    }
+
+    async function disableStudentAccount(trno, name) {
+      const s = _wlStudents.find(item => String(item.trno) === String(trno));
+      let suggestedReason = 'Administrative policy violation';
+      if (s) {
+        if (s.blocked_reason && !s.blocked_reason.toLowerCase().includes('institutional policy')) {
+          suggestedReason = s.blocked_reason;
+        } else if (s.violations && s.violations.length > 0) {
+          const v = s.violations[s.violations.length - 1];
+          suggestedReason = v.reason || (v.category ? `${v.category.replace('_', ' ')} on ${v.domain || 'prohibited site'}` : 'Policy violation');
+        }
+      }
+      const reason = prompt(`Permanently disable account for ${name || 'Student #' + trno}?\nEnter suspension reason:`, suggestedReason);
+      if (reason === null) return;
+      try {
+        const res = await fetch('/enforce/admin/disable-account', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ trno: String(trno), reason: reason })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          alert(`⛔ Student ${trno} account disabled. Active lab sessions terminated.`);
+          loadViolationsLog();
+        } else {
+          alert('Error: ' + (data.error || 'Failed to disable student account'));
+        }
+      } catch (e) {
+        alert('Network error: ' + e.message);
+      }
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    //  CHARTS
+    // ══════════════════════════════════════════════════════════════
+    const CHART_OPTS = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#94a3b8', font: { family: 'Inter', size: 11 } } },
+        tooltip: {
+          backgroundColor: 'rgba(15, 26, 53, 0.98)',
+          borderColor: 'rgba(245, 200, 66, 0.4)',
+          borderWidth: 1,
+          titleColor: '#f5c842',
+          bodyColor: '#f8fafc',
+          padding: 12,
+          cornerRadius: 8,
+          titleFont: { family: 'Inter', size: 12, weight: '700' },
+          bodyFont: { family: 'Inter', size: 12 }
+        }
+      },
+      scales: {
+        x: { ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+        y: { ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' }, beginAtZero: true }
+      }
+    };
+
+    async function loadAnalytics() {
+      try {
+        const summaryRes = await fetch('/api/analytics/dashboard_summary');
+        if (!summaryRes.ok) {
+          console.warn('[Analytics] summary endpoint returned', summaryRes.status);
+          return;
+        }
+
+        const d = await summaryRes.json();
+
+        // Update month labels on chart cards
+        const monthLabel = d.current_month_label || 'This Month';
+        const domainsLbl = document.getElementById('domainsMonthLabel');
+        const hourlyLbl = document.getElementById('hourlyMonthLabel');
+        if (domainsLbl) domainsLbl.textContent = '🌙 ' + monthLabel;
+        if (hourlyLbl) hourlyLbl.textContent = '🌙 ' + monthLabel;
+
+        const hijriTrend = d.hijri_trend || null;
+
+        // ═══ Hijri trend chart ═══
+        const hijriLabels = hijriTrend?.labels
+          || ['Shawwāl', 'Dhū al-Q.', 'Dhū al-Ḥ.', 'Muḥarram', 'Ṣafar', 'Rabīʿ I', 'Rabīʿ II', 'Jumādā I', 'Jumādā II', 'Rajab', 'Shaʿbān', 'Ramaḍān'];
+        const hijriData = hijriTrend?.lab_hours
+          || new Array(12).fill(0);
+
+        if (charts.hijri) charts.hijri.destroy();
+        const hijriCtx = document.getElementById('hijriTrendChart');
+        if (hijriCtx) {
+          const ctx = hijriCtx.getContext('2d');
+          const grad = ctx.createLinearGradient(0, 0, 0, 280);
+          grad.addColorStop(0, 'rgba(245, 200, 66, 0.4)');
+          grad.addColorStop(1, 'rgba(245, 200, 66, 0.02)');
+
+          charts.hijri = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: hijriLabels,
+              datasets: [{
+                label: 'Lab Hours',
+                data: hijriData,
+                borderColor: '#f5c842',
+                backgroundColor: grad,
+                fill: true,
+                tension: 0.4,
+                borderWidth: 2.5,
+                pointRadius: 5,
+                pointBackgroundColor: '#f5c842',
+                pointBorderColor: '#0a1128',
+                pointBorderWidth: 2,
+                pointHoverRadius: 7
+              }]
+            },
+            options: {
+              ...CHART_OPTS,
+              plugins: {
+                ...CHART_OPTS.plugins,
+                legend: { display: false }
+              },
+              scales: {
+                x: { ticks: { color: '#94a3b8', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                y: { ticks: { color: '#94a3b8', font: { size: 11 }, callback: v => v + 'h' }, grid: { color: 'rgba(255,255,255,0.05)' }, beginAtZero: true }
+              }
+            }
+          });
+        }
+
+        // ═══ Top domains chart ═══
+        const domains = d.top_domains || [];
+        if (charts.domains) charts.domains.destroy();
+        const domainsCtx = document.getElementById('topDomainsChart');
+        if (domainsCtx && domains.length > 0) {
+          charts.domains = new Chart(domainsCtx.getContext('2d'), {
+            type: 'bar',
+            data: {
+              labels: domains.map(x => x.domain),
+              datasets: [{
+                label: 'Visits',
+                data: domains.map(x => x.count),
+                backgroundColor: domains.map((_, i) => `rgba(${59 + i * 15}, ${130 - i * 8}, ${246 - i * 12}, 0.75)`),
+                borderColor: domains.map((_, i) => `rgb(${59 + i * 15}, ${130 - i * 8}, ${246 - i * 12})`),
+                borderWidth: 1.5,
+                borderRadius: 6,
+                barThickness: 22
+              }]
+            },
+            options: {
+              ...CHART_OPTS,
+              indexAxis: 'y',
+              plugins: { ...CHART_OPTS.plugins, legend: { display: false } },
+              scales: {
+                x: { ticks: { color: '#94a3b8', font: { size: 10 }, callback: v => v.toLocaleString() }, grid: { color: 'rgba(255,255,255,0.05)' }, beginAtZero: true },
+                y: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } }
+              }
+            }
+          });
+        } else if (domainsCtx) {
+          // Empty state for domains chart
+          const ctx = domainsCtx.getContext('2d');
+          ctx.clearRect(0, 0, domainsCtx.width, domainsCtx.height);
+          ctx.fillStyle = '#64748b';
+          ctx.font = '13px Inter, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('No domain data available', domainsCtx.width / 2, domainsCtx.height / 2);
+        }
+
+        // ═══ Hourly chart ═══
+        const hourlyData = d.hourly_activity || new Array(24).fill(0);
+        if (charts.hourly) charts.hourly.destroy();
+        const hourlyCtx = document.getElementById('hourlyChart');
+        if (hourlyCtx) {
+          const ctx = hourlyCtx.getContext('2d');
+          const grad = ctx.createLinearGradient(0, 0, 0, 240);
+          grad.addColorStop(0, 'rgba(37, 99, 235, 0.85)');
+          grad.addColorStop(1, 'rgba(37, 99, 235, 0.15)');
+
+          charts.hourly = new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: Array.from({ length: 24 }, (_, i) => `${String(i).padStart(2, '0')}h`),
+              datasets: [{
+                label: 'Requests',
+                data: hourlyData,
+                backgroundColor: grad,
+                borderColor: '#2563eb',
+                borderWidth: 1,
+                borderRadius: 4
+              }]
+            },
+            options: {
+              ...CHART_OPTS,
+              plugins: { ...CHART_OPTS.plugins, legend: { display: false } },
+              scales: {
+                x: { ticks: { color: '#94a3b8', font: { size: 9 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 }, grid: { display: false } },
+                y: { ticks: { color: '#94a3b8', font: { size: 10 }, callback: v => v.toLocaleString() }, grid: { color: 'rgba(255,255,255,0.05)' }, beginAtZero: true }
+              }
+            }
+          });
+        }
+      } catch (e) {
+        console.warn('[Analytics]', e);
+      }
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    //  INSIGHTS
+    // ══════════════════════════════════════════════════════════════
+    function updateInsights() {
+      const blocked = _wlStudents.filter(s => s.account_status === 'blocked').length;
+      const warned = _wlStudents.filter(s => s.account_status === 'warned').length;
+      const total = _wlStudents.length;
+      const compliance = total > 0 ? (((total - blocked) / total) * 100).toFixed(1) : 100;
+
+      document.getElementById('insightsGrid').innerHTML = `
+    <div class="insight-card ${blocked > 0 ? 'critical' : 'success'}">
+      <div class="insight-head">
+        <span class="insight-icon">${blocked > 0 ? '🚨' : '✅'}</span>
+        <span class="insight-title">Policy Compliance</span>
+        <span class="insight-badge">${blocked > 0 ? 'Action Needed' : 'Healthy'}</span>
+      </div>
+      <div class="insight-body">
+        Campus compliance at <strong>${compliance}%</strong>.
+        ${blocked > 0
+          ? `<strong>${blocked}</strong> student${blocked === 1 ? '' : 's'} currently suspended under the 14-day policy window.`
+          : 'All students are within policy bounds.'}
+      </div>
+    </div>
+
+    <div class="insight-card info">
+      <div class="insight-head">
+        <span class="insight-icon">📡</span>
+        <span class="insight-title">Lab Manager Sync</span>
+        <span class="insight-badge">Live</span>
+      </div>
+      <div class="insight-body">
+        Authoritative session data streaming from <strong>\\\\10.10.117.76\\c\\Lab Manager</strong>.
+        All workstation assignments and session timers verified.
+      </div>
+    </div>
+
+    <div class="insight-card ${warned > 0 ? 'warning' : 'success'}">
+      <div class="insight-head">
+        <span class="insight-icon">${warned > 0 ? '⚠️' : '🎯'}</span>
+        <span class="insight-title">Warning Cohort</span>
+        <span class="insight-badge">${warned} Student${warned === 1 ? '' : 's'}</span>
+      </div>
+      <div class="insight-body">
+        ${warned > 0
+          ? `<strong>${warned}</strong> student${warned === 1 ? ' has' : 's have'} received policy warnings. One more infraction triggers a 14-day suspension.`
+          : 'No students currently on warning status. Excellent institutional discipline.'}
+      </div>
+    </div>
+
+    <div class="insight-card gold">
+      <div class="insight-head">
+        <span class="insight-icon">⚖️</span>
+        <span class="insight-title">Retention Window</span>
+        <span class="insight-badge">14 Days</span>
+      </div>
+      <div class="insight-body">
+        Violations from the past <strong>14 days</strong> remain visible to supervisors.
+        Accounts auto-restore after serving the policy window. Older audit logs are archived for compliance.
+      </div>
+    </div>
+  `;
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    //  OPTION A: LAB OCCUPANCY GAUGES
+    // ══════════════════════════════════════════════════════════════
+    const CIRC = 2 * Math.PI * 36; // circumference at r=36
+
+    function statusLabel(st) {
+      const map = { available: '⬤ Available', moderate: '⬤ Moderate', near_capacity: '⬤ Near Capacity', full: '⬤ Full' };
+      return map[st] || '⬤ Unknown';
+    }
+
+    async function loadLabOccupancy() {
+      try {
+        const res = await fetch(`/api/lab/occupancy?refresh=1&_t=${Date.now()}`, { cache: 'no-store' });
+        if (!res.ok) return;
+        const d = await res.json();
+
+        const updateGauge = (key, circleId, pctId, activeId, availId, badgeId, defaultTotal) => {
+          const lab = d[key] || {};
+          const pct = lab.pct ?? 0;
+          const offset = CIRC * (1 - pct / 100);
+          const circle = document.getElementById(circleId);
+          if (circle) circle.style.strokeDashoffset = offset;
+          const pctEl = document.getElementById(pctId);
+          if (pctEl) pctEl.textContent = pct + '%';
+          const actEl = document.getElementById(activeId);
+          if (actEl) actEl.textContent = lab.active ?? 0;
+          const avEl = document.getElementById(availId);
+          if (avEl) avEl.textContent = lab.available ?? defaultTotal;
+          const badge = document.getElementById(badgeId);
+          if (badge) {
+            badge.className = 'lab-status-badge ' + (lab.status ?? 'available');
+            badge.textContent = statusLabel(lab.status);
+          }
+        };
+
+        updateGauge('mk', 'mkGaugeCircle', 'mkGaugePct', 'mkActive', 'mkAvailable', 'mkStatusBadge', 20);
+        updateGauge('rb', 'rbGaugeCircle', 'rbGaugePct', 'rbActive', 'rbAvailable', 'rbStatusBadge', 20);
+        updateGauge('m', 'mGaugeCircle', 'mGaugePct', 'mActive', 'mAvailable', 'mStatusBadge', 40);
+        updateGauge('f', 'fGaugeCircle', 'fGaugePct', 'fActive', 'fAvailable', 'fStatusBadge', 40);
+      } catch (e) {
+        console.warn('[LabOccupancy]', e);
+      }
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    //  OPTION A: ACADEMIC FOCUS INDEX
+    // ══════════════════════════════════════════════════════════════
+    async function loadFocusIndex() {
+      try {
+        const res = await fetch('/api/lab/focus_index');
+        if (!res.ok) return;
+        const d = await res.json();
+        document.getElementById('focusScore').textContent = d.focus_score ?? '—';
+        document.getElementById('focusLabel').textContent = d.label ?? '';
+        document.getElementById('focusBarFill').style.width = (d.focus_score ?? 0) + '%';
+        document.getElementById('focusProductive').textContent = (d.productive ?? 0).toLocaleString();
+        document.getElementById('focusDistracting').textContent = (d.distracting ?? 0).toLocaleString();
+        document.getElementById('focusTotal').textContent = (d.total ?? 0).toLocaleString();
+        document.getElementById('focusRefreshTime').textContent = '🔄 ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+        // Color the score
+        const score = d.focus_score ?? 0;
+        const scoreEl = document.getElementById('focusScore');
+        scoreEl.style.color = score >= 90 ? 'var(--emerald)' : (score >= 75 ? 'var(--gold)' : (score >= 55 ? 'var(--amber)' : 'var(--rose)'));
+        // Color the bar
+        const bar = document.getElementById('focusBarFill');
+        bar.style.background = score >= 90 ? 'linear-gradient(90deg, var(--emerald), var(--sky))'
+          : (score >= 75 ? 'linear-gradient(90deg, var(--gold), var(--amber))'
+            : (score >= 55 ? 'linear-gradient(90deg, var(--amber), var(--rose))'
+              : 'linear-gradient(90deg, var(--rose), #be123c)'));
+      } catch (e) {
+        console.warn('[FocusIndex]', e);
+      }
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    //  OPTION A: REINSTATEMENT QUEUE
+    // ══════════════════════════════════════════════════════════════
+    function toggleExpiryQueue() {
+      const s = document.getElementById('reinstatementSection');
+      const btn = document.getElementById('btnToggleExpiryQueue');
+      if (!s) return;
+      const isHidden = (s.style.display === 'none' || !s.style.display);
+      s.style.display = isHidden ? 'block' : 'none';
+      if (btn) {
+        const cnt = document.getElementById('reinstatementCount') ? document.getElementById('reinstatementCount').textContent : '0';
+        btn.innerHTML = `⏰ Suspension Expiry Queue (${cnt}) ${isHidden ? '▴ Hide' : '▾ Show'}`;
+      }
+    }
+
+    async function loadReinstatementQueue() {
+      try {
+        const res = await fetch('/api/lab/reinstatement_queue');
+        if (!res.ok) return;
+        const d = await res.json();
+        const section = document.getElementById('reinstatementSection');
+        const container = document.getElementById('reinstatementRows');
+        const btn = document.getElementById('btnToggleExpiryQueue');
+        const countSpan = document.getElementById('reinstatementCount');
+        const count = (d.queue || []).length;
+
+        if (countSpan) countSpan.textContent = count;
+        if (btn) {
+          btn.style.display = count > 0 ? 'inline-flex' : 'none';
+        }
+
+        if (!container) return;
+        if (!d.queue || d.queue.length === 0) {
+          if (section) section.style.display = 'none';
+          return;
+        }
+
+        container.innerHTML = d.queue.map(s => {
+          const displayStation = (!s.station || s.station.toLowerCase() === 'workstation' || s.station.toLowerCase() === 'unknown' || s.station === '—') ? '—' : s.station;
+          return `
+          <div class="reinstatement-row" style="display:flex;align-items:center;gap:12px;background:rgba(15,26,53,0.85);border:1px solid rgba(245,200,66,0.25);border-radius:10px;padding:12px 16px;margin-bottom:10px;">
+            <div style="width:36px;height:36px;border-radius:50%;overflow:hidden;flex-shrink:0;background:rgba(30,58,138,0.5);border:1.5px solid rgba(245,200,66,0.3);">
+              <img src="/photo/${s.trno}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.style.display='none';">
+            </div>
+            <div class="reinstate-urgency-badge ${s.urgency}" style="flex-shrink:0;">${s.expires_label}</div>
+            <div style="flex:1.2;min-width:0;">
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <span style="font-size:13.5px;font-weight:700;color:#fff;">${s.name || 'Unknown'}</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--sky);font-weight:700;">#${s.trno}</span>
+                <span class="badge royal" style="font-family:'JetBrains Mono',monospace;font-size:10.5px;padding:2px 7px;">🖥️ ${displayStation}</span>
+              </div>
+              <div style="font-size:11px;color:var(--text-dim);margin-top:2px;">
+                ${s.darajah} · ${s.group}
+              </div>
+              <div style="font-size:11.5px;color:#fca5a5;margin-top:3px;font-weight:600;display:flex;align-items:center;gap:5px;">
+                <span>🚫</span> <span>${s.reason || 'Visiting prohibited site or software'}</span>
+              </div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;">
+              <div style="font-size:11.5px;color:var(--text-muted);">Suspended: ${(s.blocked_at || '').substring(0, 10)}</div>
+              <div style="font-size:11px;color:var(--gold);font-weight:600;">${s.days_elapsed} / 14 days elapsed</div>
+            </div>
+            <div style="display:flex;gap:6px;flex-shrink:0;align-items:center;">
+              <button class="btn btn-success" style="font-size:11px;padding:5px 12px;font-weight:700;" onclick="unblockStudent('${s.trno}')">⚡ Reinstate</button>
+              <a href="/report/${s.trno}" class="btn btn-ghost" style="font-size:11px;padding:5px 10px;">360° Dossier</a>
+              <a href="/security" class="btn" style="font-size:11px;padding:5px 10px;background:rgba(245,200,66,0.12);color:var(--gold);border:1px solid rgba(245,200,66,0.3);">Security View</a>
+            </div>
+          </div>`;
+        }).join('');
+      } catch (e) {
+        console.warn('[ReinstatementQueue]', e);
+      }
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    //  INIT
+    // ══════════════════════════════════════════════════════════════
+    loadAnalytics();
+    loadViolationsLog().then(updateInsights);
+    loadLabOccupancy();
+    loadFocusIndex();
+    loadReinstatementQueue();
+    pollLiveFlaggedIncidents(); // Start real-time flagged student notifications
+
+    setInterval(() => {
+      loadViolationsLog().then(updateInsights);
+    }, 30000);
+
+    setInterval(loadAnalytics, 60000);
+    setInterval(loadLabOccupancy, 20000);   // Refresh gauges every 20s
+    setInterval(loadFocusIndex, 120000);    // Focus index every 2 min
+    setInterval(loadReinstatementQueue, 60000); // Queue every minute
+    setInterval(pollLiveFlaggedIncidents, 4000); // Check for flagged students every 4s
+
+    // ══════════════════════════════════════════════════════════════
+    //  REAL-TIME FLAGGED STUDENT NOTIFICATION SYSTEM
+    // ══════════════════════════════════════════════════════════════
+    let _seenIncidentIds = new Set();
+    let _notifSoundEnabled = true;
+    let _activeNotifications = [];
+    let _isDrawerOpen = false;
+
+    function toggleNotifDrawer() {
+      _isDrawerOpen = !_isDrawerOpen;
+      const drawer = document.getElementById('notifDrawer');
+      const backdrop = document.getElementById('notifDrawerBackdrop');
+      if (_isDrawerOpen) {
+        drawer.style.right = '0px';
+        backdrop.style.display = 'block';
+      } else {
+        drawer.style.right = '-480px';
+        backdrop.style.display = 'none';
+      }
+    }
+
+    function toggleNotifSound() {
+      _notifSoundEnabled = !_notifSoundEnabled;
+      const btn = document.getElementById('notifSoundToggle');
+      if (btn) btn.textContent = _notifSoundEnabled ? '🔔 Sound: ON' : '🔕 Sound: OFF';
+    }
+
+    function playInstitutionalChime() {
+      if (!_notifSoundEnabled) return;
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sine';
+        const now = ctx.currentTime;
+        osc.frequency.setValueAtTime(587.33, now); // D5
+        osc.frequency.exponentialRampToValueAtTime(880.00, now + 0.12); // A5
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+        osc.start(now);
+        osc.stop(now + 0.45);
+      } catch (e) {
+        // AudioContext autoplay restriction handled silently
+      }
+    }
+
+    async function pollLiveFlaggedIncidents() {
+      try {
+        const res = await fetch('/api/live_flagged_notifications');
+        if (!res.ok) return;
+        const data = await res.json();
+        const items = data.notifications || [];
+        _activeNotifications = items;
+
+        // Update badge
+        const badge = document.getElementById('notifBadge');
+        if (badge) {
+          if (items.length > 0) {
+            badge.textContent = items.length > 99 ? '99+' : items.length;
+            badge.style.display = 'inline-block';
+          } else {
+            badge.style.display = 'none';
+          }
+        }
+
+        // Check for brand new incidents that haven't popped up yet
+        let hasNew = false;
+        items.forEach(inc => {
+          if (!_seenIncidentIds.has(inc.incident_id)) {
+            _seenIncidentIds.add(inc.incident_id);
+            hasNew = true;
+            showFlaggedToast(inc);
+          }
+        });
+
+        if (hasNew) {
+          playInstitutionalChime();
+        }
+
+        renderNotifDrawerList(items);
+      } catch (e) {
+        console.debug('[NotifPoll]', e);
+      }
+    }
+
+    function showFlaggedToast(inc) {
+      const container = document.getElementById('flaggedToastContainer');
+      if (!container) return;
+
+      const toast = document.createElement('div');
+      toast.id = `toast-${inc.incident_id}`;
+      toast.style.cssText = `
+        pointer-events: auto;
+        background: rgba(15, 26, 53, 0.98);
+        border: 1px solid ${inc.severity === 'HIGH' ? 'rgba(244, 63, 94, 0.6)' : 'rgba(245, 158, 11, 0.6)'};
+        border-left: 5px solid ${inc.severity === 'HIGH' ? '#f43f5e' : '#f59e0b'};
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6), 0 0 20px ${inc.severity === 'HIGH' ? 'rgba(244, 63, 94, 0.25)' : 'rgba(245, 158, 11, 0.2)'};
+        border-radius: 10px;
+        padding: 16px 18px;
+        color: #fff;
+        animation: toastSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      `;
+
+      toast.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:16px;">${inc.severity === 'HIGH' ? '🚨' : '⚠️'}</span>
+            <span style="font-size:11px; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; color:${inc.severity === 'HIGH' ? '#fb7185' : '#fbbf24'};">
+              ${inc.severity === 'HIGH' ? 'High Risk Incident Flagged' : 'Warning Strike Issued'}
+            </span>
+          </div>
+          <button onclick="dismissToast('${inc.incident_id}')" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size:16px; line-height:1; padding:2px;">✕</button>
+        </div>
+
+        <div>
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <div style="width:34px;height:34px;border-radius:50%;overflow:hidden;flex-shrink:0;background:rgba(30,58,138,0.5);border:1.5px solid rgba(245,200,66,0.3);display:inline-block;vertical-align:middle;margin-right:6px;">
+              <img src="/photo/${inc.trno}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.style.display='none';">
+            </div>
+            <span style="font-weight:750; font-size:14px; color:#fff;">${inc.name}</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--sky); font-weight:700;">#${inc.trno}</span>
+            <span style="background:rgba(30,58,138,0.4); border:1px solid rgba(56,189,248,0.3); color:#38bdf8; font-size:10.5px; padding:2px 7px; border-radius:4px; font-weight:600; font-family:'JetBrains Mono',monospace;">🖥️ ${inc.station}</span>
+          </div>
+          <div style="font-size:11.5px; color:var(--text-muted); margin-top:3px;">
+            ${inc.darajah} · ${inc.group} · <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px;">${inc.timestamp}</span>
+          </div>
+          <div style="font-size:12px; color:#fca5a5; margin-top:5px; font-weight:600; background:rgba(244,63,94,0.08); padding:6px 10px; border-radius:6px; border:1px solid rgba(244,63,94,0.2);">
+            🚫 <strong>${inc.domain}</strong> — ${inc.reason}
+          </div>
+        </div>
+
+        <div style="display:flex; gap:8px; margin-top:4px; flex-wrap:wrap;">
+          <a href="/report/${inc.trno}" target="_blank" class="btn btn-ghost" style="font-size:11.5px; padding:6px 12px; text-decoration:none;">👁️ View 360</a>
+          <button onclick="triggerQuickAction('disable', '${inc.trno}', '${inc.station}', '${inc.incident_id}', '${inc.domain}')" style="background:rgba(244,63,94,0.2); border:1px solid rgba(244,63,94,0.5); color:#fca5a5; border-radius:6px; padding:6px 12px; font-size:11.5px; font-weight:700; cursor:pointer;">🚫 Disable Student</button>
+          <button onclick="triggerQuickAction('lock_station', '${inc.trno}', '${inc.station}', '${inc.incident_id}')" style="background:rgba(245,200,66,0.15); border:1px solid rgba(245,200,66,0.4); color:var(--gold); border-radius:6px; padding:6px 12px; font-size:11.5px; font-weight:700; cursor:pointer;">🔒 Lock PC</button>
+          <button onclick="triggerQuickAction('acknowledge', '${inc.trno}', '${inc.station}', '${inc.incident_id}')" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:var(--text-muted); border-radius:6px; padding:6px 10px; font-size:11.5px; cursor:pointer;">✓ Dismiss</button>
+        </div>
+      `;
+
+      container.appendChild(toast);
+
+      // Auto-dismiss after 20 seconds
+      setTimeout(() => {
+        dismissToast(inc.incident_id);
+      }, 20000);
+    }
+
+    function dismissToast(incidentId) {
+      const el = document.getElementById(`toast-${incidentId}`);
+      if (el) {
+        el.style.opacity = '0';
+        el.style.transform = 'translateX(60px)';
+        el.style.transition = 'all 0.3s ease';
+        setTimeout(() => el.remove(), 300);
+      }
+    }
+
+    function renderNotifDrawerList(items) {
+      const list = document.getElementById('notifDrawerList');
+      const sub = document.getElementById('notifDrawerSub');
+      if (!list) return;
+
+      if (sub) {
+        sub.textContent = items.length > 0 ? `${items.length} unreviewed incident(s) require action` : 'All clear — No active incidents';
+      }
+
+      if (!items || items.length === 0) {
+        list.innerHTML = `
+          <div style="text-align:center; padding:50px 20px; color:var(--text-muted);">
+            <div style="font-size:32px; margin-bottom:12px;">✅</div>
+            <div style="font-size:14px; font-weight:700; color:#fff;">No Unreviewed Flagged Students</div>
+            <div style="font-size:12px; margin-top:4px;">Workstations are compliant under current institutional policy.</div>
+          </div>
+        `;
+        return;
+      }
+
+      list.innerHTML = items.map(inc => `
+        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-left:4px solid ${inc.severity === 'HIGH' ? '#f43f5e' : '#f59e0b'}; border-radius:8px; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span style="font-size:14px;">${inc.severity === 'HIGH' ? '🚨' : '⚠️'}</span>
+              <span style="font-size:10.5px; font-weight:800; text-transform:uppercase; color:${inc.severity === 'HIGH' ? '#fb7185' : '#fbbf24'};">${inc.severity}</span>
+            </div>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--text-muted);">${inc.timestamp}</span>
+          </div>
+
+          <div>
+            <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+              <div style="width:28px;height:28px;border-radius:50%;overflow:hidden;flex-shrink:0;background:rgba(30,58,138,0.5);border:1px solid rgba(245,200,66,0.3);display:inline-block;vertical-align:middle;margin-right:4px;">
+                <img src="/photo/${inc.trno}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.style.display='none';">
+              </div>
+              <strong style="font-size:13.5px; color:#fff;">${inc.name}</strong>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--sky); font-weight:700;">#${inc.trno}</span>
+              <span style="background:rgba(30,58,138,0.4); border:1px solid rgba(56,189,248,0.3); color:#38bdf8; font-size:10px; padding:1px 6px; border-radius:4px; font-family:'JetBrains Mono',monospace;">🖥️ ${inc.station}</span>
+            </div>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">${inc.darajah} · ${inc.group}</div>
+            <div style="font-size:11.5px; color:#fca5a5; margin-top:5px; font-weight:600;">
+              🚫 ${inc.domain} <span style="font-weight:400; color:var(--text-muted);">— ${inc.reason}</span>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:6px; margin-top:4px; flex-wrap:wrap;">
+            <a href="/report/${inc.trno}" target="_blank" class="btn btn-ghost" style="font-size:11px; padding:4px 10px; text-decoration:none;">👁️ 360</a>
+            <button onclick="triggerQuickAction('disable', '${inc.trno}', '${inc.station}', '${inc.incident_id}', '${inc.domain}')" style="background:rgba(244,63,94,0.18); border:1px solid rgba(244,63,94,0.45); color:#fca5a5; border-radius:5px; padding:4px 10px; font-size:11px; font-weight:700; cursor:pointer;">🚫 Disable</button>
+            <button onclick="triggerQuickAction('lock_station', '${inc.trno}', '${inc.station}', '${inc.incident_id}')" style="background:rgba(245,200,66,0.12); border:1px solid rgba(245,200,66,0.35); color:var(--gold); border-radius:5px; padding:4px 10px; font-size:11px; font-weight:700; cursor:pointer;">🔒 Lock</button>
+            <button onclick="triggerQuickAction('acknowledge', '${inc.trno}', '${inc.station}', '${inc.incident_id}')" style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); color:var(--text-muted); border-radius:5px; padding:4px 8px; font-size:11px; cursor:pointer;">✓ Dismiss</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function triggerQuickAction(action, trno, station, incidentId, domain) {
+      try {
+        let confirmMsg = '';
+        if (action === 'disable') {
+          confirmMsg = `Are you sure you want to permanently DISABLE student account #${trno} in Active Directory and Sentinel?`;
+        } else if (action === 'lock_station') {
+          confirmMsg = `Send immediate LOCK command to workstation ${station}?`;
+        }
+
+        if (confirmMsg && !confirm(confirmMsg)) {
+          return;
+        }
+
+        const res = await fetch('/api/security/quick_action', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: action,
+            trno: trno,
+            station: station,
+            incident_id: incidentId,
+            reason: `Actioned from Live Dashboard (${action.toUpperCase()}${domain ? ' on ' + domain : ''})`
+          })
+        });
+
+        const data = await res.json();
+        if (data.ok) {
+          dismissToast(incidentId);
+          // Refresh live feed
+          pollLiveFlaggedIncidents();
+          loadViolationsLog().then(updateInsights);
+        } else {
+          alert(`Action failed: ${data.error || 'Server error'}`);
+        }
+      } catch (e) {
+        console.error('[QuickAction]', e);
+        alert('Communication error with server');
+      }
+    }
+
+    async function clearAllNotifications() {
+      try {
+        await fetch('/enforce/admin/clear-acknowledged', { method: 'POST' });
+        _seenIncidentIds.clear();
+        _activeNotifications = [];
+        const container = document.getElementById('flaggedToastContainer');
+        if (container) container.innerHTML = '';
+        renderNotifDrawerList([]);
+        const badge = document.getElementById('notifBadge');
+        if (badge) badge.style.display = 'none';
+      } catch (e) {
+        console.error('[ClearAll]', e);
+      }
+    }
+  </script>
+
+  <!-- ══ FLOATING LIVE INCIDENT TOAST CONTAINER ══ -->
+  <div id="flaggedToastContainer" style="position:fixed;top:76px;right:24px;z-index:10000;display:flex;flex-direction:column;gap:12px;max-width:440px;width:calc(100% - 48px);pointer-events:none;"></div>
+
+  <!-- ══ SLIDE-OUT INCIDENT DRAWER ══ -->
+  <div id="notifDrawerBackdrop" onclick="toggleNotifDrawer()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:9998;transition:opacity 0.25s;"></div>
+  <div id="notifDrawer" style="position:fixed;top:0;right:-480px;width:460px;max-width:92vw;height:100vh;background:#0d1633;border-left:1px solid rgba(245,200,66,0.3);box-shadow:-12px 0 40px rgba(0,0,0,0.8);z-index:9999;transition:right 0.3s cubic-bezier(0.16,1,0.3,1);display:flex;flex-direction:column;">
+    <div style="padding:20px 24px;border-bottom:1px solid rgba(255,255,255,0.1);display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.02);">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:20px;">🚨</span>
+        <div>
+          <div style="font-weight:750;font-size:15px;color:#fff;">Flagged Student Incidents</div>
+          <div id="notifDrawerSub" style="font-size:11.5px;color:var(--text-muted);">Real-time monitoring active</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button id="notifSoundToggle" onclick="toggleNotifSound()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);color:var(--text-muted);border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;">🔔 Sound: ON</button>
+        <button onclick="toggleNotifDrawer()" style="background:transparent;border:none;color:var(--text-muted);font-size:20px;cursor:pointer;padding:4px 8px;">✕</button>
+      </div>
+    </div>
+    <div id="notifDrawerList" style="flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:12px;">
+      <div style="text-align:center;padding:40px 20px;color:var(--text-muted);font-size:13px;">No unreviewed flagged incidents</div>
+    </div>
+    <div style="padding:14px 20px;border-top:1px solid rgba(255,255,255,0.08);background:rgba(0,0,0,0.2);display:flex;justify-content:space-between;align-items:center;">
+      <a href="/security" style="color:var(--gold);font-size:12px;font-weight:600;text-decoration:none;">Open Full Security Center →</a>
+      <button onclick="clearAllNotifications()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:var(--text);border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer;">Clear All</button>
+    </div>
+  </div>
+
+  <style>
+    @keyframes toastSlideIn {
+      from { opacity: 0; transform: translateX(60px) scale(0.96); }
+      to { opacity: 1; transform: translateX(0) scale(1); }
+    }
+  </style>
+</body>
+
+</html>

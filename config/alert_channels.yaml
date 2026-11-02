@@ -1,0 +1,17 @@
+channels:
+  discord:
+    enabled: false
+    webhook_url: ''
+  email:
+    enabled: true
+  local_audit:
+    enabled: true
+  telegram:
+    bot_token: ''
+    chat_id: ''
+    enabled: false
+triggers:
+  manual_suspension: true
+  prohibited_executable: true
+  strike_4_warning: true
+  strike_5_lockout: true

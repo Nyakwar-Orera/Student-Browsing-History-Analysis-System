@@ -1,0 +1,4 @@
+﻿"Computer","Status","Details","Date"
+"F-01.mamal.nbi","DEPLOYED","Agent copied and verified. Interactive launcher installed. Starts at next user logon.","11/1/2026 3:54:10 PM"
+"F-02.mamal.nbi","FAILED","Cannot access C$ administrative share. Check permissions, firewall and workstation availability.","11/1/2026 3:54:31 PM"
+"F-03.mamal.nbi","DEPLOYED","Agent copied and verified. Interactive launcher installed. Starts at next user logon.","11/1/2026 3:54:32 PM"

@@ -1,0 +1,627 @@
+# ============================================================
+# MamalBrowse Sentinel " Authoritative Access Policy
+# ============================================================
+# Comprehensive Universal Institutional Policy
+# Effective Date: October 31, 2026
+#
+# POLICY PRINCIPLES:
+#  1. SENIOR DARAJAH (Std 8-11) INSTITUTIONAL DIRECTIVE:
+#     - Senior students (Darajah 8-11) have designated personal laptops.
+#     - Lab workstation accounts remain locked & disabled for seniors.
+#  2. DARAJAH 1-7 FRESH START & POLICY RESET:
+#     - Once an account is enabled (via Active Directory or Sentinel system),
+#       all previous disabled reasons, warnings, and violations are cleared.
+#     - The system will NOT disable the account again for historical activity.
+#     - Accounts can ONLY be disabled if the student commits fresh policy
+#       violations after their account has been enabled (effective Oct 31, 2026).
+#  3. YOUTUBE ACCESS, SHORTS & TIME-PASSING:
+#     - Educational curriculum videos and Bohra community videos (Aljamea, waaz,
+#       bayan, sabaq, marsiya, madeh, Quran hifz/tilawat, Syedna, Burhani) are
+#       completely permitted and non-punishable.
+#     - YouTube Shorts (/shorts/, #shorts) are strictly BLOCKED on lab workstations.
+#     - Watching movies / entertainment videos on YouTube is treated as time-passing:
+#       students receive clear live time-passing warnings. Persisting after repeated
+#       warnings triggers progressive disciplinary action, but never immediate auto-block.
+#  4. PINTEREST PERMITTED (CURRICULUM & DESIGN RESOURCE):
+#     - pinterest.com, uk.pinterest.com, and all related domains are explicitly permitted for academic design research.
+#  5. FAIR AD REDIRECT & TRANSIENT PROTECTION:
+#     - When a student is directed by ads or popups, it DOES NOT count as a violation.
+#     - Students must close ad/popup tabs instantly.
+#     - Accidental popups or ad redirects with minimal dwell time never disable an account.
+#  6. BROWSER BOOKMARKS EXEMPTION:
+#     - Any educational or curriculum site in the student's browser bookmarks
+#       must NEVER lead to account disability or penalty strikes.
+#  7. PERMITTED LAB OPERATIONAL HOURS:
+#     - Monday through Saturday: 08:00 to 21:30 (8:00 AM " 9:30 PM)
+#     - Sunday: 10:00 to 17:00 (10:00 AM " 5:00 PM)
+# ============================================================
+
+session_time_limits:
+  darajah_1: 30
+  darajah_2: 30
+  darajah_3: 30
+  darajah_4: 30
+  darajah_5: 60
+  darajah_6: 60
+  darajah_7: 60
+  darajah_8: 120
+  darajah_9: 120
+  darajah_10: 120
+  darajah_11: 120
+  darajah_12: 120
+  igcse: 120
+  dars_burhani: 60
+  default: 60
+session_warning_threshold_minutes: 5
+auto_expire_account_on_timeout: true
+
+email_alerts:
+  enabled: false
+  recipients: []
+  digest_interval_seconds: 3600
+  immediate_alert_categories: []
+
+browser_enforcement:
+  enabled: true
+  allowed_browsers:
+  - chrome.exe
+  - msedge.exe
+  action_on_unauthorized: block
+  message: Only Google Chrome and Microsoft Edge are permitted on lab workstations. All other browsers and installers are strictly blocked.
+
+default_action: allow
+
+# "" Permitted Lab Operational Hours """"""""""""""""""""""""""
+# Permitted access windows:
+#  - Monday to Saturday: 08:00 to 21:30
+#  - Sunday: 10:00 to 17:00
+lab_operating_hours:
+  mon_sat:
+    start: '08:00'
+    end: '21:30'
+  sun:
+    start: '10:00'
+    end: '17:00'
+
+# "" Account Lock & Disciplinary Thresholds """"""""""""""""""""
+account_lock:
+  enabled: true
+  # High-severity threats trigger immediate terminal block upon deliberate access:
+  auto_block_categories:
+    - adult             # Adult & explicit content †' immediate block
+    - proxy_vpn         # Anonymous bypass / unauthorized proxy †' immediate block
+    - torrent           # BitTorrent p2p download †' immediate block
+    - video_chat        # Unmoderated video chat (Omegle/OmeTV style) †' immediate block
+    - anonymous_qa      # Cyberbullying / blind Q&A platforms †' immediate block
+    - messaging_chat    # Chatting, messaging & DM sites †' immediate block
+  # Progressive warnings categories (warn strikes 1 to 4; 5th strike disables account):
+  # 'messaging_chat', 'ai_chatbots', 'social_media', 'gaming', 'streaming', 'youtube_movies', 'movie_download'
+  max_warnings_before_block: 5
+
+# "" Categories """""""""""""""""""""""""""""""""""""""""""""""
+categories:
+
+  # "" 1. Unregulated & High-Risk Messaging / Chat """"""""""""""
+  messaging_chat:
+    action: block
+    message: "ðŸš« Policy Violation: Chatting, instant messaging, or social DM platform detected ({domain}). All chatting sites are strictly prohibited on lab workstations. Account suspended."
+    allow_override: false
+    domains:
+    - discord.com
+    - www.discord.com
+    - discordapp.com
+    - discord.gg
+    - kik.com
+    - www.kik.com
+    - kik.me
+    - snapchat.com
+    - www.snapchat.com
+    - web.snapchat.com
+    - accounts.snapchat.com
+    - whatsapp.com
+    - www.whatsapp.com
+    - web.whatsapp.com
+    - telegram.org
+    - web.telegram.org
+    - t.me
+    - viber.com
+    - www.viber.com
+    - messenger.com
+    - www.messenger.com
+    - threads.net
+    - www.threads.net
+    - threads.com
+    - www.threads.com
+    - instagram.com
+    - www.instagram.com
+    - help.instagram.com
+    - accountscenter.instagram.com
+    - slack.com
+    - app.slack.com
+    - signal.org
+    - web.signal.org
+    - chat.reddit.com
+    - line.me
+    - wechat.com
+    - teams.live.com
+
+  # "" 2. Anonymous & Blind-Q&A Sites (Cyberbullying Hubs) """"""
+  anonymous_qa:
+    action: block
+    message: "Anonymous and blind Q&A platforms are strictly prohibited under institutional anti-bullying policy. Account suspended."
+    allow_override: false
+    domains:
+    - ask.fm
+    - www.ask.fm
+    - tellonym.me
+    - www.tellonym.me
+    - ngl.link
+    - www.ngl.link
+    - onyolo.com
+    - www.onyolo.com
+    - yolo.com
+
+  # "" 3. Unmoderated Video Chats (High Risk of Explicit Content) ""
+  video_chat:
+    action: block
+    message: "Unmoderated live video chat platforms are strictly prohibited on all lab computers. Immediate account suspension."
+    allow_override: false
+    domains:
+    - ometv.com
+    - www.ometv.com
+    - chatroulette.com
+    - www.chatroulette.com
+    - emeraldchat.com
+    - www.emeraldchat.com
+    - monkey.app
+    - www.monkey.app
+    - coomeet.com
+    - www.coomeet.com
+
+  # "" 4. Unfiltered AI Chatbots & Adult Roleplay """""""""""""""
+  ai_chatbots:
+    action: warn
+    message: "š ï¸ Policy Warning: Unfiltered AI chat or roleplay platform detected ({domain}). Non-academic AI chatting is restricted during lab hours. Persisting will disable your computer account after 5 strikes."
+    allow_override: false
+    domains:
+    - janitorai.com
+    - www.janitorai.com
+    - character.ai
+    - www.character.ai
+    - beta.character.ai
+    - crushon.ai
+    - www.crushon.ai
+    - chai-research.com
+    - www.chai-research.com
+    - chai.ml
+
+  # "" 5. Social Media & Stealth Chats """"""""""""""""""""""""""
+  social_media:
+    action: warn
+    message: "š ï¸ Policy Warning: Social media access detected ({domain}). Social networking is restricted during lab hours. If you arrived via ad redirect, please close this tab immediately. Deliberately using social media will disable your account after 5 strikes."
+    allow_override: false
+    domains:
+    - reddit.com
+    - www.reddit.com
+    - tumblr.com
+    - www.tumblr.com
+    - tiktok.com
+    - www.tiktok.com
+    - m.tiktok.com
+    - getstarted.tiktok.com
+    - instagram.com
+    - www.instagram.com
+    - help.instagram.com
+    - accountscenter.instagram.com
+    - facebook.com
+    - www.facebook.com
+    - m.facebook.com
+    - business.facebook.com
+    - twitter.com
+    - www.twitter.com
+    - x.com
+    - www.x.com
+    - threads.net
+    - www.threads.net
+    - threads.com
+    - www.threads.com
+    - linkedin.com
+    - www.linkedin.com
+    - in.linkedin.com
+
+  # "" 6. Gaming & Game Chat Networks """""""""""""""""""""""""""
+  gaming:
+    action: warn
+    message: "š ï¸ Policy Warning: Online gaming or game chat platform detected ({domain}). Gaming is prohibited on lab workstations. Persisting will disable your computer account after 5 strikes."
+    allow_override: false
+    domains:
+    - roblox.com
+    - www.roblox.com
+    - twitch.tv
+    - www.twitch.tv
+    - steamcommunity.com
+    - store.steampowered.com
+    - epicgames.com
+    - minecraft.net
+    - miniclip.com
+    - poki.com
+    - crazygames.com
+    - krunker.io
+    - fortnite.com
+    - garrysmod.com
+    - recroom.com
+    - vrchat.com
+    - playtogether.gg
+    - ko-ga.me
+    - ylands.com
+    - trovegame.com
+    - manticoregames.com
+    - sandbox.game
+    - habbo.com
+    - secondlife.com
+    - blockmango.com
+    - toontownrewritten.com
+    - animaljam.com
+    - pokemon.com
+    - wizard101.com
+    - challengerush.com
+    - browser.lol
+
+  # "" 7. Movie & Media Download / Piracy """""""""""""""""""""""
+  movie_download:
+    action: warn
+    message: "Downloading movies or unauthorized media files is strictly prohibited. Warning struck. Persisting will disable your computer account after 5 strikes."
+    allow_override: false
+    domains:
+    - thepiratebay.org
+    - 1337x.to
+    - yts.mx
+    - eztv.re
+    - putlocker.com
+    - fmovies.io
+    - 123movies.com
+    - soap2day.to
+    - hdrezka.ag
+    - opensubtitles.org
+    - subscene.com
+    - filmywap.com
+    - movierulz.com
+    - filmyzilla.com
+    - bollyshare.com
+    - downloadhub.in
+    - katmovie.in
+    - worldfree4u.com
+    - moviesmod.zone
+    - themoviebox.org
+    - moviebox.ac
+    - movie-box.co
+    - ww8.123moviesfree.net
+    - videodownloader.site
+
+  # "" 8. Torrent & Peer-to-Peer """"""""""""""""""""""""""""""""
+  torrent:
+    action: block
+    message: BitTorrent and peer-to-peer file sharing protocols are prohibited. Account suspended.
+    allow_override: false
+    domains:
+    - bittorrent.com
+    - utorrent.com
+    - qbittorrent.org
+    - transmission-bt.com
+    - thepiratebay.se
+    - rarbg.to
+    - magnetdl.com
+    - zooqle.com
+    - torrend.to
+    - limetorrents.co
+    - seedr.cc
+
+  # "" 9. Commercial Video Streaming """""""""""""""""""""""""""""
+  streaming:
+    action: warn
+    message: "š ï¸ Policy Warning: Commercial entertainment streaming detected ({domain}). Only academic research and permitted educational media are allowed. Persisting will disable your computer account after 5 strikes."
+    allow_override: true
+    domains:
+    - netflix.com
+    - www.netflix.com
+    - hotstar.com
+    - primevideo.com
+    - hulu.com
+    - disneyplus.com
+    - dailymotion.com
+    - vimeo.com
+    - tubitv.com
+    - pluto.tv
+
+  # "" 10. Smart YouTube Time-Passing & Entertainment """""""""""
+  # Educational YouTube and Bohra community videos (Aljamea, waaz, bayan, sabaq, marsiya, madeh, Quran)
+  # are fully permitted for all students.
+  # Non-educational media (pranks, comedy, movies, gaming playthroughs, music videos) is treated as
+  # time-passing and strikes progressive warnings with clear reasons.
+  youtube_movies:
+    action: warn
+    message: "š ï¸ YouTube Time-Passing Warning: Non-educational entertainment video detected. Lab workstations are reserved for academic study and Bohra community curriculum. Watching movies, funny pranks, comedy, music, or gaming is considered time-passing and is prohibited during lab hours. Persisting will disable your computer account after 5 strikes."
+    allow_override: true
+    domains: []
+
+  # "" 10b. YouTube Shorts (Blocked Outright) """"""""""""""""""""
+  youtube_shorts:
+    action: block
+    message: "ðŸš« YouTube Shorts is strictly blocked on lab workstations. Please use YouTube exclusively for academic research or Bohra community study."
+    allow_override: false
+    domains: []
+
+  # "" 11. Proxy / VPN / Circumvention Tools """""""""""""""""""""
+  proxy_vpn:
+    action: block
+    message: Proxy and circumvention tools are strictly prohibited on lab workstations. Account suspended.
+    allow_override: false
+    domains:
+    - nordvpn.com
+    - expressvpn.com
+    - surfshark.com
+    - cyberghostvpn.com
+    - ipvanish.com
+    - purevpn.com
+    - privatevpn.com
+    - hidemyass.com
+    - hotspotshield.com
+    - tunnelbear.com
+    - windscribe.com
+    - kproxy.com
+    - proxysite.com
+    - anonymouse.org
+    - hidester.com
+    - croxyproxy.com
+    - 4everproxy.com
+    - sslsecureproxy.com
+    - anonymizer.com
+    - proxyfree.net
+    - proxyunblock.net
+    - ultrasurf.us
+    - hide.me
+
+  # "" 12. Adult Content (Immediate Block) """""""""""""""""""""""
+  adult:
+    action: block
+    message: Restricted content. Access absolutely prohibited under institutional policy. Account suspended.
+    allow_override: false
+    domains:
+    - pornhub.com
+    - xvideos.com
+    - xnxx.com
+    - xhamster.com
+    - redtube.com
+    - youporn.com
+    - tube8.com
+    - spankbang.com
+    - motherless.com
+    - xxx.com
+    - porn.com
+    - beeg.com
+    - onlyfans.com
+    - chaturbate.com
+    - livejasmin.com
+    - bongacams.com
+    - myfreecams.com
+    - stripchat.com
+    - naughtyamerica.com
+
+  # "" 13. Anime Piracy """""""""""""""""""""""""""""""""""""""""
+  anime_piracy:
+    action: block
+    message: Unauthorized anime streaming on piracy sites is prohibited.
+    allow_override: false
+    domains:
+    - anikai.to
+    - animepahe.ru
+    - kaa.mx
+    - animedao.to
+    - hianime.to
+    - anicrush.to
+    - wcofun.net
+    - anix.ac
+    - retrocrush.tv
+    - anime-planet.com
+
+  # "" 14. Academic & Educational Resources """""""""""""""""""""
+  educational:
+    action: allow
+    message: "Educational resource - permitted."
+    allow_override: false
+    domains:
+    - khanacademy.org
+    - www.khanacademy.org
+    - coursera.org
+    - wikipedia.org
+    - en.wikipedia.org
+    - arxiv.org
+    - jstor.org
+    - ncert.nic.in
+    - nptel.ac.in
+    - edx.org
+    - mit.edu
+    - stackoverflow.com
+    - github.com
+    - python.org
+    - w3schools.com
+    - geeksforgeeks.org
+    - quizlet.com
+    - britannica.com
+    - scholar.google.com
+    - darseburhani.org
+    - mumineen.org
+    - jameasaifiyah.org
+    - aljamea.edu
+
+# "" Whitelist """"""""""""""""""""""""""""""""""""""""""""""""
+# Domains here are ALWAYS allowed regardless of any other rule.
+whitelist_domains:
+- koha.ajsn.local
+- 10.10.117.76
+- 152.55.221.78
+- localhost
+- 127.0.0.1
+- darseburhani.org
+- mumineen.org
+- jameasaifiyah.org
+- aljamea.edu
+# Permitted Academic Design Resources
+- pinterest.com
+- www.pinterest.com
+- uk.pinterest.com
+- in.pinterest.com
+- pinterest.co.uk
+- pinterest.ca
+- pinimg.com
+- i.pinimg.com
+# YouTube CDN & streaming components (video playback relies on these)
+- ytimg.com
+- yt3.ggpht.com
+- googlevideo.com
+# Legal/institutional VPNs for administrative research
+- protonvpn.com
+- mullvad.net
+- proton.me
+
+# "" Explicit Blocklist """""""""""""""""""""""""""""""""""""""
+# Explicitly blocked outright on all lab workstations network-wide.
+blocklist_domains:
+# Messaging & Chats
+- discord.com
+- discordapp.com
+- discord.gg
+- kik.com
+- kik.me
+- snapchat.com
+- web.snapchat.com
+- accounts.snapchat.com
+- whatsapp.com
+- web.whatsapp.com
+- telegram.org
+- web.telegram.org
+- viber.com
+# Anonymous Q&A
+- ask.fm
+- tellonym.me
+- ngl.link
+- onyolo.com
+# Video Chats
+- ometv.com
+- chatroulette.com
+- emeraldchat.com
+- monkey.app
+- coomeet.com
+# Unfiltered AI Chatbots
+- janitorai.com
+- character.ai
+- crushon.ai
+- chai-research.com
+# Social Media & Image Sharing
+- reddit.com
+- chat.reddit.com
+- tumblr.com
+- tiktok.com
+- instagram.com
+- threads.net
+- threads.com
+# Gaming
+- roblox.com
+- twitch.tv
+- steamcommunity.com
+- minecraft.net
+- coregames.com
+- fortnite.com
+- garrysmod.com
+- recroom.com
+- vrchat.com
+- playtogether.gg
+- ko-ga.me
+- ylands.com
+- trovegame.com
+- manticoregames.com
+- sandbox.game
+- habbo.com
+- secondlife.com
+- blockmango.com
+- toontownrewritten.com
+- animaljam.com
+- pokemon.com
+- wizard101.com
+- challengerush.com
+- browser.lol
+# Media & Downloads
+- test-unwanted-site.org
+- anikai.to
+- themoviebox.org
+- moviebox.ac
+- videodownloader.site
+- ww8.123moviesfree.net
+- movie-box.co
+- crunchyroll.com
+- netflix.com
+- hidive.com
+- tubitv.com
+- pluto.tv
+- retrocrush.tv
+- anime-planet.com
+- animepahe.ru
+- kaa.mx
+- animedao.to
+- hianime.to
+- anicrush.to
+- wcofun.net
+- anix.ac
+- moviesmod.zone
+
+# "" Scheduled Lab Time Windows """"""""""""""""""""""""""""""""
+# Operating Schedule:
+#   - Monday through Saturday: 08:00 to 21:30
+#   - Sunday: 10:00 to 17:00
+time_windows:
+- days:
+  - mon
+  - tue
+  - wed
+  - thu
+  - fri
+  - sat
+  start: '08:00'
+  end: '21:30'
+  blocked_categories:
+  - messaging_chat
+  - anonymous_qa
+  - video_chat
+  - ai_chatbots
+  - social_media
+  - streaming
+  - youtube_movies
+  - gaming
+  - movie_download
+  - torrent
+  - proxy_vpn
+  - anime_piracy
+- days:
+  - sun
+  start: '10:00'
+  end: '17:00'
+  blocked_categories:
+  - messaging_chat
+  - anonymous_qa
+  - video_chat
+  - ai_chatbots
+  - social_media
+  - streaming
+  - youtube_movies
+  - gaming
+  - movie_download
+  - torrent
+  - proxy_vpn
+  - anime_piracy
+
+# "" Universal Policy Across All Darajahs """""""""""""""""""""""
+# Per-Darajah blocks removed per administrative directive.
+# The policy applies equally to all students in all Darajahs.
+per_darajah_extra_block: {}
+
+per_student_whitelist: {}

@@ -1,0 +1,56 @@
+In the Sentinel enforcement system, multiple strict safeguards and precautions are active to prevent accidental or unfair account disablement.
+
+1. Are Bookmarks Considered Policy Violations?
+
+No. Bookmarks are 100% exempt from policy violations and strikes.
+
+How it works: Before any blocklist, category rule, or strike evaluation runs, the engine checks the student's Chrome bookmarks (_is_bookmarked_by_student()).
+Result: If the domain is saved in the student's browser bookmarks, Sentinel treats it as an authorized academic study shortcut:
+Decision: action: allow
+Status: account_status: active
+Strikes added: 0 (completely bypassed).
+2. How Instagram & Social Media are Handled (Login vs Transient Redirects)
+
+The system distinguishes between an accidental redirect / landing page and deliberate active use:
+
+Unauthenticated / Login Gateways (/login, /accounts/login, popups, ads):
+
+If a student hits Instagram via an ad click, search redirect, or popup landing page with brief time (< 30s and hit_count <= 2), Sentinel classifies it as an Ad / Transient Landing.
+Zero Strikes: Sentinel displays:
+
+"📌 Ad / Redirect Notice: 'instagram.com' was opened via advertisement or popup redirect. The ad should be closed instantly! No violation penalty has been recorded."
+
+No strike is recorded, and the account remains active.
+
+When Does it Count as a Violation?
+
+Only when there is proof of deliberate active engagement:
+The student is logged in and browsing past the login barrier (feeds, direct messages, profile pages, reels), OR
+Sustained active dwell time (dwell_sec >= 20 seconds or repeated hits hit_count >= 3).
+3. Precautions Before a Student Account Can Be Automatically Disabled
+
+For any junior student (Darajah 1–7) to be disabled, the following safeguards are enforced:
+
+5-Strike Progressive Discipline (No Immediate Disable for Social Media or Movies):
+
+Social media (Instagram, Facebook, etc.) and non-educational YouTube movies never trigger an immediate lockout.
+A student must accumulate 5 deliberate strikes before an automatic suspension is triggered (max_warnings_before_block: 5).
+Strikes 1 through 4 only display advisory warnings to give the student opportunity to close the tab.
+
+Immediate Lockout Is Strictly Limited to 5 Extreme Categories:
+
+Immediate suspension without 5 warnings is restricted to high-severity network threats:
+adult content
+proxy_vpn (bypass tools)
+torrent (P2P file sharing)
+video_chat (unmoderated chat like Omegle/OmeTV)
+anonymous_qa
+Everyday browsing, social media landings, ads, and streaming do not qualify for immediate lockout.
+
+Fresh Start Date Cutoff (October 31, 2026):
+
+Browsing records created before October 31, 2026 are excluded. Re-enabled students cannot be penalized for pre-existing history.
+
+Cleared History on Re-Enablement:
+
+Whenever a student account is reinstated (via Sentinel or Active Directory), their previous strike tally is cleared so they start with zero active strikes.

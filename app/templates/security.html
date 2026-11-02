@@ -1,0 +1,2903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🛡️ Security Operations Center — MamalBrowse Sentinel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #0a1128;
+      --bg-elevated: #0f1a35;
+      --bg-radial:   radial-gradient(1200px 800px at 50% -5%, #131c3a 0%, #0a1128 75%);
+      --surface:     rgba(19, 28, 58, 0.90);
+      --surface-card: rgba(26, 36, 71, 0.80);
+      --surface-hover: rgba(35, 46, 84, 0.90);
+      --surface-2:   #152042;
+      --border:      rgba(255, 255, 255, 0.09);
+      --border-strong: rgba(255, 255, 255, 0.16);
+      --border-focus: rgba(245, 200, 66, 0.5);
+      --border-rose:  rgba(244, 63, 94, 0.35);
+      --border-amber: rgba(245, 158, 11, 0.35);
+      --border-green: rgba(16, 185, 129, 0.35);
+      --border-gold:  rgba(245, 200, 66, 0.35);
+
+      --gold:        #f5c842;
+      --gold-soft:   #fbbf24;
+      --gold-deep:   #d97706;
+      --royal:       #1e3a8a;
+      --royal-light: #2563eb;
+      --accent:      #1e3a8a;
+      --accent-glow: rgba(30, 58, 138, 0.35);
+      --rose:        #f43f5e;
+      --rose-glow:   rgba(244, 63, 94, 0.25);
+      --amber:       #f59e0b;
+      --amber-glow:  rgba(245, 158, 11, 0.25);
+      --green:       #10b981;
+      --green-glow:  rgba(16, 185, 129, 0.25);
+      --sky:         #38bdf8;
+      --purple:      #a855f7;
+
+      --text:        #f8fafc;
+      --text-muted:  #94a3b8;
+      --text-sub:    #64748b;
+      --radius-sm:   8px;
+      --radius-md:   14px;
+      --radius-lg:   20px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      background-image: var(--bg-radial);
+      background-attachment: fixed;
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    /* ── Top Navbar ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(8, 13, 26, 0.88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 28px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-brand {
+      display: flex; align-items: center; gap: 12px;
+      font-weight: 700; font-size: 15px; color: var(--text);
+      letter-spacing: -0.01em;
+      text-decoration: none;
+    }
+
+    .nav-brand .icon-shield {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, #f43f5e, #be123c);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 0 16px var(--rose-glow);
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .nav-brand-text { display: flex; flex-direction: column; }
+    .nav-title { font-weight: 800; font-size: 14px; color: #fff; letter-spacing: -0.01em; }
+    .nav-sub { font-size: 10px; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
+
+    .nav-links { display: flex; align-items: center; gap: 8px; }
+
+    .nav-link {
+      color: var(--text-muted); text-decoration: none; font-size: 13px;
+      font-weight: 600; padding: 7px 14px; border-radius: var(--radius-sm);
+      transition: all 0.2s ease;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .nav-link:hover { color: var(--text); background: rgba(255, 255, 255, 0.05); }
+    .nav-link.active {
+      color: #fb7185;
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid var(--border-rose);
+      box-shadow: 0 0 12px rgba(244, 63, 94, 0.15);
+    }
+
+    .btn-top {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: var(--radius-sm);
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .btn-top:hover { color: #fff; background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.2); }
+
+    /* ── Main Container ── */
+    .container { max-width: 1520px; margin: 0 auto; padding: 22px 24px 60px; }
+
+    /* ── Master Status Banner ── */
+    .soc-header {
+      background: var(--surface);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px 26px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      box-shadow: 0 12px 30px -10px rgba(0,0,0,0.5);
+    }
+
+    .soc-title-wrap { display: flex; align-items: center; gap: 14px; }
+    .soc-crest {
+      width: 48px; height: 48px;
+      background: linear-gradient(135deg, rgba(30,58,138,0.9), rgba(15,26,53,0.9));
+      border: 1px solid rgba(245,200,66,0.35);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 0 16px rgba(245,200,66,0.15);
+    }
+    .soc-title-text h1 { font-size: 22px; font-weight: 900; letter-spacing: -0.02em; color: #fff; }
+    .soc-title-text p { font-size: 12px; color: var(--text-sub); margin-top: 2px; }
+
+    .soc-status-badges { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .live-pulse-badge {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #6ee7b7;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 20px;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .live-pulse-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+      animation: pulse 1.8s infinite;
+    }
+    @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.85); } }
+
+    /* ── Persistent KPI Cards ── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .kpi-card {
+      background: var(--surface);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .kpi-card:hover { transform: translateY(-2px); }
+    .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+
+    .kpi-card.critical { border-color: var(--border-rose); background: linear-gradient(145deg, rgba(244, 63, 94, 0.08) 0%, var(--surface) 60%); }
+    .kpi-card.critical::before { background: linear-gradient(90deg, #f43f5e, #fb7185); }
+
+    .kpi-card.warning { border-color: var(--border-amber); background: linear-gradient(145deg, rgba(245, 158, 11, 0.08) 0%, var(--surface) 60%); }
+    .kpi-card.warning::before { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+
+    .kpi-card.purple-card { border-color: rgba(168, 85, 247, 0.35); background: linear-gradient(145deg, rgba(168, 85, 247, 0.08) 0%, var(--surface) 60%); }
+    .kpi-card.purple-card::before { background: linear-gradient(90deg, #a855f7, #c084fc); }
+
+    .kpi-card.success { border-color: var(--border-green); background: linear-gradient(145deg, rgba(16, 185, 129, 0.08) 0%, var(--surface) 60%); }
+    .kpi-card.success::before { background: linear-gradient(90deg, #10b981, #34d399); }
+
+    .kpi-card.radar { border-color: rgba(56, 189, 248, 0.3); background: linear-gradient(145deg, rgba(56, 189, 248, 0.06) 0%, var(--surface) 60%); }
+    .kpi-card.radar::before { background: linear-gradient(90deg, #38bdf8, #818cf8); }
+
+    .kpi-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .kpi-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); }
+    .kpi-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+    .kpi-val { font-size: 28px; font-weight: 800; color: #fff; letter-spacing: -0.02em; line-height: 1; }
+    .kpi-sub { font-size: 11px; color: var(--text-sub); margin-top: 6px; font-weight: 500; }
+
+    /* ── Emergency Lab Lock Strip ── */
+    .lab-lock-card {
+      background: rgba(15, 26, 53, 0.95);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      padding: 12px 20px;
+      margin-bottom: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .lab-lock-label { display: flex; align-items: center; gap: 10px; }
+    .lab-lock-label-icon { font-size: 20px; }
+    .lab-lock-btns { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .btn-lab-lock {
+      font-size: 11.5px; font-weight: 700; padding: 6px 12px; border-radius: 7px;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
+      transition: all 0.15s; border: 1px solid transparent;
+    }
+    .btn-lab-lock.mk { background: rgba(56, 189, 248, 0.15); color: #7dd3fc; border-color: rgba(56, 189, 248, 0.35); }
+    .btn-lab-lock.mk:hover { background: #0284c7; color: #fff; }
+    .btn-lab-lock.rb { background: rgba(168, 85, 247, 0.15); color: #d8b4fe; border-color: rgba(168, 85, 247, 0.35); }
+    .btn-lab-lock.rb:hover { background: #9333ea; color: #fff; }
+    .btn-lab-lock.m { background: rgba(59, 130, 246, 0.15); color: #93c5fd; border-color: rgba(59, 130, 246, 0.35); }
+    .btn-lab-lock.m:hover { background: #2563eb; color: #fff; }
+    .btn-lab-lock.f { background: rgba(236, 72, 153, 0.15); color: #f9a8d4; border-color: rgba(236, 72, 153, 0.35); }
+    .btn-lab-lock.f:hover { background: #db2777; color: #fff; }
+    .btn-lab-lock.all-lock { background: rgba(244, 63, 94, 0.22); color: #fca5a5; border-color: rgba(244, 63, 94, 0.45); font-weight: 800; }
+    .btn-lab-lock.all-lock:hover { background: #dc2626; color: #fff; box-shadow: 0 0 12px rgba(220, 38, 38, 0.5); }
+    .btn-lab-lock.unlock { background: rgba(255, 255, 255, 0.06); color: var(--text-muted); border-color: var(--border); }
+    .btn-lab-lock.unlock:hover { background: rgba(255, 255, 255, 0.15); color: #fff; }
+
+    /* ══ MASTER SOC TABS ══ */
+    .master-tabs-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 22px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .master-tab-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: 12px;
+      padding: 10px 18px;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .master-tab-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    .master-tab-btn.active {
+      background: var(--royal);
+      color: #fff;
+      border-color: var(--royal-light);
+      box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
+    }
+    .master-tab-btn.active.tab-triage {
+      background: rgba(244, 63, 94, 0.18);
+      border-color: var(--border-rose);
+      color: #fda4af;
+      box-shadow: 0 4px 16px rgba(244, 63, 94, 0.25);
+    }
+    .master-tab-btn.active.tab-strikes {
+      background: rgba(245, 158, 11, 0.18);
+      border-color: var(--border-amber);
+      color: #fde68a;
+      box-shadow: 0 4px 16px rgba(245, 158, 11, 0.25);
+    }
+    .master-tab-btn.active.tab-gov {
+      background: rgba(56, 189, 248, 0.18);
+      border-color: rgba(56, 189, 248, 0.4);
+      color: #7dd3fc;
+      box-shadow: 0 4px 16px rgba(56, 189, 248, 0.25);
+    }
+    .master-tab-btn.active.tab-intel {
+      background: rgba(168, 85, 247, 0.18);
+      border-color: rgba(168, 85, 247, 0.4);
+      color: #d8b4fe;
+      box-shadow: 0 4px 16px rgba(168, 85, 247, 0.25);
+    }
+
+    .master-tab-badge {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.35);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ── Tab Panes ── */
+    .master-tab-content { display: none; animation: fadeIn 0.25s ease-out; }
+    .master-tab-content.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ── Workstation Radar Strip ── */
+    .radar-card {
+      background: var(--surface);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px 22px;
+      margin-bottom: 20px;
+    }
+    .card-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px; flex-wrap: wrap; gap: 10px;
+    }
+    .card-head-title { font-size: 14px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px; }
+
+    .station-radar-pill {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11.5px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .station-radar-pill:hover { background: rgba(255, 255, 255, 0.1); }
+    .station-radar-pill.critical { border-color: rgba(244,63,94,0.4); background: rgba(244,63,94,0.12); color: #fda4af; }
+    .station-radar-pill.warning { border-color: rgba(245,158,11,0.4); background: rgba(245,158,11,0.12); color: #fde68a; }
+    .station-radar-count { font-size: 10px; font-weight: 800; background: rgba(0,0,0,0.3); padding: 1px 5px; border-radius: 4px; }
+    .station-radar-lock { background: transparent; border: none; cursor: pointer; font-size: 12px; opacity: 0.8; }
+    .station-radar-lock:hover { opacity: 1; transform: scale(1.15); }
+
+    /* ── Filter Toolbar ── */
+    .filter-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin-bottom: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .filter-top-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+    .filter-pills { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .filter-pill {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .filter-pill:hover { color: var(--text); background: rgba(255,255,255,0.08); }
+    .filter-pill.active { background: var(--royal); color: #fff; border-color: var(--royal-light); }
+    .filter-pill.active-rose { background: rgba(244, 63, 94, 0.2); color: #fda4af; border-color: var(--border-rose); }
+    .filter-pill.active-amber { background: rgba(245, 158, 11, 0.2); color: #fde68a; border-color: var(--border-amber); }
+    .filter-pill.active-purple { background: rgba(168, 85, 247, 0.2); color: #d8b4fe; border-color: rgba(168, 85, 247, 0.5); }
+
+    .filter-controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .search-input-wrap {
+      position: relative; flex: 1; min-width: 220px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; padding: 0 10px;
+    }
+    .search-input-wrap input {
+      background: transparent; border: none; color: #fff;
+      padding: 8px 6px; font-size: 12.5px; width: 100%; outline: none;
+    }
+    .select-wrap select {
+      background: rgba(0, 0, 0, 0.35); border: 1px solid var(--border);
+      color: var(--text); padding: 8px 12px; font-size: 12px;
+      border-radius: var(--radius-sm); outline: none; cursor: pointer;
+    }
+
+    /* ── Incident Stream Cards ── */
+    .stream-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px 22px;
+    }
+    .stream-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+    .feed-container { display: flex; flex-direction: column; gap: 10px; }
+
+    .alert-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+    .alert-item:hover { background: rgba(255, 255, 255, 0.04); border-color: rgba(255, 255, 255, 0.18); }
+    .alert-item.risk-high { border-left: 4px solid var(--rose); }
+    .alert-item.risk-medium { border-left: 4px solid var(--amber); }
+
+    .alert-top-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+    .alert-tags-left { display: flex; align-items: center; gap: 8px; }
+    .sev-meter { font-size: 10.5px; font-weight: 800; font-family: 'JetBrains Mono', monospace; padding: 1px 6px; border-radius: 4px; }
+    .sev-meter.high { background: rgba(244,63,94,0.18); color: #fb7185; }
+    .sev-meter.med { background: rgba(245,158,11,0.18); color: #fbbf24; }
+    .time-stamp { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--text-muted); }
+    .station-badge { font-size: 11px; font-family: 'JetBrains Mono', monospace; background: rgba(30,58,138,0.3); border: 1px solid rgba(56,189,248,0.25); color: #7dd3fc; padding: 2px 7px; border-radius: 4px; }
+
+    .alert-student-section { display: flex; align-items: flex-start; gap: 12px; }
+    .student-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: rgba(30, 58, 138, 0.5); border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff; font-size: 12px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      overflow: hidden; position: relative;
+    }
+    .student-avatar img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+    }
+    .student-details { flex: 1; min-width: 0; }
+    .student-header-line { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .student-name-text { font-size: 13.5px; font-weight: 750; color: #fff; }
+    .student-trno-tag { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--sky); font-weight: 700; }
+
+    .target-callout {
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(0, 0, 0, 0.25); border: 1px solid var(--border);
+      border-radius: 6px; padding: 6px 10px; margin-top: 4px; gap: 10px;
+    }
+    .target-info { display: flex; align-items: center; gap: 6px; overflow: hidden; }
+    .target-name { font-size: 12px; font-weight: 700; color: #fca5a5; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: 'JetBrains Mono', monospace; }
+    .target-name.proc { color: #d8b4fe; }
+
+    .alert-reason-banner {
+      font-size: 11.5px; color: var(--text-sub);
+      background: rgba(255, 255, 255, 0.02); padding: 4px 8px; border-radius: 4px;
+    }
+
+    .alert-actions-bar { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+    .btn-action {
+      font-size: 11px; font-weight: 700; padding: 4px 9px; border-radius: 6px;
+      cursor: pointer; border: 1px solid transparent; transition: all 0.15s;
+    }
+    .btn-action-ack { background: rgba(16, 185, 129, 0.12); color: #6ee7b7; border-color: rgba(16, 185, 129, 0.3); }
+    .btn-action-ack:hover { background: #10b981; color: #fff; }
+
+    /* ── Strike Matrix & Tables ── */
+    .strike-info-strip {
+      background: rgba(15, 26, 53, 0.7);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px 20px;
+      margin-bottom: 18px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 12px;
+    }
+    .strike-tier-card { display: flex; align-items: center; gap: 10px; }
+    .strike-tier-icon { font-size: 20px; }
+    .strike-tier-title { font-size: 12px; font-weight: 800; color: #fff; }
+    .strike-tier-sub { font-size: 10.5px; color: var(--text-sub); }
+
+    .dossier-table, .gov-table {
+      width: 100%; border-collapse: separate; border-spacing: 0;
+      font-size: 12.5px;
+    }
+    .dossier-table th, .gov-table th {
+      background: rgba(10, 17, 40, 0.8);
+      color: var(--text-sub);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+    .dossier-table td, .gov-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      vertical-align: middle;
+    }
+    .dossier-table tr:hover, .gov-table tr:hover { background: rgba(255, 255, 255, 0.025); }
+
+    .strike-dots-row { display: flex; align-items: center; gap: 4px; margin-top: 4px; }
+    .strike-dot { width: 9px; height: 9px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.15); }
+    .strike-dot.dot-empty { background: rgba(255, 255, 255, 0.08); }
+    .strike-dot.dot-warn { background: #f59e0b; border-color: #f59e0b; box-shadow: 0 0 6px rgba(245, 158, 11, 0.5); }
+    .strike-dot.dot-s3 { background: #f97316; border-color: #f97316; box-shadow: 0 0 6px rgba(249, 115, 22, 0.5); }
+    .strike-dot.dot-s4 { background: #ef4444; border-color: #ef4444; box-shadow: 0 0 6px rgba(239, 68, 68, 0.6); }
+    .strike-dot.dot-s5 { background: #e11d48; border-color: #e11d48; box-shadow: 0 0 8px rgba(225, 29, 72, 0.8); }
+
+    /* ── AD Governance Styles ── */
+    .gov-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
+    .gov-kpi-chips { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .gov-chip {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 11.5px;
+      font-weight: 600;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .gov-chip.disabled-chip { background: rgba(244, 63, 94, 0.12); border-color: rgba(244, 63, 94, 0.35); color: #fda4af; cursor: pointer; }
+    .gov-chip.active-chip { background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.35); color: #6ee7b7; cursor: pointer; }
+    .gov-chip.domain-chip { background: rgba(99, 102, 241, 0.12); border-color: rgba(99, 102, 241, 0.35); color: #c7d2fe; }
+
+    .gov-tabs { display: flex; gap: 4px; background: rgba(0, 0, 0, 0.25); padding: 4px; border-radius: var(--radius-sm); border: 1px solid var(--border); }
+    .gov-tab {
+      background: transparent; border: none; color: var(--text-muted);
+      padding: 5px 12px; font-size: 12px; font-weight: 700; border-radius: 6px; cursor: pointer;
+    }
+    .gov-tab.active { background: var(--royal); color: #fff; }
+    .gov-tab.active-danger { background: rgba(244, 63, 94, 0.2); color: #fca5a5; }
+
+    .btn-gov-enable { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.4); font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 6px; cursor: pointer; }
+    .btn-gov-enable:hover { background: #10b981; color: #fff; }
+    .btn-gov-disable { background: rgba(244, 63, 94, 0.15); color: #fca5a5; border: 1px solid rgba(244, 63, 94, 0.4); font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 6px; cursor: pointer; }
+    .btn-gov-disable:hover { background: #f43f5e; color: #fff; }
+
+    .days-pill { font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 12px; display: inline-block; font-family: 'JetBrains Mono', monospace; }
+    .days-pill.critical { background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.4); color: #fca5a5; }
+    .days-pill.warning { background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); color: #fde68a; }
+    .days-pill.ok { background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); color: #7dd3fc; }
+    .days-pill.indefinite { background: rgba(148, 163, 184, 0.1); border: 1px solid rgba(148, 163, 184, 0.25); color: var(--text-muted); }
+
+    /* ── Analytics Tier Grids ── */
+    .analytics-top-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 1024px) { .analytics-top-grid { grid-template-columns: 1fr; } }
+
+    .analytics-trio-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .chart-container-box { position: relative; width: 100%; min-height: 220px; }
+
+    /* ── Modals ── */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(5, 10, 25, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 9999;
+      display: none; align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-card {
+      background: #0f1a35; border: 1px solid rgba(245, 200, 66, 0.3);
+      border-radius: var(--radius-lg); width: 100%; max-width: 620px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.8); overflow: hidden;
+      display: flex; flex-direction: column; max-height: 90vh;
+    }
+    .modal-header {
+      padding: 16px 20px; border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .modal-header h3 { font-size: 16px; font-weight: 800; color: #fff; }
+    .modal-close { background: transparent; border: none; color: var(--text-muted); font-size: 18px; cursor: pointer; }
+    .modal-body { padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+
+    /* ── Official Printable Dossier Paper Modal ── */
+    .dossier-paper {
+      background: #0d152b; border: 1px solid rgba(245, 200, 66, 0.4);
+      border-radius: var(--radius-lg); width: 100%; max-width: 780px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.9); overflow: hidden;
+      display: flex; flex-direction: column; max-height: 92vh;
+    }
+    .dossier-header-strip {
+      padding: 18px 24px; border-bottom: 2px solid rgba(245, 200, 66, 0.3);
+      background: rgba(19, 28, 58, 0.6);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+
+    /* ── Pagination Buttons ── */
+    .pg-btn {
+      background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border);
+      color: var(--text-muted); border-radius: 6px; padding: 4px 10px;
+      font-size: 11.5px; font-weight: 600; cursor: pointer;
+    }
+    .pg-btn:hover { color: #fff; background: rgba(255,255,255,0.12); }
+    .pg-btn.active { background: var(--gold); color: #0f172a; border-color: var(--gold); font-weight: 800; }
+    .pg-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .badge-count { font-size: 10.5px; font-weight: 800; padding: 2px 7px; border-radius: 12px; }
+    .badge-rose { background: rgba(244, 63, 94, 0.18); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.4); }
+    .badge-amber { background: rgba(245, 158, 11, 0.18); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+    .badge-purple { background: rgba(168, 85, 247, 0.18); color: #d8b4fe; border: 1px solid rgba(168, 85, 247, 0.4); }
+    .badge-sky { background: rgba(56, 189, 248, 0.18); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.4); }
+
+    .btn {
+      background: var(--royal); color: #fff; border: 1px solid var(--royal-light);
+      border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 700;
+      cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 5px;
+    }
+    .btn:hover { background: #1d4ed8; }
+    .btn-surface { background: rgba(255,255,255,0.06); border-color: var(--border); color: var(--text); }
+    .btn-surface:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+    @media print {
+      body * { visibility: hidden; }
+      #disciplinaryDossierModal, #disciplinaryDossierModal * { visibility: visible; }
+      #disciplinaryDossierModal { position: absolute; left: 0; top: 0; width: 100%; background: #fff !important; color: #000 !important; }
+      .dossier-paper { background: #fff !important; color: #000 !important; border: 1px solid #ccc !important; box-shadow: none !important; width: 100% !important; max-width: 100% !important; }
+      .dossier-footer-bar { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <nav>
+    <a href="/home" class="nav-brand">
+      <div class="nav-brand-text">
+        <span class="nav-title">MamalBrowse Sentinel</span>
+        <span class="nav-sub">Security Operations Center · Al-Jamea</span>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="/home" class="nav-link">Dashboard</a>
+      <a href="/analytics" class="nav-link">Analytics</a>
+      <a href="/students" class="nav-link">Students</a>
+      <a href="/darajah" class="nav-link">Darajah</a>
+      <a href="/security" class="nav-link active">Security</a>
+      <a href="/reports/executive" class="nav-link" target="_blank">Executive</a>
+      <button class="btn-top" id="btnSoundToggle" onclick="toggleAudioMute()" title="Toggle audio chime">
+        <span id="soundLabel">Audio: ON</span>
+      </button>
+      <button class="btn-top" id="btnNotif" onclick="requestNotificationPermission()">
+        Browser Alerts
+      </button>
+      <a href="/logout" class="btn-top" style="color:#fca5a5;border-color:rgba(244,63,94,0.3);">Logout</a>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <!-- ── Master SOC Banner ── -->
+    <div class="soc-header">
+      <div class="soc-title-wrap">
+        <div class="soc-crest">🛡️</div>
+        <div class="soc-title-text">
+          <h1>Security Command Center &amp; Enforcement Console</h1>
+          <p>Windows Domain: <strong style="color:var(--sky);font-family:'JetBrains Mono',monospace;">mamal.nbi</strong> · Enrolled Roster: <strong style="color:var(--gold);">1,397 Active OU Students</strong> (Koha Alumni Excluded)</p>
+        </div>
+      </div>
+      <div class="soc-status-badges">
+        <div class="live-pulse-badge">
+          <div class="live-pulse-dot"></div>
+          <span>Sentinel Armed &amp; Telemetry Live</span>
+        </div>
+        <button class="btn btn-surface" onclick="refreshCurrentTab()" style="font-size:12px;padding:6px 14px;">
+          🔄 Refresh
+        </button>
+        <button class="btn btn-surface" onclick="exportThreatCSV()" style="font-size:12px;padding:6px 14px;">
+          📥 Export CSV
+        </button>
+      </div>
+    </div>
+
+    <!-- ── KPI Overview Grid ── -->
+    <div class="kpi-grid">
+      <div class="kpi-card critical">
+        <div class="kpi-header">
+          <span class="kpi-title">Critical Threats</span>
+          <div class="kpi-icon" style="background:rgba(244,63,94,0.15);color:#f87171;">🚨</div>
+        </div>
+        <div class="kpi-val" id="kpiHighCount" style="color:#f87171;">0</div>
+        <div class="kpi-sub">Proxy, VPNs, piracy, unauthorized binaries</div>
+      </div>
+      <div class="kpi-card warning">
+        <div class="kpi-header">
+          <span class="kpi-title">Policy Warnings</span>
+          <div class="kpi-icon" style="background:rgba(245,158,11,0.15);color:#fbbf24;">⚠️</div>
+        </div>
+        <div class="kpi-val" id="kpiMedCount" style="color:#fbbf24;">0</div>
+        <div class="kpi-sub">Social media, non-academic YouTube, gaming</div>
+      </div>
+      <div class="kpi-card purple-card">
+        <div class="kpi-header">
+          <span class="kpi-title">Disallowed Software</span>
+          <div class="kpi-icon" style="background:rgba(168,85,247,0.15);color:#d8b4fe;">💻</div>
+        </div>
+        <div class="kpi-val" id="kpiAppCount" style="color:#d8b4fe;">0</div>
+        <div class="kpi-sub">Non-approved browsers, media players, proxy .exe</div>
+      </div>
+      <div class="kpi-card success">
+        <div class="kpi-header">
+          <span class="kpi-title">Reviewed &amp; Suppressed</span>
+          <div class="kpi-icon" style="background:rgba(16,185,129,0.15);color:#34d399;">✅</div>
+        </div>
+        <div class="kpi-val" id="kpiAckCount" style="color:#34d399;">0</div>
+        <div class="kpi-sub">Acknowledged alerts removed from queue</div>
+      </div>
+      <div class="kpi-card radar">
+        <div class="kpi-header">
+          <span class="kpi-title">Active Directory Status</span>
+          <div class="kpi-icon" style="background:rgba(56,189,248,0.15);color:#38bdf8;">🏛️</div>
+        </div>
+        <div class="kpi-val" id="kpiRadarStatus" style="font-size:20px;color:#7dd3fc;margin-top:2px;">mamal.nbi</div>
+        <div class="kpi-sub" id="kpiLastUpdated">Sync: Live polling</div>
+      </div>
+    </div>
+
+    <!-- ── Emergency Lab Lock Strip ── -->
+    <div class="lab-lock-card">
+      <div class="lab-lock-label">
+        <div class="lab-lock-label-icon">🔒</div>
+        <div>
+          <div style="font-size:13px;font-weight:800;color:#fff;">Emergency Lab Terminal Interlock Control</div>
+          <div style="font-size:11px;color:var(--text-sub);">Instant workstation lock · invigilation quarantine · prayer intervals (120 Total Terminals)</div>
+        </div>
+      </div>
+      <div class="lab-lock-btns">
+        <button class="btn-lab-lock mk" onclick="executeLabLock('MK', 'lock')">🖥️ Masakin MK·20</button>
+        <button class="btn-lab-lock rb" onclick="executeLabLock('RB', 'lock')">🖥️ Rabwaat RB·20</button>
+        <button class="btn-lab-lock m" onclick="executeLabLock('M', 'lock')">🖥️ Boys M·40</button>
+        <button class="btn-lab-lock f" onclick="executeLabLock('F', 'lock')">🖥️ Girls F·40</button>
+        <button class="btn-lab-lock all-lock" onclick="executeLabLock('ALL', 'lock')">🛑 Lock All 120</button>
+        <button class="btn-lab-lock unlock" onclick="executeLabLock('ALL', 'unlock')">🔓 Unlock All</button>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <!-- 🏛️ MASTER SOC TAB NAVIGATION BAR                             -->
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <div class="master-tabs-bar">
+      <button class="master-tab-btn tab-triage active" id="btnTab_triage" onclick="switchMasterTab('triage')">
+        <span>🚨</span> Live Triage &amp; Interlock
+        <span class="master-tab-badge" id="tabBadgeTriage">0</span>
+      </button>
+      <button class="master-tab-btn tab-strikes" id="btnTab_strikes" onclick="switchMasterTab('strikes')">
+        <span>⚖️</span> Disciplinary &amp; 5-Strike Matrix
+        <span class="master-tab-badge" id="tabBadgeStrikes">0</span>
+      </button>
+      <button class="master-tab-btn tab-gov" id="btnTab_gov" onclick="switchMasterTab('gov')">
+        <span>🏛️</span> Active Directory &amp; Governance
+        <span class="master-tab-badge" id="tabBadgeGov">—</span>
+      </button>
+      <button class="master-tab-btn tab-intel" id="btnTab_intel" onclick="switchMasterTab('intel')">
+        <span>📈</span> Threat Intelligence &amp; Analytics
+      </button>
+    </div>
+
+    <!-- ╔══════════════════════════════════════════════════════════════╗ -->
+    <!-- ║  TAB 1: LIVE TRIAGE & INTERLOCK                              ║ -->
+    <!-- ╚══════════════════════════════════════════════════════════════╝ -->
+    <div class="master-tab-content active" id="paneTab_triage">
+
+      <!-- Workstation Threat Radar -->
+      <div class="radar-card">
+        <div class="card-head">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="card-head-title"><span>🖥️</span> Workstation Threat Radar</span>
+            <span class="badge-count badge-rose" id="radarStationBadge">Active Workstation Telemetry</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:11.5px;color:var(--text-sub);">Click a station to filter feed below</span>
+            <button class="btn btn-surface" style="font-size:11px;padding:3px 9px;" onclick="clearStationFilter()">✕ Clear</button>
+          </div>
+        </div>
+        <div id="workstationRadarGrid" style="display:flex;flex-wrap:wrap;gap:8px;max-height:130px;overflow-y:auto;padding:2px;">
+          <span style="font-size:12px;color:var(--text-muted);">Syncing lab workstation radar…</span>
+        </div>
+      </div>
+
+      <!-- Real-Time Filter Toolbar -->
+      <div class="filter-panel">
+        <div class="filter-top-row">
+          <div class="filter-pills">
+            <button class="filter-pill active" id="pillAll" onclick="setRiskPill('ALL')">All Threats</button>
+            <button class="filter-pill" id="pillHigh" onclick="setRiskPill('HIGH')">🚨 Critical</button>
+            <button class="filter-pill" id="pillMed" onclick="setRiskPill('MEDIUM')">⚠️ Warnings</button>
+            <button class="filter-pill" id="pillProxy" onclick="setCategoryPill('proxy')">🌐 Proxy / VPN</button>
+            <button class="filter-pill" id="pillSocial" onclick="setCategoryPill('social')">📱 Social</button>
+            <button class="filter-pill" id="pillGaming" onclick="setCategoryPill('gaming')">🎮 Gaming</button>
+            <button class="filter-pill" id="pillPiracy" onclick="setCategoryPill('piracy')">🎬 Piracy</button>
+            <button class="filter-pill" id="pillApp" onclick="setCategoryPill('.exe')">💻 Software</button>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span style="font-size:12px;color:var(--text-sub);" id="filterResultsCount">All active threat records</span>
+            <button class="btn btn-surface" style="font-size:11px;padding:4px 10px;" onclick="acknowledgeAllVisible()">✓ Review All Visible</button>
+          </div>
+        </div>
+        <div class="filter-controls">
+          <div class="search-input-wrap">
+            <span style="font-size:13px;opacity:0.7;">🔍</span>
+            <input type="text" id="inpSearch" placeholder="Search TRNO, student name, domain, .exe, or station…" oninput="filterLocalFeed()">
+          </div>
+          <div class="select-wrap">
+            <select id="selDarajah" onchange="fetchThreatData()">
+              <option value="">All Darajahs / Classes</option>
+            </select>
+          </div>
+          <div class="select-wrap">
+            <select id="selGroup" onchange="fetchThreatData()">
+              <option value="">All Student Groups</option>
+              <option value="Talabaat">Talabaat (Boys)</option>
+              <option value="Talebaat">Talebaat (Girls)</option>
+            </select>
+          </div>
+          <button class="btn btn-surface" onclick="resetFilters()" style="font-size:11px;padding:7px 12px;">✕ Reset</button>
+        </div>
+      </div>
+
+      <!-- Real-Time Telemetry Stream Cards -->
+      <div class="stream-card">
+        <div class="stream-header">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:15px;font-weight:800;color:#fff;">🚨 Real-Time Security Telemetry Stream</span>
+            <span id="feedCountBadge" class="badge-count badge-rose">0 Active</span>
+          </div>
+          <span style="font-size:11.5px;font-family:'JetBrains Mono',monospace;color:var(--text-sub);" id="streamTimestamp">—</span>
+        </div>
+        <div class="feed-container" id="alertFeedList" style="max-height:540px;overflow-y:auto;padding-right:4px;">
+          <div style="text-align:center;padding:40px;color:var(--text-muted);">
+            <div style="font-size:28px;margin-bottom:8px;">📡</div>
+            <h4 style="color:#e2e8f0;font-weight:700;">Connecting to Sentinel Telemetry Stream…</h4>
+            <p style="font-size:12px;color:var(--text-sub);margin-top:6px;">Syncing workstation telemetry and analyzing 2.55M lab session records…</p>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;">
+          <span id="feedPaginationInfo" style="font-size:12px;color:var(--text-sub);">Showing 0 alerts</span>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <button class="pg-btn" id="feedBtnPrev" onclick="changeFeedPage(-1)" disabled>‹ Prev</button>
+            <span id="feedPageNum" style="font-family:'JetBrains Mono',monospace;font-weight:700;color:#fff;padding:0 6px;">1 / 1</span>
+            <button class="pg-btn" id="feedBtnNext" onclick="changeFeedPage(1)" disabled>Next ›</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ╔══════════════════════════════════════════════════════════════╗ -->
+    <!-- ║  TAB 2: DISCIPLINARY & 5-STRIKE MATRIX                       ║ -->
+    <!-- ╚══════════════════════════════════════════════════════════════╝ -->
+    <div class="master-tab-content" id="paneTab_strikes">
+
+      <!-- Disciplinary Policy Ladder -->
+      <div class="strike-info-strip">
+        <div class="strike-tier-card">
+          <div class="strike-tier-icon">🟡</div>
+          <div>
+            <div class="strike-tier-title">Strike 1 &amp; 2: Educational Warning</div>
+            <div class="strike-tier-sub">On-screen notification · advisory recorded</div>
+          </div>
+        </div>
+        <div class="strike-tier-card">
+          <div class="strike-tier-icon">🟠</div>
+          <div>
+            <div class="strike-tier-title">Strike 3: Proctor Counseling</div>
+            <div class="strike-tier-sub">Formal flag logged in disciplinary dossier</div>
+          </div>
+        </div>
+        <div class="strike-tier-card">
+          <div class="strike-tier-icon">🔴</div>
+          <div>
+            <div class="strike-tier-title">Strike 4: Urgent Multi-Channel Alert</div>
+            <div class="strike-tier-sub">Admin dispatch (Telegram/Discord/Email)</div>
+          </div>
+        </div>
+        <div class="strike-tier-card">
+          <div class="strike-tier-icon">🛑</div>
+          <div>
+            <div class="strike-tier-title">Strike 5: Active Directory Lockout</div>
+            <div class="strike-tier-sub">AD user disabled · 14-day lab suspension</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Bulk Domain Pardon Panel ── -->
+      <div class="stream-card" id="bulkPardonPanel" style="border-color:rgba(56,189,248,0.3);background:linear-gradient(145deg,rgba(56,189,248,0.05),var(--surface));margin-bottom:18px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+          <span style="font-size:15px;font-weight:800;color:#fff;">Bulk Domain Pardon</span>
+          <span style="background:rgba(56,189,248,0.15);color:#7dd3fc;border:1px solid rgba(56,189,248,0.3);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;">Admin Tool</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--text-sub);margin-bottom:14px;line-height:1.6;">
+          Preview and bulk-clear all students whose accounts were suspended due to a specific domain violation.
+          Type any domain keyword (e.g. <code style="background:rgba(56,189,248,0.12);color:#7dd3fc;padding:1px 5px;border-radius:4px;">youtube</code>, <code style="background:rgba(56,189,248,0.12);color:#7dd3fc;padding:1px 5px;border-radius:4px;">tiktok</code>, <code style="background:rgba(56,189,248,0.12);color:#7dd3fc;padding:1px 5px;border-radius:4px;">facebook</code>), preview the list, then pardon all with one click.
+          Darajah 8–11 senior accounts remain locked per institutional directive.
+        </p>
+
+        <!-- Quick Presets -->
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+          <span style="font-size:11px;color:var(--text-sub);align-self:center;font-weight:600;">Quick Presets:</span>
+          <button class="btn btn-surface" onclick="setPardonKeyword('youtube')" style="font-size:11px;padding:4px 10px;color:#fde68a;border-color:rgba(253,230,138,0.3);">YouTube</button>
+          <button class="btn btn-surface" onclick="setPardonKeyword('tiktok')" style="font-size:11px;padding:4px 10px;color:#f9a8d4;border-color:rgba(249,168,212,0.3);">TikTok</button>
+          <button class="btn btn-surface" onclick="setPardonKeyword('facebook')" style="font-size:11px;padding:4px 10px;color:#93c5fd;border-color:rgba(147,197,253,0.3);">Facebook</button>
+          <button class="btn btn-surface" onclick="setPardonKeyword('instagram')" style="font-size:11px;padding:4px 10px;color:#c4b5fd;border-color:rgba(196,181,253,0.3);">Instagram</button>
+          <button class="btn btn-surface" onclick="setPardonKeyword('roblox')" style="font-size:11px;padding:4px 10px;color:#86efac;border-color:rgba(134,239,172,0.3);">Roblox</button>
+          <button class="btn btn-surface" onclick="setPardonKeyword('gaming')" style="font-size:11px;padding:4px 10px;color:#fb923c;border-color:rgba(251,146,60,0.3);">Gaming</button>
+        </div>
+
+        <!-- Search Row -->
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px;">
+          <input type="text" id="pardonKeywordInp" placeholder="Enter domain keyword (e.g. youtube)" value=""
+            style="flex:1;min-width:220px;background:rgba(0,0,0,0.35);border:1px solid var(--border);color:#fff;padding:8px 14px;border-radius:8px;font-size:13px;outline:none;"
+            onkeydown="if(event.key==='Enter') previewPardon()">
+          <button class="btn btn-surface" onclick="previewPardon()" id="btnPardonPreview" style="font-size:12px;padding:7px 16px;min-width:100px;">
+            Preview
+          </button>
+          <button onclick="executeBulkPardon()" id="btnPardonExecute"
+            style="display:none;background:rgba(16,185,129,0.18);color:#34d399;border:1px solid rgba(16,185,129,0.45);padding:7px 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.2s;">
+            Pardon All (<span id="pardonCount">0</span>)
+          </button>
+          <span id="pardonStatusMsg" style="font-size:11.5px;color:var(--text-sub);"></span>
+        </div>
+
+        <!-- Preview Table -->
+        <div id="pardonPreviewWrap" style="display:none;">
+          <div style="font-size:12px;color:var(--text-sub);margin-bottom:8px;font-weight:600;" id="pardonPreviewLabel"></div>
+          <div style="max-height:280px;overflow-y:auto;border-radius:8px;border:1px solid var(--border);">
+            <table class="dossier-table" style="width:100%;border-radius:0;">
+              <thead>
+                <tr>
+                  <th style="width:220px;">Student</th>
+                  <th style="width:120px;">Darajah</th>
+                  <th>Reason for Block</th>
+                  <th style="width:100px;">Suspended At</th>
+                  <th style="width:80px;">Violations</th>
+                </tr>
+              </thead>
+              <tbody id="pardonPreviewTbody">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Strike Table Container -->
+      <div class="stream-card">
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:12px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <h2 style="font-size:16px;font-weight:900;color:#fff;">⚖️ Disciplinary Escalation Matrix (Strikes 1–5)</h2>
+            <span class="badge-count badge-rose" id="strikeMatrixBadge">0 Enforced</span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input type="text" id="strikeSearchInp" placeholder="Search TRNO or Name…" oninput="filterStrikeMatrix()"
+              style="background:rgba(0,0,0,0.3);border:1px solid var(--border);color:#fff;padding:6px 12px;border-radius:6px;font-size:12px;outline:none;">
+            <button class="btn btn-surface" onclick="fetchStrikeMatrix()" style="font-size:11.5px;padding:6px 12px;">🔄 Refresh</button>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;">
+          <button class="master-tab-btn active" id="tabStrike_ALL" onclick="setStrikeFilter('ALL')" style="padding:6px 14px;font-size:12px;">All Escalations (<span id="strikeCountAll">0</span>)</button>
+          <button class="master-tab-btn" id="tabStrike_5" onclick="setStrikeFilter('5')" style="padding:6px 14px;font-size:12px;color:#fca5a5;">🛑 Strike 5 · AD Suspended (<span id="strikeCount5">0</span>)</button>
+          <button class="master-tab-btn" id="tabStrike_4" onclick="setStrikeFilter('4')" style="padding:6px 14px;font-size:12px;color:#f87171;">🔴 Strike 4 · Final Warning (<span id="strikeCount4">0</span>)</button>
+          <button class="master-tab-btn" id="tabStrike_3" onclick="setStrikeFilter('3')" style="padding:6px 14px;font-size:12px;color:#fbbf24;">🟠 Strike 3 · Counseling (<span id="strikeCount3">0</span>)</button>
+          <button class="master-tab-btn" id="tabStrike_WARN" onclick="setStrikeFilter('WARN')" style="padding:6px 14px;font-size:12px;color:#fde68a;">🟡 Strikes 1–2 · Warning (<span id="strikeCountWarn">0</span>)</button>
+        </div>
+
+        <div style="overflow-x:auto;">
+          <table class="dossier-table">
+            <thead>
+              <tr>
+                <th style="width:260px;">Student Identity</th>
+                <th style="width:130px;">Darajah &amp; Group</th>
+                <th style="width:180px;">Strike Level (1–5)</th>
+                <th>Policy Infractions &amp; Station</th>
+                <th style="width:140px;">AD Account Status</th>
+                <th style="width:200px;text-align:right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="strikeMatrixTbody">
+              <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text-sub);">Loading disciplinary escalation records…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ╔══════════════════════════════════════════════════════════════╗ -->
+    <!-- ║  TAB 3: ACTIVE DIRECTORY & ACCOUNT GOVERNANCE               ║ -->
+    <!-- ╚══════════════════════════════════════════════════════════════╝ -->
+    <div class="master-tab-content" id="paneTab_gov">
+
+      <!-- 14-Day Suspension Expiry Review Queue -->
+      <div id="secReinstatementSection" style="display:none;margin-bottom:20px;">
+        <div class="radar-card" style="border-color:rgba(245,200,66,0.35);background:linear-gradient(145deg, rgba(245,200,66,0.06), var(--surface));">
+          <div class="card-head">
+            <div>
+              <div style="font-size:14px;font-weight:800;color:#fff;display:flex;align-items:center;gap:8px;">
+                <span>⏰</span> Suspension Expiry Queue — 14-Day Institutional Rule
+              </div>
+              <div style="font-size:11.5px;color:var(--text-sub);margin-top:2px;">
+                Students whose 14-day suspension expires within 3 days. Darajah 8–11 senior students remain permanently locked per institutional directive.
+              </div>
+            </div>
+            <span class="badge-count badge-amber" id="secReinstatementCountBadge">0 Due for Review</span>
+          </div>
+          <div id="secReinstatementRows" style="margin-top:10px;"></div>
+        </div>
+      </div>
+
+      <!-- Main AD Hub -->
+      <div class="stream-card">
+        <div class="gov-head">
+          <div>
+            <h2 style="font-size:16px;font-weight:900;color:#fff;">🏛️ Active Directory Account Governance Hub</h2>
+            <p style="font-size:11.5px;color:var(--text-sub);margin-top:2px;">
+              Windows Domain: <code style="color:var(--sky);">mamal.nbi</code> · Locked to 1,397 active student accounts across Talabaat &amp; Talebaat OUs.
+            </p>
+          </div>
+          <div class="gov-kpi-chips">
+            <div class="gov-chip domain-chip"><span>🖥️</span> <strong>mamal.nbi</strong> <span style="font-size:10px;color:#a5b4fc;">(ONLINE)</span></div>
+            <div class="gov-chip disabled-chip" onclick="switchGovTab('disabled')">
+              <span>⛔</span> <strong><span id="govKpiDisabledCount">—</span> Disabled</strong>
+            </div>
+            <div class="gov-chip active-chip" onclick="switchGovTab('active')">
+              <span>🟢</span> <strong><span id="govKpiActiveCount">—</span> Active</strong>
+            </div>
+            <button class="btn btn-surface" onclick="fetchGovAccounts(true)" style="font-size:11px;padding:4px 8px;">🔄 Sync AD</button>
+            <a href="/enforce/admin/governance/export-disabled" class="btn btn-surface" style="font-size:11px;padding:4px 8px;text-decoration:none;">📥 Export CSV</a>
+            <button class="btn btn-surface" onclick="openGovAuditModal()" style="font-size:11px;padding:4px 8px;">📜 Audit Trail</button>
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+          <div class="gov-tabs">
+            <button class="gov-tab active-danger" id="tabGovDisabled" onclick="switchGovTab('disabled')">⛔ Disabled (<span id="tabCountDisabled">—</span>)</button>
+            <button class="gov-tab" id="tabGovActive" onclick="switchGovTab('active')">🟢 Active Accounts</button>
+            <button class="gov-tab" id="tabGovViolations" onclick="switchGovTab('violations')">🚨 Policy Strikes</button>
+            <button class="gov-tab" id="tabGovAll" onclick="switchGovTab('all')">👥 All Students</button>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <div class="search-input-wrap" style="width:240px;">
+              <span style="font-size:13px;opacity:0.7;">🔍</span>
+              <input type="text" id="inpGovSearch" placeholder="Search TRNO, name, reason…" oninput="filterGovLocalTable()">
+            </div>
+            <div class="select-wrap" style="width:140px;">
+              <select id="selGovDarajah" onchange="fetchGovAccounts()">
+                <option value="">All Darajahs</option>
+                <option value="1">Darajah 1</option><option value="2">Darajah 2</option>
+                <option value="3">Darajah 3</option><option value="4">Darajah 4</option>
+                <option value="5">Darajah 5</option><option value="6">Darajah 6</option>
+                <option value="7">Darajah 7</option><option value="8">Darajah 8</option>
+                <option value="9">Darajah 9</option><option value="10">Darajah 10</option>
+                <option value="11">Darajah 11</option>
+              </select>
+            </div>
+            <div class="select-wrap" style="width:110px;">
+              <select id="selGovPageSize" onchange="setGovPageSize(this.value)">
+                <option value="15" selected>15/page</option>
+                <option value="25">25/page</option>
+                <option value="50">50/page</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div style="overflow-x:auto;">
+          <table class="gov-table">
+            <thead>
+              <tr>
+                <th style="width:240px;">Student Identity</th>
+                <th style="width:140px;">AD Status</th>
+                <th style="width:160px;">Date Disabled</th>
+                <th>Reason / Infraction Note</th>
+                <th style="width:120px;text-align:center;">Days Left</th>
+                <th style="width:180px;text-align:right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="govTableBody">
+              <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text-sub);">Querying Active Directory &amp; Sentinel accounts…</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;">
+          <div id="govPaginationInfo" style="font-size:12px;color:var(--text-sub);">Showing 0 accounts</div>
+          <div id="govPaginationNav" style="display:flex;gap:4px;align-items:center;"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ╔══════════════════════════════════════════════════════════════╗ -->
+    <!-- ║  TAB 4: THREAT INTELLIGENCE & ANALYTICS                      ║ -->
+    <!-- ╚══════════════════════════════════════════════════════════════╝ -->
+    <div class="master-tab-content" id="paneTab_intel">
+
+      <!-- Top Row: Trajectory & Severity Split -->
+      <div class="analytics-top-grid">
+        <div class="radar-card" style="display:flex;flex-direction:column;">
+          <div class="card-head">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span class="card-head-title"><span>📈</span> 14-Day Threat Velocity Trajectory</span>
+              <span class="badge-count badge-sky">14d Telemetry</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span class="badge-count badge-amber" id="trajectoryPeakBadge">⚡ Peak: Calculating…</span>
+              <span class="badge-count badge-sky" id="trajectoryTotalBadge">14-Day Window</span>
+            </div>
+          </div>
+          <div style="font-size:11.5px;color:var(--text-sub);margin-bottom:12px;">
+            Frequency of Critical vs Warning violations across lab sessions to detect systemic outbreak spikes.
+          </div>
+          <div class="chart-container-box" style="height:260px;flex:1;">
+            <canvas id="chartDailyTrend"></canvas>
+          </div>
+        </div>
+
+        <div class="radar-card" style="display:flex;flex-direction:column;">
+          <div class="card-head">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span class="card-head-title"><span>📊</span> Threat Severity &amp; Policy Mix</span>
+              <span class="badge-count badge-amber" id="threatCompBadge">Severity Split</span>
+            </div>
+            <div style="display:flex;gap:4px;background:rgba(0,0,0,0.3);padding:2px;border-radius:6px;border:1px solid var(--border);">
+              <button class="pg-btn active" id="btnToggleSeverity" onclick="switchThreatCompView('severity')" style="font-size:11px;padding:3px 8px;">Severity</button>
+              <button class="pg-btn" id="btnToggleCategory" onclick="switchThreatCompView('category')" style="font-size:11px;padding:3px 8px;">Policy Mix</button>
+            </div>
+          </div>
+
+          <div id="viewSeveritySplit" style="display:flex;flex-direction:column;flex:1;">
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:var(--text-sub);margin-bottom:8px;">
+              <span>Critical vs Warning ratio</span>
+              <span id="severityRatioText" style="font-weight:700;color:#fff;">—</span>
+            </div>
+            <div class="chart-container-box" style="height:190px;"><canvas id="chartRiskDist"></canvas></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;">
+              <div style="background:rgba(244,63,94,0.08);border:1px solid rgba(244,63,94,0.25);border-radius:8px;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:11.5px;color:#fca5a5;font-weight:700;">🚨 Critical</span>
+                <span style="font-size:16px;font-weight:800;color:#fff;" id="compStatHigh">0</span>
+              </div>
+              <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:8px;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:11.5px;color:#fde68a;font-weight:700;">⚠️ Warnings</span>
+                <span style="font-size:16px;font-weight:800;color:#fff;" id="compStatMed">0</span>
+              </div>
+            </div>
+          </div>
+
+          <div id="viewCategoryMix" style="display:none;flex-direction:column;flex:1;">
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:var(--text-sub);margin-bottom:8px;">
+              <span>Classification by rule</span>
+              <span id="topCategoryText" style="font-weight:700;color:var(--sky);">—</span>
+            </div>
+            <div class="chart-container-box" style="height:230px;"><canvas id="chartCategoryBreakdown"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trio Hotspot Grid -->
+      <div class="analytics-trio-grid">
+        <div class="radar-card" style="display:flex;flex-direction:column;">
+          <div class="card-head">
+            <span class="card-head-title"><span>🏛️</span> Darajah Risk Hotspots</span>
+            <span class="badge-count badge-amber">Class 1–11</span>
+          </div>
+          <div style="font-size:11.5px;color:var(--text-sub);margin-bottom:8px;">Violation density per class year.</div>
+          <div class="chart-container-box" style="height:210px;flex:1;"><canvas id="chartDarajahRisk"></canvas></div>
+        </div>
+        <div class="radar-card" style="display:flex;flex-direction:column;">
+          <div class="card-head">
+            <span class="card-head-title"><span>🌐</span> Top Restricted Targets</span>
+            <span class="badge-count badge-rose">Top 5 Targets</span>
+          </div>
+          <div style="font-size:11.5px;color:var(--text-sub);margin-bottom:8px;">Blocked domains, web proxies, and unapproved .exe.</div>
+          <div class="chart-container-box" style="height:210px;flex:1;"><canvas id="chartTopDomains"></canvas></div>
+        </div>
+        <div class="radar-card" style="display:flex;flex-direction:column;">
+          <div class="card-head">
+            <span class="card-head-title"><span>👤</span> Repeat Violation Dossiers</span>
+            <span class="badge-count badge-rose">Repeaters</span>
+          </div>
+          <div style="font-size:11.5px;color:var(--text-sub);margin-bottom:8px;">Students with multiple logged security strikes.</div>
+          <div id="topStudentsList" style="display:flex;flex-direction:column;gap:8px;max-height:210px;overflow-y:auto;flex:1;">
+            <div style="text-align:center;color:var(--text-sub);font-size:12px;padding:24px;">Scanning dossiers…</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- 🛡️ MODALS                                                    -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+
+  <!-- 1. Threat Details Modal -->
+  <div class="modal-overlay" id="threatModal" onclick="if(event.target===this)closeThreatModal()">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modalTitle">🛡️ Incident Details</h3>
+        <button class="modal-close" onclick="closeThreatModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div>
+          <span style="font-size:11px;color:var(--text-sub);text-transform:uppercase;font-weight:700;">Student Identification</span>
+          <div id="modStudent" style="font-size:14px;font-weight:700;color:#fff;margin-top:2px;">—</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div>
+            <span style="font-size:11px;color:var(--text-sub);text-transform:uppercase;font-weight:700;">Darajah &amp; Group</span>
+            <div id="modClass" style="font-size:12.5px;color:#cbd5e1;margin-top:2px;">—</div>
+          </div>
+          <div>
+            <span style="font-size:11px;color:var(--text-sub);text-transform:uppercase;font-weight:700;">Timestamp</span>
+            <div id="modTime" style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--sky);margin-top:2px;">—</div>
+          </div>
+        </div>
+        <div>
+          <span style="font-size:11px;color:var(--text-sub);text-transform:uppercase;font-weight:700;">Target Entity (Domain / Process)</span>
+          <div id="modDomain" style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#fca5a5;word-break:break-all;background:rgba(0,0,0,0.3);padding:8px 10px;border-radius:6px;border:1px solid var(--border);margin-top:4px;">—</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div>
+            <span style="font-size:11px;color:var(--text-sub);text-transform:uppercase;font-weight:700;">Category &amp; Risk</span>
+            <div id="modRisk" style="margin-top:2px;">—</div>
+          </div>
+          <div>
+            <span style="font-size:11px;color:var(--text-sub);text-transform:uppercase;font-weight:700;">Workstation</span>
+            <div id="modIP" style="font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--sky);margin-top:2px;">—</div>
+          </div>
+        </div>
+        <div>
+          <span style="font-size:11px;color:var(--text-sub);text-transform:uppercase;font-weight:700;">Action &amp; Enforcement Reason</span>
+          <div id="modAction" style="font-size:12.5px;color:#fde68a;background:rgba(245,158,11,0.08);padding:8px 10px;border-radius:6px;border:1px solid rgba(245,158,11,0.25);margin-top:4px;">—</div>
+        </div>
+      </div>
+      <div style="padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-surface" onclick="closeThreatModal()">Close</button>
+        <button class="btn btn-surface" id="modalBtnLock" style="color:#7dd3fc;border-color:rgba(56,189,248,0.4);" onclick="adminModalLockStation()">🔒 Lock Station</button>
+        <button class="btn btn-surface" id="modalBtnLogout" style="color:#fcd34d;border-color:rgba(245,158,11,0.4);" onclick="adminModalForceLogout()">🚪 Force Logout</button>
+        <button class="btn" id="modalBtnDisable" style="background:#dc2626;border-color:#dc2626;color:#fff;" onclick="adminModalDisableAccount()">⛔ Disable Account</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Governance Audit Trail Modal -->
+  <div class="modal-overlay" id="govAuditModal" onclick="if(event.target===this)closeGovAuditModal()">
+    <div class="modal-card" style="max-width: 720px;">
+      <div class="modal-header">
+        <h3 style="display:flex;align-items:center;gap:8px;"><span>📜</span> Active Directory &amp; Governance Audit Trail</h3>
+        <button class="modal-close" onclick="closeGovAuditModal()">✕</button>
+      </div>
+      <div class="modal-body" style="max-height: 480px;">
+        <div id="govAuditList" style="display:flex;flex-direction:column;gap:10px;">
+          <div style="text-align:center;color:var(--text-muted);padding:30px;">Loading audit trail from server…</div>
+        </div>
+      </div>
+      <div style="padding:12px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;">
+        <button class="btn btn-surface" onclick="closeGovAuditModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Official Printable Disciplinary Dossier Modal -->
+  <div class="modal-overlay" id="disciplinaryDossierModal" onclick="if(event.target===this)closeDisciplinaryDossier()">
+    <div class="dossier-paper">
+      <div class="dossier-header-strip">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div style="font-size:28px;">🛡️</div>
+          <div>
+            <div style="font-size:15px;font-weight:900;color:#fff;">Al-Jamea tus-Saifiyah · Nairobi</div>
+            <div style="font-size:11px;color:var(--text-sub);">Office of the Proctor &amp; IT Governance · Disciplinary Incident Dossier</div>
+          </div>
+        </div>
+        <div style="text-align:right;font-size:11px;color:var(--text-sub);">
+          <div style="color:var(--gold);font-weight:800;">STRICTLY CONFIDENTIAL</div>
+          <div id="dossierHijriDate">Al-Jamea Telemetry Record</div>
+          <div id="dossierGeneratedAt">—</div>
+        </div>
+      </div>
+      <div class="modal-body" id="dossierModalBody" style="max-height: 520px;">
+        <div style="text-align:center;padding:30px;color:var(--text-sub);">Loading student disciplinary dossier…</div>
+      </div>
+      <div class="dossier-footer-bar" style="padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+        <span style="font-size:11.5px;color:var(--text-sub);">Official Record · Generated per 14-Day Institutional Enforcement Directive</span>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-surface" onclick="printDisciplinaryDossier()" style="color:var(--gold);border-color:rgba(245,200,66,0.4);">
+            🖨️ Print / Save PDF
+          </button>
+          <button class="btn btn-surface" onclick="closeDisciplinaryDossier()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- 📜 JAVASCRIPT SOC CONTROLLER                                  -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <script>
+    // State
+    let activeMasterTab = 'triage';
+    let rawAlerts = [];
+    let rawStrikeRecords = [];
+    let currentStrikeFilter = 'ALL';
+    let cachedGovRecords = [];
+    let filteredGovRecords = [];
+    let govCurrentPage = 1;
+    let govPageSize = 15;
+    let currentGovFilter = 'disabled';
+    let acknowledgedCount = 0;
+    let isAudioMuted = false;
+    let knownAlertKeys = new Set();
+    let currentModalAlert = null;
+    let _secQueueAll = [];
+
+    // Chart instances
+    let chartRiskDistInst = null;
+    let chartTopDomainsInst = null;
+    let chartDarajahRiskInst = null;
+    let chartDailyTrendInst = null;
+    let chartCategoryInst = null;
+
+    // Filters for Tab 1 (Triage)
+    let activeRiskFilter = 'ALL';
+    let activeCategoryFilter = '';
+    let activeStationFilter = '';
+    let feedCurrentPage = 1;
+    const feedPageSize = 6;
+    let filteredFeedAlerts = [];
+
+    // ── Master Tab Switcher ──
+    function switchMasterTab(tabId) {
+      activeMasterTab = tabId;
+      document.querySelectorAll('.master-tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.master-tab-content').forEach(pane => pane.classList.remove('active'));
+
+      const activeBtn = document.getElementById(`btnTab_${tabId}`);
+      const activePane = document.getElementById(`paneTab_${tabId}`);
+      if (activeBtn) activeBtn.classList.add('active');
+      if (activePane) activePane.classList.add('active');
+
+      if (tabId === 'intel') {
+        setTimeout(() => {
+          [chartDailyTrendInst, chartRiskDistInst, chartCategoryInst, chartDarajahRiskInst, chartTopDomainsInst].forEach(c => {
+            if (c) c.resize();
+          });
+        }, 60);
+      } else if (tabId === 'strikes') {
+        fetchStrikeMatrix();
+      } else if (tabId === 'gov') {
+        fetchGovAccounts();
+      } else if (tabId === 'triage') {
+        fetchThreatData();
+      }
+    }
+
+    function refreshCurrentTab() {
+      if (activeMasterTab === 'triage') fetchThreatData();
+      else if (activeMasterTab === 'strikes') fetchStrikeMatrix();
+      else if (activeMasterTab === 'gov') fetchGovAccounts(true);
+      else if (activeMasterTab === 'intel') fetchDailyTrend();
+    }
+
+    // ── Audio & Notification Controls ──
+    function toggleAudioMute() {
+      isAudioMuted = !isAudioMuted;
+      document.getElementById('soundIcon').textContent = isAudioMuted ? '🔇' : '🔊';
+      document.getElementById('soundLabel').textContent = isAudioMuted ? 'Audio: MUTED' : 'Audio: ON';
+      document.getElementById('btnSoundToggle').style.borderColor = isAudioMuted ? 'rgba(244,63,94,0.4)' : 'var(--border)';
+    }
+
+    function playAlertBeep(isHigh) {
+      if (isAudioMuted) return;
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = isHigh ? 'sawtooth' : 'sine';
+        osc.frequency.setValueAtTime(isHigh ? 880 : 587.33, ctx.currentTime);
+        gain.gain.setValueAtTime(0.08, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + (isHigh ? 0.35 : 0.25));
+        osc.start();
+        osc.stop(ctx.currentTime + (isHigh ? 0.35 : 0.25));
+      } catch (e) {}
+    }
+
+    function requestNotificationPermission() {
+      if ('Notification' in window) {
+        Notification.requestPermission().then(perm => {
+          if (perm === 'granted') {
+            const btn = document.getElementById('btnNotif');
+            if (btn) { btn.textContent = '🔔 Alerts Active'; btn.style.borderColor = 'rgba(16,185,129,0.4)'; btn.style.color = '#34d399'; }
+            new Notification('MamalBrowse Sentinel', { body: 'Security push alerts activated.' });
+          }
+        });
+      }
+    }
+
+    function initNotifButton() {
+      if ('Notification' in window && Notification.permission === 'granted') {
+        const btn = document.getElementById('btnNotif');
+        if (btn) { btn.textContent = '🔔 Alerts Active'; btn.style.borderColor = 'rgba(16,185,129,0.4)'; btn.style.color = '#34d399'; }
+      }
+    }
+
+    // ── Emergency Lab Lock ──
+    async function executeLabLock(lab, action) {
+      const names = { 'MK': 'Masakin Lab (20 PCs)', 'RB': 'Rabwaat Lab (20 PCs)', 'M': 'Boys Lab (40 PCs)', 'F': 'Girls Lab (40 PCs)', 'ALL': 'All 120 Lab Terminals' };
+      const target = names[lab] || `${lab} Lab`;
+      if (!confirm(`⚠️ EMERGENCY LAB INTERLOCK: Are you sure you want to ${action.toUpperCase()} ${target}?`)) return;
+
+      try {
+        const res = await fetch('/api/security/lab_lock', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ lab: lab, action: action })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          alert(`✓ ${data.message || `Command ${action} broadcast to ${target}.`}`);
+        } else {
+          alert(`Error: ${data.error || 'Failed to broadcast lab command'}`);
+        }
+      } catch (err) {
+        alert('Network error: ' + err.message);
+      }
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // 🚨 TAB 1: LIVE TRIAGE & TELEMETRY CONTROLLER
+    // ══════════════════════════════════════════════════════════════
+    async function fetchThreatData() {
+      const selDar = document.getElementById('selDarajah');
+      const selGrp = document.getElementById('selGroup');
+      const dar = selDar ? selDar.value : '';
+      const grp = selGrp ? selGrp.value : '';
+
+      const params = new URLSearchParams({
+        risk: activeRiskFilter,
+        category: activeCategoryFilter,
+        darajah: dar,
+        group: grp,
+        limit: 150
+      });
+
+      // 1. Fetch threat summary independently for rapid KPI and Radar rendering
+      fetch('/api/analytics/threat_summary')
+        .then(res => res.ok ? res.json() : null)
+        .then(summaryData => {
+          if (!summaryData) return;
+          updateSummaryCharts(summaryData);
+
+          const kpiH = document.getElementById('kpiHighCount');
+          const kpiM = document.getElementById('kpiMedCount');
+          const kpiA = document.getElementById('kpiAppCount');
+          const kpiAck = document.getElementById('kpiAckCount');
+          if (kpiH && summaryData.high_count !== undefined) kpiH.textContent = summaryData.high_count.toLocaleString();
+          if (kpiM && summaryData.medium_count !== undefined) kpiM.textContent = summaryData.medium_count.toLocaleString();
+          if (kpiA && summaryData.app_count !== undefined) kpiA.textContent = summaryData.app_count.toLocaleString();
+          if (kpiAck && summaryData.reviewed_count !== undefined) kpiAck.textContent = summaryData.reviewed_count.toLocaleString();
+          if (summaryData.workstation_radar) renderWorkstationRadar(summaryData.workstation_radar);
+        })
+        .catch(err => console.error('Threat summary fetch:', err));
+
+      // 2. Fetch live alert telemetry stream concurrently
+      fetch(`/api/analytics/live_alerts?${params.toString()}`)
+        .then(res => res.ok ? res.json() : null)
+        .then(alertsData => {
+          if (!alertsData) return;
+          processAlerts(alertsData);
+          const nowStr = new Date().toLocaleTimeString();
+          if (document.getElementById('kpiLastUpdated')) document.getElementById('kpiLastUpdated').textContent = `Sync: ${nowStr}`;
+          if (document.getElementById('streamTimestamp')) document.getElementById('streamTimestamp').textContent = `Updated ${nowStr}`;
+        })
+        .catch(err => {
+          console.error('Live alerts fetch:', err);
+          const container = document.getElementById('alertFeedList');
+          if (container && rawAlerts.length === 0) {
+            container.innerHTML = `
+              <div style="text-align:center;padding:40px;color:var(--text-muted);">
+                <div style="font-size:28px;margin-bottom:8px;">📡</div>
+                <h4 style="color:#38bdf8;font-weight:700;">Connecting to Sentinel Telemetry Feed…</h4>
+                <p style="font-size:12px;margin-top:4px;">Synchronizing active workstation telemetry across 120 lab terminals.</p>
+              </div>
+            `;
+          }
+        });
+    }
+
+    function processAlerts(data) {
+      rawAlerts = data.alerts || [];
+
+      let liveAppViolations = 0;
+      rawAlerts.forEach(a => {
+        const dom = (a.domain || '').toLowerCase();
+        const url = (a.url || '').toLowerCase();
+        if (dom.endsWith('.exe') || url.includes('.exe') || (a.browser && a.browser !== 'chrome.exe')) {
+          liveAppViolations++;
+        }
+      });
+      const kpiA = document.getElementById('kpiAppCount');
+      if (kpiA && (kpiA.textContent === '0' || kpiA.textContent === '—') && liveAppViolations > 0) {
+        kpiA.textContent = liveAppViolations.toLocaleString();
+      }
+
+      if (document.getElementById('feedCountBadge')) {
+        document.getElementById('feedCountBadge').textContent = `${rawAlerts.length} Active`;
+      }
+      if (document.getElementById('tabBadgeTriage')) {
+        document.getElementById('tabBadgeTriage').textContent = rawAlerts.length;
+      }
+
+      // Check for new High Risk alerts to chime
+      let hasNewHigh = false;
+      rawAlerts.forEach(a => {
+        const key = a.alert_key || `${a.trno}|${a.domain}|${a.visit_time}`;
+        if (!knownAlertKeys.has(key)) {
+          knownAlertKeys.add(key);
+          if (a.risk_level === 'HIGH') hasNewHigh = true;
+        }
+      });
+
+      if (hasNewHigh) playAlertBeep(true);
+
+      filterLocalFeed();
+      populateDarajahOptions();
+    }
+
+    function filterLocalFeed() {
+      feedCurrentPage = 1;
+      const search = (document.getElementById('inpSearch')?.value || '').toLowerCase().trim();
+      let res = rawAlerts;
+      if (activeStationFilter) {
+        res = res.filter(a => a.station && a.station.toLowerCase().includes(activeStationFilter.toLowerCase()));
+      }
+      if (search && (!activeStationFilter || search !== activeStationFilter.toLowerCase())) {
+        res = res.filter(a =>
+          (a.name && a.name.toLowerCase().includes(search)) ||
+          (a.trno && String(a.trno).toLowerCase().includes(search)) ||
+          (a.domain && a.domain.toLowerCase().includes(search)) ||
+          (a.url && a.url.toLowerCase().includes(search)) ||
+          (a.category && a.category.toLowerCase().includes(search)) ||
+          (a.reason && a.reason.toLowerCase().includes(search)) ||
+          (a.class && a.class.toLowerCase().includes(search)) ||
+          (a.darajah && a.darajah.toLowerCase().includes(search)) ||
+          (a.station && a.station.toLowerCase().includes(search))
+        );
+      }
+      filteredFeedAlerts = res;
+      renderFeedPage();
+    }
+
+    function renderFeedPage() {
+      const container = document.getElementById('alertFeedList');
+      const counterEl = document.getElementById('filterResultsCount');
+      const totalCount = filteredFeedAlerts.length;
+      const totalPages = Math.ceil(totalCount / feedPageSize) || 1;
+
+      if (feedCurrentPage > totalPages) feedCurrentPage = totalPages;
+      if (feedCurrentPage < 1) feedCurrentPage = 1;
+
+      if (counterEl) {
+        counterEl.textContent = `Displaying ${totalCount} of ${rawAlerts.length} incidents`;
+      }
+
+      const infoEl = document.getElementById('feedPaginationInfo');
+      const pageNumEl = document.getElementById('feedPageNum');
+      const btnPrev = document.getElementById('feedBtnPrev');
+      const btnNext = document.getElementById('feedBtnNext');
+
+      const startIdx = (feedCurrentPage - 1) * feedPageSize;
+      const endIdx = Math.min(startIdx + feedPageSize, totalCount);
+
+      if (infoEl) infoEl.textContent = totalCount === 0 ? 'Showing 0 alerts' : `Showing ${startIdx + 1}–${endIdx} of ${totalCount} active alerts`;
+      if (pageNumEl) pageNumEl.textContent = `${feedCurrentPage} / ${totalPages}`;
+      if (btnPrev) btnPrev.disabled = feedCurrentPage <= 1;
+      if (btnNext) btnNext.disabled = feedCurrentPage >= totalPages;
+
+      if (!container) return;
+
+      if (totalCount === 0) {
+        container.innerHTML = `
+          <div style="text-align:center;padding:40px;color:var(--text-muted);">
+            <div style="font-size:32px;margin-bottom:8px;">✅</div>
+            <h4 style="color:#34d399;font-weight:700;">All Clear — No Active Threats</h4>
+            <p style="font-size:12px;margin-top:4px;">No matching policy violations detected for the selected criteria.</p>
+          </div>
+        `;
+        return;
+      }
+
+      const pageAlerts = filteredFeedAlerts.slice(startIdx, endIdx);
+      container.innerHTML = pageAlerts.map(a => {
+        const isHigh = a.risk_level === 'HIGH';
+        const riskBadge = isHigh ? 'badge-rose' : 'badge-amber';
+        const riskClass = isHigh ? 'risk-high' : 'risk-medium';
+        const sev = a.severity || a.severity_score || (isHigh ? 9 : 5);
+        const alertKey = a.alert_key || `${a.trno}|${a.domain}|${a.visit_time}`;
+        const isProc = (a.domain || '').toLowerCase().endsWith('.exe');
+        const targetIcon = isProc ? '💻' : '🌐';
+        const initials = (a.name || 'Student').split(' ').map(p => p[0]).filter(Boolean).slice(0, 2).join('').toUpperCase();
+
+        return `
+          <div class="alert-item ${riskClass}" onclick="showThreatDetails('${escapeJs(alertKey)}')">
+            <div class="alert-top-row">
+              <div class="alert-tags-left">
+                <span class="badge-count ${riskBadge}">${isHigh ? '🚨 CRITICAL' : '⚠️ WARNING'}</span>
+                <span class="sev-meter ${isHigh ? 'high' : 'med'}">SEV ${sev}/10</span>
+                <span class="time-stamp">${escapeHtml(a.visit_time || 'Recent')}</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <span class="station-badge">🖥️ ${escapeHtml(a.station && a.station !== 'N/A' && a.station !== 'Lab-PC' ? a.station : 'Unassigned')}</span>
+                <span class="badge-count badge-purple">${escapeHtml(a.group || 'Talabaat')}</span>
+              </div>
+            </div>
+
+            <div class="alert-student-section">
+              <div class="student-avatar">
+                <img src="/photo/${escapeHtml(a.trno)}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;">${initials}</div>
+              </div>
+              <div class="student-details">
+                <div class="student-header-line">
+                  <span class="student-name-text">${escapeHtml(a.name || 'Student')}</span>
+                  <span class="student-trno-tag">#${escapeHtml(a.trno)}</span>
+                  <span style="font-size:12px;color:var(--text-sub);">•</span>
+                  <span style="font-size:12px;color:var(--text-muted);font-weight:600;">🏛️ ${escapeHtml(a.class || 'Unknown Class')}</span>
+                </div>
+                
+                <div class="target-callout">
+                  <div class="target-info">
+                    <span class="target-icon">${targetIcon}</span>
+                    <span class="target-name ${isProc ? 'proc' : ''}" title="${escapeHtml(a.url || a.domain)}">${escapeHtml(a.domain)}</span>
+                  </div>
+                  <span class="category-tag ${isHigh ? 'badge-rose' : 'badge-amber'}">${escapeHtml(a.category || 'Restricted')}</span>
+                </div>
+
+                <div class="alert-reason-banner" style="margin-top:6px;">
+                  ${escapeHtml(a.reason || 'Safety policy trigger recorded on workstation.')}
+                </div>
+              </div>
+            </div>
+
+            <div class="alert-actions-bar" onclick="event.stopPropagation();">
+              <button class="btn-action btn-action-ack" onclick="acknowledgeAlert('${escapeJs(alertKey)}')">✅ Reviewed</button>
+              <button class="btn-action" style="background:rgba(16,185,129,0.15);color:#34d399;border:1px solid rgba(16,185,129,0.4);" onclick="unblockStudentSecurity('${escapeJs(a.trno)}')">🔓 Reinstate</button>
+              <button class="btn-action" style="background:rgba(56,189,248,0.12);color:#7dd3fc;border:1px solid rgba(56,189,248,0.35);" onclick="adminLockStation('${escapeJs(a.station)}', '${escapeJs(a.trno)}')">🔒 Lock PC</button>
+              <button class="btn-action" style="background:rgba(244,63,94,0.15);color:#fca5a5;border:1px solid rgba(244,63,94,0.4);" onclick="adminDisableAccount('${escapeJs(a.trno)}', '${escapeJs(a.station)}', '${escapeJs(a.category)}')">⛔ Disable</button>
+              <a href="/report/${encodeURIComponent(a.trno)}" class="btn-action" style="background:rgba(255,255,255,0.06);color:#fff;text-decoration:none;" target="_blank">🔍 360</a>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function changeFeedPage(delta) {
+      const totalPages = Math.ceil(filteredFeedAlerts.length / feedPageSize) || 1;
+      feedCurrentPage = Math.min(Math.max(1, feedCurrentPage + delta), totalPages);
+      renderFeedPage();
+    }
+
+    function setRiskPill(risk) {
+      activeRiskFilter = risk;
+      activeCategoryFilter = '';
+      clearActiveCategoryPills();
+      document.getElementById('pillAll').className = 'filter-pill' + (risk === 'ALL' ? ' active' : '');
+      document.getElementById('pillHigh').className = 'filter-pill' + (risk === 'HIGH' ? ' active-rose' : '');
+      document.getElementById('pillMed').className = 'filter-pill' + (risk === 'MEDIUM' ? ' active-amber' : '');
+      fetchThreatData();
+    }
+
+    function setCategoryPill(category) {
+      activeCategoryFilter = category;
+      activeRiskFilter = 'ALL';
+      document.getElementById('pillAll').className = 'filter-pill';
+      document.getElementById('pillHigh').className = 'filter-pill';
+      document.getElementById('pillMed').className = 'filter-pill';
+      clearActiveCategoryPills();
+      const pillMap = { 'proxy': 'pillProxy', 'social': 'pillSocial', 'gaming': 'pillGaming', 'piracy': 'pillPiracy', '.exe': 'pillApp' };
+      const pid = pillMap[category];
+      if (pid && document.getElementById(pid)) document.getElementById(pid).className = 'filter-pill active-purple';
+      fetchThreatData();
+    }
+
+    function clearActiveCategoryPills() {
+      ['pillProxy', 'pillSocial', 'pillGaming', 'pillPiracy', 'pillApp'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.className = 'filter-pill';
+      });
+    }
+
+    function resetFilters() {
+      if (document.getElementById('inpSearch')) document.getElementById('inpSearch').value = '';
+      if (document.getElementById('selDarajah')) document.getElementById('selDarajah').value = '';
+      if (document.getElementById('selGroup')) document.getElementById('selGroup').value = '';
+      activeCategoryFilter = '';
+      activeStationFilter = '';
+      clearActiveCategoryPills();
+      setRiskPill('ALL');
+    }
+
+    function renderWorkstationRadar(radarList) {
+      const container = document.getElementById('workstationRadarGrid');
+      const badge = document.getElementById('radarStationBadge');
+      if (!container) return;
+      if (!radarList || radarList.length === 0) {
+        container.innerHTML = `<span style="font-size:12px;color:var(--text-sub);">✅ No workstation active alerts detected. All lab terminals clear.</span>`;
+        if (badge) badge.textContent = 'All Terminals Clear';
+        return;
+      }
+      if (badge) badge.textContent = `${radarList.length} Active Workstations`;
+      container.innerHTML = radarList.map(item => {
+        const isCrit = item.status === 'critical' || item.count >= 3;
+        const cls = isCrit ? 'critical' : 'warning';
+        return `
+          <div class="station-radar-pill ${cls}" onclick="filterByStation('${escapeJs(item.station)}')" title="Filter incidents on ${escapeHtml(item.station)}">
+            <span style="font-weight:700;">🖥️ ${escapeHtml(item.station)}</span>
+            <span class="station-radar-count">${item.count} flag${item.count !== 1 ? 's' : ''}</span>
+            <button class="station-radar-lock" onclick="event.stopPropagation(); adminLockStation('${escapeJs(item.station)}')" title="Remote Lock ${escapeHtml(item.station)}">🔒</button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function filterByStation(st) {
+      activeStationFilter = st;
+      const inp = document.getElementById('inpSearch');
+      if (inp) inp.value = st;
+      filterLocalFeed();
+    }
+
+    function clearStationFilter() {
+      activeStationFilter = '';
+      const inp = document.getElementById('inpSearch');
+      if (inp) inp.value = '';
+      filterLocalFeed();
+    }
+
+    async function acknowledgeAlert(alertKey) {
+      try {
+        const res = await fetch('/api/analytics/acknowledge_alert', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ alert_key: alertKey })
+        });
+        if (res.ok) {
+          acknowledgedCount++;
+          document.getElementById('kpiAckCount').textContent = acknowledgedCount;
+          rawAlerts = rawAlerts.filter(a => (a.alert_key || `${a.trno}|${a.domain}|${a.visit_time}`) !== alertKey);
+          filterLocalFeed();
+        }
+      } catch (e) {}
+    }
+
+    async function acknowledgeAllVisible() {
+      if (!filteredFeedAlerts || filteredFeedAlerts.length === 0) {
+        alert('No alerts currently in view to review.');
+        return;
+      }
+      const keys = filteredFeedAlerts.map(a => a.alert_key || `${a.trno}|${a.domain}|${a.visit_time}`);
+      if (!confirm(`Mark all ${keys.length} visible alerts as reviewed & resolved?`)) return;
+
+      try {
+        const res = await fetch('/api/analytics/acknowledge_all', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ keys: keys })
+        });
+        const data = await res.json();
+        if (data.status === 'ok') {
+          acknowledgedCount += keys.length;
+          document.getElementById('kpiAckCount').textContent = acknowledgedCount;
+          rawAlerts = rawAlerts.filter(a => !keys.includes(a.alert_key || `${a.trno}|${a.domain}|${a.visit_time}`));
+          filterLocalFeed();
+        }
+      } catch (e) {
+        alert('Network error: ' + e.message);
+      }
+    }
+
+    function populateDarajahOptions() {
+      const sel = document.getElementById('selDarajah');
+      if (!sel || sel.options.length > 1) return;
+      const darajahSet = new Set();
+      rawAlerts.forEach(a => {
+        if (a.darajah) darajahSet.add(a.darajah);
+        else if (a.class) darajahSet.add(a.class);
+      });
+      Array.from(darajahSet).sort().forEach(d => {
+        const opt = document.createElement('option');
+        opt.value = d;
+        opt.textContent = d;
+        sel.appendChild(opt);
+      });
+    }
+
+    // Modal Details
+    function showThreatDetails(alertKey) {
+      const a = rawAlerts.find(item => (item.alert_key || `${item.trno}|${item.domain}|${item.visit_time}`) === alertKey);
+      if (!a) return;
+      currentModalAlert = a;
+
+      document.getElementById('modStudent').textContent = `${a.name || 'Unknown'} (#${a.trno || 'N/A'})`;
+      document.getElementById('modClass').textContent = `${a.class || 'General'} · ${a.group || 'Talabaat'}`;
+      document.getElementById('modTime').textContent = a.visit_time || 'Recent';
+      document.getElementById('modDomain').textContent = a.url || a.domain || 'N/A';
+
+      const isHigh = a.risk_level === 'HIGH';
+      document.getElementById('modRisk').innerHTML = `
+        <span class="badge-count ${isHigh ? 'badge-rose' : 'badge-amber'}">${isHigh ? '🚨 CRITICAL' : '⚠️ WARNING'}</span>
+        <span style="margin-left:8px;font-size:12px;font-weight:600;color:#fff;">${a.category || 'Restricted'}</span>
+      `;
+
+      document.getElementById('modIP').textContent = a.station && a.station !== 'N/A' ? `Station ${a.station}` : (a.client_ip || 'Lab Terminal');
+      document.getElementById('modAction').textContent = a.action || a.reason || 'Policy infraction logged under institutional directive.';
+      document.getElementById('threatModal').classList.add('active');
+    }
+
+    function closeThreatModal() {
+      document.getElementById('threatModal').classList.remove('active');
+      currentModalAlert = null;
+    }
+
+    async function adminDisableAccount(trno, station, category) {
+      if (!trno) { alert('No student TRNO associated.'); return; }
+      const reason = prompt(`Enter suspension reason to DISABLE Student #${trno} in Active Directory:`, `Policy violation (${category || 'Security infraction'})`);
+      if (reason === null) return;
+      try {
+        const res = await fetch('/api/security/quick_action', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'disable', trno: String(trno), station: station || '', reason: reason })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          alert(`⛔ Student #${trno} account has been DISABLED in Active Directory.`);
+          closeThreatModal();
+          fetchThreatData();
+          fetchStrikeMatrix();
+          fetchGovAccounts(true);
+        } else {
+          alert('Error: ' + (data.error || 'Failed to disable account'));
+        }
+      } catch (e) {
+        alert('Network error: ' + e.message);
+      }
+    }
+
+    async function adminLockStation(station, trno) {
+      if (!station || station === 'N/A' || station === 'Unassigned') {
+        station = prompt('Enter workstation name to lock (e.g. MK-05, RB-12):', 'MK-01');
+        if (!station) return;
+      }
+      if (!confirm(`Send immediate LOCK command to workstation ${station}?`)) return;
+      try {
+        const res = await fetch('/api/security/quick_action', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'lock_station', station: station, trno: trno ? String(trno) : '' })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          alert(`🔒 Lock command sent to workstation ${station}.`);
+          closeThreatModal();
+        } else {
+          alert('Error: ' + (data.error || 'Failed to lock station'));
+        }
+      } catch (e) {
+        alert('Network error: ' + e.message);
+      }
+    }
+
+    async function adminForceLogout(trno, station) {
+      if (!trno) return;
+      if (!confirm(`Force logout active session for Student #${trno} on ${station || 'workstation'}?`)) return;
+      try {
+        const res = await fetch('/enforce/admin/station/logout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ trno: String(trno), station: station || '' })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          alert(`🚪 Session for Student #${trno} terminated.`);
+          closeThreatModal();
+        } else {
+          alert(data.message || data.error || 'Failed to logout student');
+        }
+      } catch (e) {
+        alert('Network error: ' + e.message);
+      }
+    }
+
+    function adminModalLockStation() { if (currentModalAlert) adminLockStation(currentModalAlert.station, currentModalAlert.trno); }
+    function adminModalForceLogout() { if (currentModalAlert) adminForceLogout(currentModalAlert.trno, currentModalAlert.station); }
+    function adminModalDisableAccount() { if (currentModalAlert) adminDisableAccount(currentModalAlert.trno, currentModalAlert.station, currentModalAlert.category); }
+
+    // ══════════════════════════════════════════════════════════════
+    // ⚖️ TAB 2: DISCIPLINARY & 5-STRIKE MATRIX CONTROLLER
+    // ══════════════════════════════════════════════════════════════
+    async function fetchStrikeMatrix() {
+      const tbody = document.getElementById('strikeMatrixTbody');
+      if (!tbody) return;
+      try {
+        const res = await fetch('/api/security/strike_matrix');
+        const data = await res.json();
+        if (!data.ok) {
+          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:24px;color:#fca5a5;">Failed loading strike matrix: ${data.error || 'Server error'}</td></tr>`;
+          return;
+        }
+
+        rawStrikeRecords = data.records || [];
+        const counts = data.counts || {};
+
+        if (document.getElementById('strikeCountAll')) document.getElementById('strikeCountAll').textContent = counts.total || 0;
+        if (document.getElementById('strikeCount5')) document.getElementById('strikeCount5').textContent = counts.s5 || 0;
+        if (document.getElementById('strikeCount4')) document.getElementById('strikeCount4').textContent = counts.s4 || 0;
+        if (document.getElementById('strikeCount3')) document.getElementById('strikeCount3').textContent = counts.s3 || 0;
+        if (document.getElementById('strikeCountWarn')) document.getElementById('strikeCountWarn').textContent = (counts.s1 || 0) + (counts.s2 || 0);
+        if (document.getElementById('strikeMatrixBadge')) document.getElementById('strikeMatrixBadge').textContent = `${counts.total || 0} Students Flagged`;
+        if (document.getElementById('tabBadgeStrikes')) document.getElementById('tabBadgeStrikes').textContent = counts.total || 0;
+
+        renderStrikeMatrixTable();
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:24px;color:#fca5a5;">Network error: ${e.message}</td></tr>`;
+      }
+    }
+
+    function setStrikeFilter(lvl) {
+      currentStrikeFilter = lvl;
+      ['ALL', '5', '4', '3', 'WARN'].forEach(k => {
+        const btn = document.getElementById(`tabStrike_${k}`);
+        if (btn) {
+          if (k === lvl) btn.classList.add('active');
+          else btn.classList.remove('active');
+        }
+      });
+      renderStrikeMatrixTable();
+    }
+
+    function filterStrikeMatrix() {
+      renderStrikeMatrixTable();
+    }
+
+    function renderStrikeMatrixTable() {
+      const tbody = document.getElementById('strikeMatrixTbody');
+      if (!tbody) return;
+      const q = (document.getElementById('strikeSearchInp')?.value || '').trim().toLowerCase();
+
+      let filtered = rawStrikeRecords;
+      if (currentStrikeFilter === '5') filtered = filtered.filter(r => r.strike_level === 5);
+      else if (currentStrikeFilter === '4') filtered = filtered.filter(r => r.strike_level === 4);
+      else if (currentStrikeFilter === '3') filtered = filtered.filter(r => r.strike_level === 3);
+      else if (currentStrikeFilter === 'WARN') filtered = filtered.filter(r => r.strike_level <= 2);
+
+      if (q) {
+        filtered = filtered.filter(r =>
+          String(r.trno).toLowerCase().includes(q) ||
+          String(r.name).toLowerCase().includes(q) ||
+          String(r.darajah).toLowerCase().includes(q)
+        );
+      }
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr><td colspan="6" style="text-align:center;padding:36px;color:var(--text-muted);">
+            <div style="font-size:24px;margin-bottom:6px;">⚖️</div>
+            No student records match the selected strike criteria.
+          </td></tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(r => {
+        const dots = [1, 2, 3, 4, 5].map(i => {
+          let dotCls = 'dot-empty';
+          if (i <= r.strike_level) {
+            if (i === 5) dotCls = 'dot-s5';
+            else if (i === 4) dotCls = 'dot-s4';
+            else if (i === 3) dotCls = 'dot-s3';
+            else dotCls = 'dot-warn';
+          }
+          return `<span class="strike-dot ${dotCls}"></span>`;
+        }).join('');
+
+        const strikeBadges = {
+          5: `<span class="badge-count badge-rose" style="background:#be123c;color:#fff;">🛑 Strike 5 · AD Suspended</span>`,
+          4: `<span class="badge-count badge-rose">🔴 Strike 4 · Final Warning</span>`,
+          3: `<span class="badge-count badge-amber">🟠 Strike 3 · Counseling</span>`,
+          2: `<span class="badge-count" style="background:rgba(245,158,11,0.15);color:#fde68a;">🟡 Strike 2 · Advisory</span>`,
+          1: `<span class="badge-count" style="background:rgba(245,158,11,0.12);color:#fef08a;">🟡 Strike 1 · Warning</span>`
+        };
+
+        const statusBadge = r.is_blocked
+          ? `<span style="background:rgba(244,63,94,0.18);color:#fca5a5;border:1px solid rgba(244,63,94,0.4);padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;">⛔ Locked in AD</span>`
+          : `<span style="background:rgba(16,185,129,0.15);color:#6ee7b7;border:1px solid rgba(16,185,129,0.35);padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;">🟢 Active (Watching)</span>`;
+
+        const initials = (r.name || 'Student').split(' ').map(p => p[0]).filter(Boolean).slice(0, 2).join('').toUpperCase();
+
+        return `
+          <tr>
+            <td>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="student-avatar">
+                  <img src="/photo/${r.trno}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                  <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;">${initials}</div>
+                </div>
+                <div>
+                  <div style="font-weight:750;color:#fff;font-size:13.5px;">${escapeHtml(r.name)}</div>
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--sky);font-weight:700;">#${r.trno}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div style="font-size:12px;color:#cbd5e1;font-weight:600;">${escapeHtml(r.darajah)}</div>
+              <div style="font-size:10.5px;color:var(--text-sub);">${escapeHtml(r.group)}</div>
+            </td>
+            <td>
+              <div style="display:flex;flex-direction:column;gap:5px;">
+                <div>${strikeBadges[r.strike_level] || `Strike ${r.strike_level}`}</div>
+                <div class="strike-dots-row">${dots}</div>
+              </div>
+            </td>
+            <td>
+              <div style="font-size:12px;color:#fca5a5;font-weight:700;">${r.violations_count} logged infraction${r.violations_count !== 1 ? 's' : ''}</div>
+              <div style="font-size:11px;color:var(--text-sub);">${escapeHtml(r.blocked_reason)}</div>
+              <div style="font-size:10.5px;color:var(--text-muted);margin-top:2px;font-family:'JetBrains Mono',monospace;">🖥️ ${escapeHtml(r.last_station)} · ${r.last_incident || 'Recent'}</div>
+            </td>
+            <td>${statusBadge}</td>
+            <td style="text-align:right;">
+              <div style="display:flex;gap:6px;justify-content:flex-end;align-items:center;">
+                <a href="/report/${encodeURIComponent(r.trno)}" target="_blank" class="btn btn-surface" style="font-size:11px;padding:4px 8px;text-decoration:none;">👁️ 360</a>
+                <button class="btn btn-surface" onclick="openDisciplinaryDossier('${escapeJs(r.trno)}')" style="font-size:11px;padding:4px 8px;color:var(--gold);border-color:rgba(245,200,66,0.35);">📜 Dossier</button>
+                ${r.is_blocked
+                  ? `<button class="btn-gov-enable" onclick="unblockStudentSecurity('${escapeJs(r.trno)}')">⚡ Reinstate</button>`
+                  : `<button class="btn-gov-disable" onclick="adminDisableAccount('${escapeJs(r.trno)}', '${escapeJs(r.last_station)}', 'Strike threshold')">⛔ Suspend</button>`
+                }
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // 🏛️ TAB 3: ACTIVE DIRECTORY & GOVERNANCE CONTROLLER
+    // ══════════════════════════════════════════════════════════════
+    function switchGovTab(tab) {
+      currentGovFilter = tab;
+      govCurrentPage = 1;
+      document.getElementById('tabGovDisabled').className = 'gov-tab' + (tab === 'disabled' ? ' active-danger' : '');
+      document.getElementById('tabGovActive').className = 'gov-tab' + (tab === 'active' ? ' active' : '');
+      document.getElementById('tabGovViolations').className = 'gov-tab' + (tab === 'violations' ? ' active' : '');
+      document.getElementById('tabGovAll').className = 'gov-tab' + (tab === 'all' ? ' active' : '');
+      fetchGovAccounts();
+    }
+
+    async function fetchGovAccounts(force = false) {
+      const selDar = document.getElementById('selGovDarajah');
+      const dar = selDar ? selDar.value : '';
+      const tbody = document.getElementById('govTableBody');
+
+      try {
+        fetch('/enforce/admin/governance/summary')
+          .then(r => r.json())
+          .then(data => {
+            if (data.ok && data.ad) {
+              const dis = data.ad.ad_disabled_count || 0;
+              const act = data.ad.ad_active_count || 0;
+              if (document.getElementById('govKpiDisabledCount')) document.getElementById('govKpiDisabledCount').textContent = dis.toLocaleString();
+              if (document.getElementById('govKpiActiveCount')) document.getElementById('govKpiActiveCount').textContent = act.toLocaleString();
+              if (document.getElementById('tabCountDisabled')) document.getElementById('tabCountDisabled').textContent = dis.toLocaleString();
+              if (document.getElementById('tabBadgeGov')) document.getElementById('tabBadgeGov').textContent = `${dis} Locked`;
+            }
+          })
+          .catch(() => {});
+
+        const res = await fetch(`/enforce/admin/governance/accounts?filter=${currentGovFilter}&darajah=${encodeURIComponent(dar)}`);
+        const data = await res.json();
+        if (!data.ok) {
+          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:24px;color:#fca5a5;">Failed loading accounts: ${data.error || 'Server error'}</td></tr>`;
+          return;
+        }
+
+        cachedGovRecords = data.records || [];
+        applyGovFilterAndRender();
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:24px;color:#fca5a5;">Network error querying Active Directory: ${e.message}</td></tr>`;
+      }
+    }
+
+    function filterGovLocalTable() {
+      govCurrentPage = 1;
+      applyGovFilterAndRender();
+    }
+
+    function applyGovFilterAndRender() {
+      const q = (document.getElementById('inpGovSearch')?.value || '').trim().toLowerCase();
+      if (!q) {
+        filteredGovRecords = cachedGovRecords;
+      } else {
+        filteredGovRecords = cachedGovRecords.filter(r => {
+          const haystack = `${r.trno} ${r.name} ${r.darajah} ${r.reason} ${r.station} ${r.disabled_by}`.toLowerCase();
+          return haystack.includes(q);
+        });
+      }
+      renderGovPage();
+    }
+
+    function renderGovPage() {
+      const totalRecords = filteredGovRecords.length;
+      const totalPages = Math.ceil(totalRecords / govPageSize) || 1;
+      if (govCurrentPage > totalPages) govCurrentPage = totalPages;
+      if (govCurrentPage < 1) govCurrentPage = 1;
+
+      const startIdx = (govCurrentPage - 1) * govPageSize;
+      const endIdx = Math.min(startIdx + govPageSize, totalRecords);
+      const pageRecords = filteredGovRecords.slice(startIdx, endIdx);
+
+      renderGovTableRows(pageRecords);
+
+      const infoEl = document.getElementById('govPaginationInfo');
+      if (infoEl) {
+        if (totalRecords === 0) infoEl.innerHTML = `Showing 0 accounts (${currentGovFilter.toUpperCase()} view)`;
+        else infoEl.innerHTML = `Showing <strong>${startIdx + 1}–${endIdx}</strong> of <strong>${totalRecords.toLocaleString()}</strong> accounts (${currentGovFilter.toUpperCase()} view)`;
+      }
+
+      renderGovPaginationNav(totalPages);
+    }
+
+    function renderGovTableRows(records) {
+      const tbody = document.getElementById('govTableBody');
+      if (!tbody) return;
+
+      if (!records || records.length === 0) {
+        tbody.innerHTML = `
+          <tr><td colspan="6" style="text-align:center;padding:36px;color:var(--text-muted);">
+            <div style="font-size:24px;margin-bottom:6px;">🏛️</div>
+            No accounts found matching current governance filter.
+          </td></tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = records.map(r => {
+        const isDis = r.is_disabled || (r.status && String(r.status).toLowerCase() === 'disabled');
+        const daysLeft = computeDaysRemaining(r.disabled_at || r.blocked_at);
+        const daysPill = renderDaysPill(isDis ? daysLeft : -1, isDis);
+        const initials = (r.name || 'Student').split(' ').map(p => p[0]).filter(Boolean).slice(0, 2).join('').toUpperCase();
+
+        return `
+          <tr>
+            <td>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="student-avatar">
+                  <img src="/photo/${r.trno}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                  <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;">${initials}</div>
+                </div>
+                <div>
+                  <div style="font-weight:750;color:#fff;font-size:13.5px;">${escapeHtml(r.name || 'Student')}</div>
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--sky);font-weight:700;">#${r.trno} · <span style="color:var(--text-muted);font-weight:400;">${escapeHtml(r.darajah || 'General')}</span></div>
+                </div>
+              </div>
+            </td>
+            <td>
+              ${isDis ? `<span style="background:rgba(244,63,94,0.18);color:#fca5a5;border:1px solid rgba(244,63,94,0.4);padding:2px 7px;border-radius:5px;font-size:11px;font-weight:700;">⛔ Disabled</span>` : `<span style="background:rgba(16,185,129,0.15);color:#6ee7b7;border:1px solid rgba(16,185,129,0.35);padding:2px 7px;border-radius:5px;font-size:11px;font-weight:700;">🟢 Active</span>`}
+            </td>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--text-sub);">
+              ${escapeHtml((r.disabled_at || r.blocked_at || '—').substring(0, 16))}
+              ${r.disabled_by ? `<div style="font-size:10px;color:var(--text-muted);">by ${escapeHtml(r.disabled_by)}</div>` : ''}
+            </td>
+            <td style="font-size:12px;color:#cbd5e1;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escapeHtml(r.reason || 'Safety infraction')}">
+              ${escapeHtml(r.reason || 'Institutional policy directive')}
+            </td>
+            <td style="text-align:center;">${daysPill}</td>
+            <td style="text-align:right;">
+              <div style="display:flex;gap:6px;justify-content:flex-end;">
+                ${isDis
+                  ? `<button class="btn-gov-enable" onclick="execGovEnable('${escapeJs(r.trno)}', '${escapeJs(r.name)}')">🟢 Re-Enable</button>`
+                  : `<button class="btn-gov-disable" onclick="execGovDisable('${escapeJs(r.trno)}', '${escapeJs(r.name)}')">⛔ Disable</button>`
+                }
+                <a href="/report/${encodeURIComponent(r.trno)}" target="_blank" class="btn btn-surface" style="font-size:11px;padding:4px 8px;text-decoration:none;">🔍 360</a>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderGovPaginationNav(totalPages) {
+      const navEl = document.getElementById('govPaginationNav');
+      if (!navEl) return;
+      if (totalPages <= 1) { navEl.innerHTML = ''; return; }
+
+      let html = `<button class="pg-btn" onclick="changeGovPage(1)" ${govCurrentPage === 1 ? 'disabled' : ''}>«</button>`;
+      html += `<button class="pg-btn" onclick="changeGovPage(${govCurrentPage - 1})" ${govCurrentPage === 1 ? 'disabled' : ''}>‹</button>`;
+      html += `<span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:700;color:#fff;padding:0 6px;">${govCurrentPage} / ${totalPages}</span>`;
+      html += `<button class="pg-btn" onclick="changeGovPage(${govCurrentPage + 1})" ${govCurrentPage === totalPages ? 'disabled' : ''}>›</button>`;
+      html += `<button class="pg-btn" onclick="changeGovPage(${totalPages})" ${govCurrentPage === totalPages ? 'disabled' : ''}>»</button>`;
+      navEl.innerHTML = html;
+    }
+
+    function changeGovPage(page) {
+      const totalPages = Math.ceil(filteredGovRecords.length / govPageSize) || 1;
+      govCurrentPage = Math.min(Math.max(1, page), totalPages);
+      renderGovPage();
+    }
+
+    function setGovPageSize(sz) {
+      govPageSize = parseInt(sz, 10) || 15;
+      govCurrentPage = 1;
+      renderGovPage();
+    }
+
+    function computeDaysRemaining(disabledAtStr) {
+      if (!disabledAtStr || disabledAtStr === '—') return null;
+      try {
+        const d = new Date(disabledAtStr);
+        if (isNaN(d.getTime())) return null;
+        const expiry = new Date(d.getTime() + 14 * 24 * 60 * 60 * 1000);
+        const diffMs = expiry - new Date();
+        return Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+      } catch (e) { return null; }
+    }
+
+    function renderDaysPill(daysLeft, isDis) {
+      if (!isDis) return `<span class="days-pill ok">— Active</span>`;
+      if (daysLeft === null) return `<span class="days-pill indefinite">⏳ 14d Rule</span>`;
+      if (daysLeft <= 2) return `<span class="days-pill critical">⏰ ${daysLeft}d Expiring</span>`;
+      if (daysLeft <= 5) return `<span class="days-pill warning">⏳ ${daysLeft}d left</span>`;
+      return `<span class="days-pill ok">${daysLeft}d left</span>`;
+    }
+
+    async function execGovEnable(trno, name) {
+      const note = prompt(`Enter note to RE-ENABLE student #${trno} (${name}) in Active Directory:`, 'Restored by Administrator');
+      if (note === null) return;
+      try {
+        const res = await fetch('/enforce/admin/governance/enable', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ trno: String(trno), note: note, actor: 'Administrator' })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          alert(`✅ Student #${trno} account has been RE-ENABLED in Windows Active Directory.`);
+          fetchGovAccounts(true);
+          fetchStrikeMatrix();
+        } else {
+          alert('Error: ' + (data.error || 'Failed to re-enable account'));
+        }
+      } catch (e) { alert('Network error: ' + e.message); }
+    }
+
+    async function execGovDisable(trno, name) {
+      const reason = prompt(`Enter reason to DISABLE student #${trno} (${name}) in Active Directory:`, 'Administrative policy enforcement');
+      if (reason === null) return;
+      try {
+        const res = await fetch('/enforce/admin/governance/disable', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ trno: String(trno), reason: reason, actor: 'Administrator' })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          alert(`⛔ Student #${trno} account has been DISABLED in Windows Active Directory.`);
+          fetchGovAccounts(true);
+          fetchStrikeMatrix();
+        } else {
+          alert('Error: ' + (data.error || 'Failed to disable account'));
+        }
+      } catch (e) { alert('Network error: ' + e.message); }
+    }
+
+    async function openGovAuditModal() {
+      const modal = document.getElementById('govAuditModal');
+      const list = document.getElementById('govAuditList');
+      modal.classList.add('active');
+      list.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:30px;">Loading audit trail from server…</div>';
+      try {
+        const res = await fetch('/enforce/admin/governance/audit-log');
+        const data = await res.json();
+        if (!data.ok || !data.events || data.events.length === 0) {
+          list.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:30px;">No audit trail events recorded yet.</div>';
+          return;
+        }
+        list.innerHTML = data.events.map(ev => {
+          const isDis = ev.action === 'DISABLE';
+          const badge = isDis
+            ? `<span class="badge-count badge-rose">DISABLED</span>`
+            : `<span class="badge-count" style="background:rgba(16,185,129,0.18);color:#6ee7b7;">RE-ENABLED</span>`;
+          return `
+            <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
+              <div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  ${badge}
+                  <strong style="color:#fff;font-size:13px;">${escapeHtml(ev.name || 'Student')} (#${escapeHtml(ev.trno)})</strong>
+                  <span style="font-size:11px;color:var(--text-sub);">by ${escapeHtml(ev.actor || 'Admin')}</span>
+                </div>
+                <div style="font-size:12px;color:#cbd5e1;margin-top:4px;"><strong>Reason:</strong> ${escapeHtml(ev.reason || 'None provided')}</div>
+              </div>
+              <div style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text-sub);text-align:right;">
+                ${escapeHtml(ev.date_display || ev.timestamp || '')}
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (e) {
+        list.innerHTML = `<div style="text-align:center;color:#fca5a5;padding:20px;">Failed to load audit trail: ${e.message}</div>`;
+      }
+    }
+
+    function closeGovAuditModal() {
+      document.getElementById('govAuditModal').classList.remove('active');
+    }
+
+    async function loadSecReinstatementQueue() {
+      try {
+        const res = await fetch('/api/lab/reinstatement_queue');
+        if (!res.ok) return;
+        const d = await res.json();
+        const sec = document.getElementById('secReinstatementSection');
+        const badge = document.getElementById('secReinstatementCountBadge');
+        _secQueueAll = d.queue || [];
+        if (!sec) return;
+        if (_secQueueAll.length === 0) {
+          sec.style.display = 'none';
+          return;
+        }
+        sec.style.display = 'block';
+        if (badge) badge.textContent = `${_secQueueAll.length} Expiring Soon`;
+        renderSecReinstatementRows();
+      } catch (e) {}
+    }
+
+    function renderSecReinstatementRows() {
+      const cont = document.getElementById('secReinstatementRows');
+      if (!cont) return;
+      cont.innerHTML = _secQueueAll.slice(0, 5).map(s => `
+        <div style="display:flex;align-items:center;gap:12px;background:rgba(15,26,53,0.85);border:1px solid rgba(245,200,66,0.25);border-radius:10px;padding:10px 14px;margin-bottom:8px;">
+          <div class="student-avatar" style="width:34px;height:34px;flex-shrink:0;">
+            <img src="/photo/${escapeJs(s.trno)}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+            <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;">${escapeHtml((s.name||'S')[0])}</div>
+          </div>
+          <span class="badge-count ${s.urgency === 'critical' ? 'badge-rose' : 'badge-amber'}">${s.expires_label}</span>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <strong style="font-size:13px;color:#fff;">${escapeHtml(s.name)}</strong>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--sky);">#${s.trno}</span>
+              <span style="font-size:11px;color:var(--text-sub);">${escapeHtml(s.darajah)}</span>
+            </div>
+            <div style="font-size:11.5px;color:#fca5a5;margin-top:2px;">🚫 ${escapeHtml(s.reason || 'Policy infraction')}</div>
+          </div>
+          <button class="btn-gov-enable" onclick="unblockStudentSecurity('${escapeJs(s.trno)}')">⚡ Reinstate</button>
+        </div>
+      `).join('');
+    }
+
+    async function unblockStudentSecurity(trno) {
+      if (!confirm(`Unblock Student #${trno}? This will restore lab PC access immediately.`)) return;
+      try {
+        const res = await fetch('/enforce/admin/unblock', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ trno: String(trno), note: 'Reinstated from Security Command Center' })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          alert(`✓ Student #${trno} unblocked and reinstated.`);
+          fetchThreatData();
+          fetchGovAccounts(true);
+          fetchStrikeMatrix();
+          loadSecReinstatementQueue();
+        } else {
+          alert('Error: ' + (data.error || 'Failed to unblock student'));
+        }
+      } catch (e) { alert('Network error: ' + e.message); }
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // BULK DOMAIN PARDON CONTROLLER
+    // ══════════════════════════════════════════════════════════════
+    let _pardonStudentList = [];
+
+    function setPardonKeyword(kw) {
+      const inp = document.getElementById('pardonKeywordInp');
+      if (inp) { inp.value = kw; previewPardon(); }
+    }
+
+    async function previewPardon() {
+      const inp = document.getElementById('pardonKeywordInp');
+      const keyword = (inp?.value || '').trim().toLowerCase();
+      if (!keyword) { alert('Please enter a domain keyword first.'); return; }
+
+      const btn = document.getElementById('btnPardonPreview');
+      const statusMsg = document.getElementById('pardonStatusMsg');
+      if (btn) btn.textContent = 'Loading…';
+      if (statusMsg) statusMsg.textContent = '';
+
+      try {
+        const res = await fetch(`/enforce/admin/bulk-unblock-preview?domain=${encodeURIComponent(keyword)}`);
+        const data = await res.json();
+        if (!data.ok) { if (statusMsg) statusMsg.textContent = 'Error: ' + (data.error || 'Failed'); if (btn) btn.textContent = 'Preview'; return; }
+
+        _pardonStudentList = data.students || [];
+        const count = _pardonStudentList.length;
+
+        // Update execute button
+        const execBtn = document.getElementById('btnPardonExecute');
+        const countEl = document.getElementById('pardonCount');
+        if (execBtn) execBtn.style.display = count > 0 ? 'inline-flex' : 'none';
+        if (countEl) countEl.textContent = count;
+        if (statusMsg) statusMsg.textContent = count > 0 ? `Found ${count} suspended student(s) matching "${keyword}"` : `No suspended students matching "${keyword}" found.`;
+
+        // Render preview table
+        const wrap = document.getElementById('pardonPreviewWrap');
+        const label = document.getElementById('pardonPreviewLabel');
+        const tbody = document.getElementById('pardonPreviewTbody');
+        if (wrap) wrap.style.display = count > 0 ? 'block' : 'none';
+        if (label) label.textContent = `Preview: ${count} student(s) to be pardoned for "${keyword}" violations`;
+
+        if (tbody) {
+          if (count === 0) { tbody.innerHTML = ''; }
+          else {
+            tbody.innerHTML = _pardonStudentList.map(s => {
+              const initials = (s.name || 'S').split(' ').map(p => p[0]).filter(Boolean).slice(0, 2).join('').toUpperCase();
+              const blockedDate = s.blocked_at ? s.blocked_at.split('T')[0] : '—';
+              return `
+                <tr>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <div class="student-avatar" style="width:30px;height:30px;font-size:11px;">${initials}</div>
+                      <div>
+                        <div style="font-weight:700;color:#fff;font-size:12.5px;">${escapeHtml(s.name)}</div>
+                        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--sky);">#${s.trno}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td><div style="font-size:12px;color:#cbd5e1;font-weight:600;">${escapeHtml(s.darajah)}</div><div style="font-size:10px;color:var(--text-sub);">${escapeHtml(s.group)}</div></td>
+                  <td><div style="font-size:11px;color:#fca5a5;max-width:260px;word-break:break-word;">${escapeHtml(s.blocked_reason || '—')}</div></td>
+                  <td><div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--text-sub);">${blockedDate}</div></td>
+                  <td><div style="font-size:12px;font-weight:700;color:#fbbf24;text-align:center;">${s.violations_count}</div></td>
+                </tr>
+              `;
+            }).join('');
+          }
+        }
+
+        if (btn) btn.textContent = 'Preview';
+      } catch (e) {
+        if (statusMsg) statusMsg.textContent = 'Network error: ' + e.message;
+        if (btn) btn.textContent = 'Preview';
+      }
+    }
+
+    async function executeBulkPardon() {
+      const inp = document.getElementById('pardonKeywordInp');
+      const keyword = (inp?.value || '').trim().toLowerCase();
+      const count = _pardonStudentList.length;
+      if (!keyword || count === 0) return;
+
+      if (!confirm(`Pardon and reinstate ${count} student(s) suspended for "${keyword}" violations?\n\nThis will:\n• Restore their Sentinel account to Active\n• Re-enable their Active Directory login immediately\n\nDarajah 8–11 senior students will remain locked per institutional policy.`)) return;
+
+      const execBtn = document.getElementById('btnPardonExecute');
+      const statusMsg = document.getElementById('pardonStatusMsg');
+      if (execBtn) { execBtn.disabled = true; execBtn.textContent = 'Processing…'; }
+      if (statusMsg) { statusMsg.textContent = `Pardoning ${count} student(s)…`; statusMsg.style.color = '#7dd3fc'; }
+
+      try {
+        const res = await fetch('/enforce/admin/bulk-unblock-by-domain', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            domain: keyword,
+            note: `Bulk pardon: ${keyword} violations cleared by Administrator`,
+            actor: 'Administrator'
+          })
+        });
+        const data = await res.json();
+
+        if (data.ok) {
+          const msg = `Pardoned ${data.pardoned_count} student(s) for "${keyword}" violations.`
+            + (data.skipped_senior?.length ? ` ${data.skipped_senior.length} senior account(s) remain locked.` : '');
+
+          if (statusMsg) { statusMsg.textContent = msg; statusMsg.style.color = '#34d399'; }
+          if (execBtn) { execBtn.style.display = 'none'; }
+
+          // Clear preview
+          _pardonStudentList = [];
+          const wrap = document.getElementById('pardonPreviewWrap');
+          if (wrap) wrap.style.display = 'none';
+
+          // Refresh tables
+          fetchStrikeMatrix();
+          fetchGovAccounts(true);
+          loadSecReinstatementQueue();
+
+          alert(`✓ ${msg}`);
+        } else {
+          if (statusMsg) { statusMsg.textContent = 'Error: ' + (data.error || 'Failed'); statusMsg.style.color = '#fca5a5'; }
+          if (execBtn) { execBtn.disabled = false; execBtn.textContent = `Pardon All (${count})`; }
+        }
+      } catch (e) {
+        if (statusMsg) { statusMsg.textContent = 'Network error: ' + e.message; statusMsg.style.color = '#fca5a5'; }
+        if (execBtn) { execBtn.disabled = false; execBtn.textContent = `Pardon All (${count})`; }
+      }
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // 📈 TAB 4: THREAT INTELLIGENCE & ANALYTICS CONTROLLER
+    // ══════════════════════════════════════════════════════════════
+
+    async function fetchDailyTrend() {
+      try {
+        const res = await fetch('/api/analytics/threat_daily_trend');
+        if (!res.ok) return;
+        const data = await res.json();
+        renderDailyTrendChart(data);
+        renderCategoryBreakdown(data.category_dist || {});
+      } catch (e) {}
+    }
+
+    function renderDailyTrendChart(data) {
+      const ctx = document.getElementById('chartDailyTrend');
+      if (!ctx) return;
+      if (chartDailyTrendInst) chartDailyTrendInst.destroy();
+
+      const highArr = data.high || [];
+      const medArr = data.medium || [];
+      const labels = data.labels || [];
+
+      let peakVal = 0, peakDate = '', totalEvents = 0;
+      for (let i = 0; i < labels.length; i++) {
+        const sum = (highArr[i] || 0) + (medArr[i] || 0);
+        totalEvents += sum;
+        if (sum > peakVal) { peakVal = sum; peakDate = labels[i]; }
+      }
+
+      if (document.getElementById('trajectoryPeakBadge')) {
+        document.getElementById('trajectoryPeakBadge').textContent = peakVal > 0 ? `⚡ Peak: ${peakDate} (${peakVal})` : '⚡ Trend Stable';
+      }
+      if (document.getElementById('trajectoryTotalBadge')) {
+        document.getElementById('trajectoryTotalBadge').textContent = `Total: ${totalEvents} events`;
+      }
+
+      chartDailyTrendInst = new Chart(ctx.getContext('2d'), {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            { label: '🚨 Critical Threats', data: highArr, borderColor: '#f43f5e', backgroundColor: 'rgba(244,63,94,0.12)', fill: true, tension: 0.35, pointRadius: 3, borderWidth: 2 },
+            { label: '⚠️ Warnings', data: medArr, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.08)', fill: true, tension: 0.35, pointRadius: 3, borderWidth: 2 }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          plugins: { legend: { position: 'top', labels: { color: '#94a3b8', font: { family: 'Inter', size: 10 } } } },
+          scales: {
+            x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
+            y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#94a3b8', stepSize: 1, font: { size: 10 } }, beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    function renderCategoryBreakdown(catDist) {
+      const ctx = document.getElementById('chartCategoryBreakdown');
+      if (!ctx) return;
+      if (chartCategoryInst) chartCategoryInst.destroy();
+
+      const catColors = {
+        'Educational': '#10b981', 'Institutional': '#a855f7', 'Search Engine': '#38bdf8',
+        'Video & Media': '#f59e0b', 'Social Media': '#fb923c', 'Gaming': '#ef4444',
+        'Proxy / VPN': '#f43f5e', 'Movie / Media Piracy': '#e11d48', 'Adult Content': '#dc2626'
+      };
+
+      const entries = Object.entries(catDist).sort((a,b) => b[1]-a[1]).slice(0, 8);
+      const labels = entries.map(([k]) => k);
+      const values = entries.map(([,v]) => v);
+      const colors = labels.map(l => catColors[l] || '#475569');
+
+      if (document.getElementById('topCategoryText') && entries.length > 0) {
+        document.getElementById('topCategoryText').textContent = `Top Trigger: ${entries[0][0]} (${entries[0][1]})`;
+      }
+
+      chartCategoryInst = new Chart(ctx.getContext('2d'), {
+        type: 'doughnut',
+        data: {
+          labels,
+          datasets: [{ data: values, backgroundColor: colors, borderColor: '#0f172a', borderWidth: 2 }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '66%',
+          plugins: { legend: { position: 'right', labels: { color: '#94a3b8', font: { size: 10 }, boxWidth: 10, padding: 6 } } }
+        }
+      });
+    }
+
+    function switchThreatCompView(view) {
+      const isSev = view === 'severity';
+      const elSev = document.getElementById('viewSeveritySplit');
+      const elCat = document.getElementById('viewCategoryMix');
+      if (elSev) elSev.style.display = isSev ? 'flex' : 'none';
+      if (elCat) elCat.style.display = isSev ? 'none' : 'flex';
+
+      const btnSev = document.getElementById('btnToggleSeverity');
+      const btnCat = document.getElementById('btnToggleCategory');
+      if (btnSev) btnSev.className = 'pg-btn' + (isSev ? ' active' : '');
+      if (btnCat) btnCat.className = 'pg-btn' + (!isSev ? ' active' : '');
+
+      const badge = document.getElementById('threatCompBadge');
+      if (badge) badge.textContent = isSev ? 'Severity Split' : 'Policy Mix';
+
+      if (!isSev && chartCategoryInst) chartCategoryInst.resize();
+      else if (isSev && chartRiskDistInst) chartRiskDistInst.resize();
+    }
+
+    function updateSummaryCharts(data) {
+      const high = data.high_count || 0;
+      const med = data.medium_count || 0;
+      const total = high + med;
+
+      if (document.getElementById('compStatHigh')) document.getElementById('compStatHigh').textContent = high;
+      if (document.getElementById('compStatMed')) document.getElementById('compStatMed').textContent = med;
+      if (document.getElementById('severityRatioText')) {
+        document.getElementById('severityRatioText').textContent = total > 0 ? `${Math.round((high / total) * 100)}% Critical · ${100 - Math.round((high / total) * 100)}% Warnings` : 'Zero active threats';
+      }
+
+      const ctxRisk = document.getElementById('chartRiskDist');
+      if (ctxRisk) {
+        if (chartRiskDistInst) chartRiskDistInst.destroy();
+        chartRiskDistInst = new Chart(ctxRisk.getContext('2d'), {
+          type: 'doughnut',
+          data: {
+            labels: ['Critical', 'Warnings'],
+            datasets: [{ data: [high, med], backgroundColor: ['#f43f5e', '#f59e0b'], borderColor: '#0f172a', borderWidth: 2 }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '72%',
+            plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 10 } } } }
+          }
+        });
+      }
+
+      // Top Domains
+      const domains = (data.top_domains || []).slice(0, 5);
+      const ctxDom = document.getElementById('chartTopDomains');
+      if (ctxDom) {
+        if (chartTopDomainsInst) chartTopDomainsInst.destroy();
+        chartTopDomainsInst = new Chart(ctxDom.getContext('2d'), {
+          type: 'bar',
+          data: {
+            labels: domains.map(d => d.domain.length > 15 ? d.domain.substring(0, 15) + '…' : d.domain),
+            datasets: [{ data: domains.map(d => d.count), backgroundColor: domains.map(d => (d.domain.endsWith('.exe') ? '#c084fc' : '#fb7185')), borderRadius: 4 }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
+              y: { grid: { display: false }, ticks: { color: '#f1f5f9', font: { family: 'JetBrains Mono', size: 10 } } }
+            }
+          }
+        });
+      }
+
+      // Darajah Risk
+      const darRisk = Array.isArray(data.risk_by_darajah)
+        ? data.risk_by_darajah.slice(0, 7)
+        : Object.entries(data.risk_by_darajah || {}).map(([k,v]) => ({ darajah: k, count: typeof v === 'object' ? ((v.HIGH||0)+(v.MEDIUM||0)) : v })).slice(0, 7);
+
+      const ctxDar = document.getElementById('chartDarajahRisk');
+      if (ctxDar) {
+        if (chartDarajahRiskInst) chartDarajahRiskInst.destroy();
+        chartDarajahRiskInst = new Chart(ctxDar.getContext('2d'), {
+          type: 'bar',
+          data: {
+            labels: darRisk.map(d => d.darajah),
+            datasets: [{ data: darRisk.map(d => d.count), backgroundColor: darRisk.map((_, i) => i % 2 === 0 ? '#f43f5e' : '#f59e0b'), borderRadius: 4 }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { grid: { display: false }, ticks: { color: '#f1f5f9', font: { size: 10 } } },
+              y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } }, beginAtZero: true }
+            }
+          }
+        });
+      }
+
+      // Top Repeaters
+      const topStudents = data.top_students || [];
+      const listEl = document.getElementById('topStudentsList');
+      if (listEl) {
+        if (topStudents.length === 0) {
+          listEl.innerHTML = `<div style="text-align:center;color:var(--text-sub);font-size:12px;padding:24px;">✓ No high-risk repeaters detected.</div>`;
+        } else {
+          listEl.innerHTML = topStudents.slice(0, 5).map((s, i) => `
+            <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:6px;padding:6px 10px;display:flex;justify-content:space-between;align-items:center;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-weight:800;color:var(--gold);font-size:11px;">#${i+1}</span>
+                <a href="/report/${encodeURIComponent(s.trno)}" target="_blank" style="font-size:12px;font-weight:700;color:#fff;text-decoration:none;">${escapeHtml(s.name || s.trno)}</a>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--sky);">#${escapeHtml(s.trno)}</span>
+              </div>
+              <span class="badge-count badge-rose">${s.count} strikes</span>
+            </div>
+          `).join('');
+        }
+      }
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // 📜 OFFICIAL DISCIPLINARY DOSSIER MODAL & PRINT
+    // ══════════════════════════════════════════════════════════════
+    async function openDisciplinaryDossier(trno) {
+      const modal = document.getElementById('disciplinaryDossierModal');
+      const body = document.getElementById('dossierModalBody');
+      modal.classList.add('active');
+      body.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-sub);">Loading student dossier for #${trno}…</div>`;
+
+      document.getElementById('dossierGeneratedAt').textContent = new Date().toLocaleString();
+
+      try {
+        const studentRecord = rawStrikeRecords.find(r => String(r.trno) === String(trno)) || { trno: trno, name: `Student #${trno}`, darajah: 'General', strike_level: 1, violations_count: 1 };
+        
+        body.innerHTML = `
+          <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:16px;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
+              <div>
+                <h2 style="font-size:18px;font-weight:900;color:#fff;">${escapeHtml(studentRecord.name)}</h2>
+                <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--sky);font-weight:700;">TRNO: ${escapeHtml(studentRecord.trno)}</span>
+                  <span style="color:var(--text-sub);">·</span>
+                  <span style="font-size:12px;color:#cbd5e1;">Darajah: ${escapeHtml(studentRecord.darajah)}</span>
+                  <span style="color:var(--text-sub);">·</span>
+                  <span style="font-size:12px;color:var(--text-muted);">${escapeHtml(studentRecord.group || 'Talabaat')}</span>
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <div class="badge-count badge-rose" style="font-size:12px;padding:4px 10px;">
+                  DISCIPLINARY TIER: STRIKE ${studentRecord.strike_level} OF 5
+                </div>
+                <div style="font-size:11px;color:var(--text-sub);margin-top:4px;">
+                  Active Directory: <strong>${studentRecord.is_blocked ? '⛔ SUSPENDED' : '🟢 ACTIVE'}</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-bottom:16px;">
+            <h4 style="font-size:13px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">
+              Logged Policy Violations &amp; Infraction History
+            </h4>
+            <div style="background:rgba(0,0,0,0.25);border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-size:12.5px;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+                <span style="color:var(--text-sub);">Total Recorded Strikes:</span>
+                <strong style="color:#fca5a5;">${studentRecord.violations_count} infraction(s)</strong>
+              </div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+                <span style="color:var(--text-sub);">Primary Violation Cause:</span>
+                <strong style="color:#fff;">${escapeHtml(studentRecord.blocked_reason || 'Prohibited browsing / software execution')}</strong>
+              </div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+                <span style="color:var(--text-sub);">Last Station / Terminal:</span>
+                <strong style="color:var(--sky);font-family:'JetBrains Mono',monospace;">${escapeHtml(studentRecord.last_station || 'Workstation')}</strong>
+              </div>
+              <div style="display:flex;justify-content:space-between;">
+                <span style="color:var(--text-sub);">Last Telemetry Timestamp:</span>
+                <strong style="font-family:'JetBrains Mono',monospace;color:#fff;">${escapeHtml(studentRecord.last_incident || 'Recent')}</strong>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:24px;padding-top:16px;border-top:1px dashed rgba(255,255,255,0.15);display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+            <div style="border-top:1px solid rgba(255,255,255,0.3);padding-top:8px;margin-top:24px;">
+              <div style="font-size:11px;color:var(--text-sub);text-transform:uppercase;font-weight:700;">Office of the Proctor Signature</div>
+              <div style="font-size:12px;color:#fff;margin-top:4px;">Disciplinary Board Review</div>
+            </div>
+            <div style="border-top:1px solid rgba(255,255,255,0.3);padding-top:8px;margin-top:24px;">
+              <div style="font-size:11px;color:var(--text-sub);text-transform:uppercase;font-weight:700;">IT Sentinel Administrator Signature</div>
+              <div style="font-size:12px;color:#fff;margin-top:4px;">Domain Compliance Enforced</div>
+            </div>
+          </div>
+        `;
+      } catch (e) {
+        body.innerHTML = `<div style="text-align:center;color:#fca5a5;padding:24px;">Failed loading dossier details: ${e.message}</div>`;
+      }
+    }
+
+    function closeDisciplinaryDossier() {
+      document.getElementById('disciplinaryDossierModal').classList.remove('active');
+    }
+
+    function printDisciplinaryDossier() {
+      window.print();
+    }
+
+    function exportThreatCSV() {
+      if (!rawAlerts || rawAlerts.length === 0) {
+        alert('No telemetry alerts available to export.');
+        return;
+      }
+      const headers = ['Timestamp', 'TRNO', 'Student Name', 'Class', 'Group', 'Risk Level', 'Domain', 'Category', 'Station', 'Reason'];
+      const rows = rawAlerts.map(a => [
+        `"${(a.visit_time || '').replace(/"/g, '""')}"`,
+        `"${(a.trno || '').replace(/"/g, '""')}"`,
+        `"${(a.name || '').replace(/"/g, '""')}"`,
+        `"${(a.class || a.darajah || '').replace(/"/g, '""')}"`,
+        `"${(a.group || '').replace(/"/g, '""')}"`,
+        `"${(a.risk_level || '').replace(/"/g, '""')}"`,
+        `"${(a.domain || '').replace(/"/g, '""')}"`,
+        `"${(a.category || '').replace(/"/g, '""')}"`,
+        `"${(a.station || '').replace(/"/g, '""')}"`,
+        `"${(a.reason || '').replace(/"/g, '""')}"`
+      ]);
+      const csv = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      const link = document.createElement('a');
+      link.setAttribute('href', encodeURI(csv));
+      link.setAttribute('download', `sentinel_security_telemetry_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+    function escapeJs(str) {
+      if (!str) return '';
+      return String(str).replace(/'/g, "\\'").replace(/"/g, '\\"');
+    }
+
+    // ── Lifecycle Initialization ──
+    window.addEventListener('DOMContentLoaded', () => {
+      initNotifButton();
+      fetchThreatData();
+      fetchStrikeMatrix();
+      fetchGovAccounts();
+      fetchDailyTrend();
+      loadSecReinstatementQueue();
+
+      // Periodic Auto-refresh intervals
+      setInterval(fetchThreatData, 5000);
+      setInterval(fetchStrikeMatrix, 10000);
+      setInterval(loadSecReinstatementQueue, 30000);
+      setInterval(fetchDailyTrend, 120000);
+    });
+  </script>
+
+</body>
+</html>

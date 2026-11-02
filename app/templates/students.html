@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Students 360° Roster — MamalBrowse Sentinel | Al-Jamea tus-Saifiyah</title>
+  <meta name="description" content="Official Student 360° Directory and Conduct Dossier for Al-Jamea tus-Saifiyah computer lab.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      /* ── Institutional Deep Royal Blue & Gold Palette ── */
+      --bg: #0a1128;
+      --bg-elevated: #0f1a35;
+      --surface: #131c3a;
+      --surface-2: #1a2447;
+      --surface-3: #232e54;
+      --border: rgba(255, 255, 255, 0.09);
+      --border-strong: rgba(255, 255, 255, 0.16);
+
+      --gold: #f5c842;
+      --gold-soft: #fbbf24;
+      --gold-deep: #d97706;
+      --royal: #1e3a8a;
+      --royal-light: #2563eb;
+      --sky: #38bdf8;
+      --emerald: #10b981;
+      --rose: #f43f5e;
+      --amber: #f59e0b;
+      --violet: #8b5cf6;
+
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+
+      --radius-sm: 8px;
+      --radius: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+      --shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 20px 48px -12px rgba(0, 0, 0, 0.6);
+
+      --gradient-gold: linear-gradient(135deg, #f5c842 0%, #fbbf24 50%, #d97706 100%);
+      --gradient-royal: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 14px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      background-image:
+        radial-gradient(ellipse 900px 600px at 20% -10%, rgba(30, 58, 138, 0.28), transparent),
+        radial-gradient(ellipse 700px 500px at 90% 10%, rgba(245, 200, 66, 0.07), transparent);
+      background-attachment: fixed;
+    }
+
+    /* ══ NAVBAR ══ */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 17, 40, 0.88);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid var(--border);
+      padding: 0 28px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: -0.01em;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .nav-brand .crest {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--gradient-royal);
+      border: 1px solid rgba(245, 200, 66, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 4px 12px rgba(30, 58, 138, 0.4);
+    }
+
+    .nav-brand .brand-text {
+      background: var(--gradient-gold);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 900;
+    }
+
+    .nav-brand .brand-sub {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      -webkit-text-fill-color: var(--text-dim);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s;
+    }
+
+    .nav-link:hover {
+      color: var(--text);
+      background: var(--surface-2);
+    }
+
+    .nav-link.active {
+      color: var(--gold);
+      background: rgba(245, 200, 66, 0.1);
+      border: 1px solid rgba(245, 200, 66, 0.25);
+    }
+
+    .btn-logout {
+      background: rgba(244, 63, 94, 0.12);
+      color: #fca5a5;
+      border: 1px solid rgba(244, 63, 94, 0.25);
+      border-radius: var(--radius-sm);
+      padding: 8px 16px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      margin-left: 8px;
+    }
+
+    .btn-logout:hover {
+      background: rgba(244, 63, 94, 0.22);
+      color: #fff;
+    }
+
+    /* ══ CONTAINER ══ */
+    .container {
+      max-width: 1520px;
+      margin: 0 auto;
+      padding: 28px 28px 60px;
+    }
+
+    /* ══ HEADER ══ */
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .page-title {
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+
+    .page-title span {
+      background: var(--gradient-gold);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .page-sub {
+      color: var(--text-muted);
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .badge-pill.gold {
+      background: rgba(245, 200, 66, 0.1);
+      border-color: rgba(245, 200, 66, 0.3);
+      color: var(--gold);
+    }
+
+    .badge-pill.rose {
+      background: rgba(244, 63, 94, 0.12);
+      border-color: rgba(244, 63, 94, 0.3);
+      color: #fca5a5;
+    }
+
+    /* View Switcher */
+    .view-switcher {
+      display: inline-flex;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 3px;
+      gap: 4px;
+    }
+
+    .view-tab {
+      padding: 7px 14px;
+      border-radius: 7px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .view-tab:hover {
+      color: var(--text);
+    }
+
+    .view-tab.active {
+      background: var(--royal);
+      color: #fff;
+      box-shadow: 0 2px 10px rgba(30, 58, 138, 0.6);
+      border: 1px solid rgba(245, 200, 66, 0.3);
+    }
+
+    .btn-export {
+      background: rgba(16, 185, 129, 0.12);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 7px 16px;
+      font-size: 12.5px;
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-export:hover {
+      background: rgba(16, 185, 129, 0.22);
+      color: #fff;
+    }
+
+    /* ══ FILTER BAR ══ */
+    .filter-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .filter-form {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+
+    .fg {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+      min-width: 140px;
+    }
+
+    .fg.search-fg {
+      flex: 1.5;
+      min-width: 220px;
+    }
+
+    .fg label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .fg input,
+    .fg select {
+      padding: 10px 14px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .fg select option {
+      background: var(--bg-elevated);
+      color: var(--text);
+    }
+
+    .fg input:focus,
+    .fg select:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(245, 200, 66, 0.18);
+    }
+
+    .btn-filter {
+      padding: 10px 20px;
+      background: var(--gradient-royal);
+      color: #fff;
+      border: 1px solid rgba(245, 200, 66, 0.35);
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(30, 58, 138, 0.4);
+    }
+
+    .btn-filter:hover {
+      opacity: 0.92;
+      transform: translateY(-1px);
+    }
+
+    .btn-reset {
+      padding: 10px 16px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 13px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-reset:hover {
+      color: var(--text);
+      background: var(--surface-3);
+    }
+
+    /* ══ SECTION HEADERS ══ */
+    .darajah-section {
+      margin-bottom: 36px;
+    }
+
+    .section-header-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .darajah-title {
+      font-size: 17px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .darajah-pill {
+      background: rgba(245, 200, 66, 0.12);
+      border: 1px solid rgba(245, 200, 66, 0.3);
+      color: var(--gold);
+      border-radius: 999px;
+      padding: 2px 10px;
+      font-size: 11px;
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ══ STUDENT GRID VIEW ══ */
+    .student-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 18px;
+    }
+
+    .student-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px 18px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+
+    .student-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--gradient-gold);
+      opacity: 0.3;
+      transition: opacity 0.2s;
+    }
+
+    .student-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow);
+      border-color: rgba(245, 200, 66, 0.35);
+    }
+
+    .student-card:hover::before {
+      opacity: 1;
+    }
+
+    .student-card.risk-blocked {
+      border-color: rgba(244, 63, 94, 0.45);
+      background: linear-gradient(180deg, rgba(244, 63, 94, 0.05) 0%, var(--surface) 35%);
+    }
+
+    .student-card.risk-warned {
+      border-color: rgba(245, 158, 11, 0.4);
+      background: linear-gradient(180deg, rgba(245, 158, 11, 0.04) 0%, var(--surface) 35%);
+    }
+
+    /* Status badge pill */
+    .status-badge-corner {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      font-size: 9.5px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
+    .status-blocked {
+      background: rgba(244, 63, 94, 0.16);
+      color: #fb7185;
+      border: 1px solid rgba(244, 63, 94, 0.4);
+    }
+
+    .status-warned {
+      background: rgba(245, 158, 11, 0.16);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+
+    /* Avatar */
+    .avatar-wrapper {
+      width: 74px;
+      height: 74px;
+      border-radius: 50%;
+      position: relative;
+      margin-bottom: 12px;
+      border: 2px solid rgba(245, 200, 66, 0.3);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+      overflow: hidden;
+      background: var(--surface-2);
+    }
+
+    .avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .avatar-fallback {
+      width: 100%;
+      height: 100%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: var(--gradient-royal);
+      color: #fff;
+      font-weight: 800;
+      font-size: 22px;
+    }
+
+    .student-trno {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+
+    .student-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.35;
+      max-width: 230px;
+      margin-bottom: 2px;
+    }
+
+    .student-name-ar {
+      font-size: 12px;
+      color: var(--text-dim);
+      direction: rtl;
+      margin-bottom: 10px;
+    }
+
+    /* Badges row */
+    .chip-row {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+
+    .chip {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-muted);
+    }
+
+    .chip-gold {
+      background: rgba(245, 200, 66, 0.08);
+      border-color: rgba(245, 200, 66, 0.25);
+      color: var(--gold);
+    }
+
+    .chip-emerald {
+      background: rgba(16, 185, 129, 0.08);
+      border-color: rgba(16, 185, 129, 0.25);
+      color: #34d399;
+    }
+
+    .chip-sky {
+      background: rgba(56, 189, 248, 0.08);
+      border-color: rgba(56, 189, 248, 0.25);
+      color: #38bdf8;
+    }
+
+    /* AD banner */
+    .ad-banner {
+      width: 100%;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      margin-bottom: 12px;
+    }
+
+    .ad-banner.active {
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      color: #34d399;
+    }
+
+    .ad-banner.disabled {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+      color: #fca5a5;
+    }
+
+    /* KPI strip */
+    .card-kpi-strip {
+      width: 100%;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 6px;
+      margin-bottom: 14px;
+    }
+
+    .kpi-unit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .kpi-unit-val {
+      font-size: 13px;
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text);
+    }
+
+    .kpi-unit-lbl {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    /* Risk Score Bar */
+    .risk-meter {
+      width: 100%;
+      margin-bottom: 14px;
+    }
+
+    .risk-head {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .risk-bar {
+      height: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .risk-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+    }
+
+    /* Card Actions */
+    .card-actions {
+      display: flex;
+      gap: 6px;
+      width: 100%;
+      margin-top: auto;
+    }
+
+    .btn-dossier {
+      flex: 1;
+      padding: 8px 12px;
+      background: var(--gradient-royal);
+      color: #fff;
+      border: 1px solid rgba(245, 200, 66, 0.25);
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .btn-dossier:hover {
+      opacity: 0.92;
+      box-shadow: 0 4px 12px rgba(30, 58, 138, 0.5);
+    }
+
+    .btn-action-unblock {
+      background: rgba(16, 185, 129, 0.14);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-action-unblock:hover {
+      background: rgba(16, 185, 129, 0.25);
+      color: #fff;
+    }
+
+    .btn-action-disable {
+      background: rgba(244, 63, 94, 0.12);
+      color: #fca5a5;
+      border: 1px solid rgba(244, 63, 94, 0.3);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-action-disable:hover {
+      background: rgba(244, 63, 94, 0.22);
+      color: #fff;
+    }
+
+    /* ══ TABLE VIEW ══ */
+    .table-container {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow-x: auto;
+      box-shadow: var(--shadow-sm);
+      display: none; /* toggled via JS */
+    }
+
+    table.roster-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    table.roster-table thead {
+      background: var(--surface-2);
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    table.roster-table th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 10.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-dim);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    table.roster-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      vertical-align: middle;
+    }
+
+    table.roster-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .table-avatar-cell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .table-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 1px solid rgba(245, 200, 66, 0.25);
+      background: var(--surface-2);
+      flex-shrink: 0;
+    }
+
+    .table-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* ══ EMPTY STATE ══ */
+    .empty-roster-state {
+      padding: 80px 20px;
+      text-align: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+    }
+
+    .empty-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.6;
+    }
+
+    .empty-roster-state h3 {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .empty-roster-state p {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      max-width: 440px;
+      margin: 0 auto 20px;
+    }
+
+    /* ══ FOOTER ══ */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 24px 28px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 40px;
+    }
+
+    footer strong {
+      color: var(--gold);
+      font-weight: 700;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ══ NAVBAR ══ -->
+  <nav>
+    <a href="/home" class="nav-brand">
+      <div>
+        <div class="brand-text">MamalBrowse Sentinel</div>
+        <div class="brand-sub">Al-Jamea tus-Saifiyah · Nairobi</div>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="/home" class="nav-link">Dashboard</a>
+      <a href="/darajah" class="nav-link">Darajah Matrix</a>
+      <a href="/students" class="nav-link active">Students</a>
+      <a href="/analytics" class="nav-link">Analytics</a>
+      <a href="/security" class="nav-link">Security</a>
+      <a href="/logout" class="btn-logout">Sign Out</a>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <!-- ══ HEADER ══ -->
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Student <span>360° Directory</span></h1>
+        <p class="page-sub">
+          Authoritative academic profiles, digital conduct telemetry, and Active Directory domain mapping.
+        </p>
+      </div>
+
+      <div class="header-actions">
+        <span class="badge-pill gold">
+          <span>🎓</span>
+          <span><strong>{{ total }}</strong> Student Profiles</span>
+        </span>
+        {% if total_ad_disabled > 0 %}
+        <span class="badge-pill rose">
+          <span>⛔</span>
+          <span><strong>{{ total_ad_disabled }}</strong> AD Accounts Disabled</span>
+        </span>
+        {% endif %}
+
+        <div class="view-switcher">
+          <button class="view-tab active" id="tabGrid" onclick="switchView('grid')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            Grid
+          </button>
+          <button class="view-tab" id="tabTable" onclick="switchView('table')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+            Table
+          </button>
+        </div>
+
+        <a href="/students/export_csv?group_by={{ group_by }}{% if darajah_filter %}&darajah={{ darajah_filter }}{% endif %}{% if group_filter %}&group={{ group_filter }}{% endif %}{% if ad_filter %}&ad_status={{ ad_filter }}{% endif %}{% if search %}&q={{ search }}{% endif %}" class="btn-export">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          Export CSV
+        </a>
+      </div>
+    </div>
+
+    <!-- ══ FILTERS ══ -->
+    <div class="filter-card">
+      <form class="filter-form" method="GET">
+        <input type="hidden" name="group_by" value="{{ group_by }}">
+
+        <div class="fg search-fg">
+          <label for="q">Search Name or TRNO</label>
+          <input type="text" id="q" name="q" value="{{ search }}" placeholder="e.g. Murtaza or 28653...">
+        </div>
+
+        <div class="fg">
+          <label for="darajah">Darajah</label>
+          <select id="darajah" name="darajah">
+            <option value="">All Cohorts</option>
+            {% for d in all_darajahs %}
+            <option value="{{ d }}" {% if darajah_filter == d %}selected{% endif %}>Darajah {{ d }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="fg">
+          <label for="group">Campus Group</label>
+          <select id="group" name="group">
+            <option value="">All Groups</option>
+            {% for g in all_groups %}
+            <option value="{{ g }}" {% if group_filter == g %}selected{% endif %}>{{ g }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="fg">
+          <label for="ad_status">AD Domain Status</label>
+          <select id="ad_status" name="ad_status">
+            <option value="" {% if not ad_filter %}selected{% endif %}>All Accounts</option>
+            <option value="active" {% if ad_filter == 'active' %}selected{% endif %}>🟢 Active in AD</option>
+            <option value="disabled" {% if ad_filter == 'disabled' %}selected{% endif %}>⛔ Disabled in AD</option>
+          </select>
+        </div>
+
+        {% if all_months %}
+        <div class="fg">
+          <label for="month">Academic Month</label>
+          <select id="month" name="month">
+            <option value="">All Months</option>
+            {% for m in all_months %}
+            <option value="{{ m }}" {% if month_filter == m %}selected{% endif %}>{{ m }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        {% endif %}
+
+        <div style="display:flex; gap:8px;">
+          <button type="submit" class="btn-filter">Apply Filters</button>
+          {% if search or darajah_filter or group_filter or month_filter or ad_filter %}
+          <a href="/students?group_by={{ group_by }}" class="btn-reset">Reset</a>
+          {% endif %}
+        </div>
+      </form>
+    </div>
+
+    <!-- ══ EMPTY STATE ══ -->
+    {% if not grouped %}
+    <div class="empty-roster-state">
+      <div class="empty-icon">🔍</div>
+      <h3>No Student Records Found</h3>
+      <p>No students match your filter criteria. Adjust the search filters or clear constraints.</p>
+      <a href="/students?group_by={{ group_by }}" class="btn-filter" style="text-decoration:none;display:inline-block;">Reset All Filters</a>
+    </div>
+    {% endif %}
+
+    <!-- ══ CONTENT SECTIONS ══ -->
+    {% for section_label, students in grouped.items() %}
+    <div class="darajah-section">
+      <div class="section-header-wrap">
+        <div class="darajah-title">
+          {% if group_by == 'month' %}
+          📅 {{ section_label }}
+          {% else %}
+          🏫 Darajah {{ section_label }}
+          {% endif %}
+          <span class="darajah-pill">{{ students | length }} Students</span>
+        </div>
+      </div>
+
+      <!-- GRID VIEW -->
+      <div class="student-grid roster-grid-view">
+        {% for s in students %}
+        {% set clean_name = s.name.split('-')[-1].strip() if '-' in s.name else s.name %}
+        {% set initials = (clean_name.split()[0][0] if clean_name else s.trno[0] if s.trno else '?') | upper %}
+        {% set acc_status = s.account_status if s.account_status is defined else 'active' %}
+        {% set risk_score = s.risk_score if s.risk_score is defined else 0 %}
+        {% set is_ad_dis = s.ad_disabled if s.ad_disabled is defined else false %}
+
+        <div class="student-card {% if acc_status == 'blocked' and s.violation_count > 0 %}risk-blocked{% elif acc_status == 'warned' %}risk-warned{% elif is_ad_dis %}risk-blocked{% endif %}">
+          {% if is_ad_dis %}
+          <div class="status-badge-corner status-blocked">⛔ AD Disabled</div>
+          {% elif acc_status == 'blocked' and s.violation_count > 0 %}
+          <div class="status-badge-corner status-blocked">⛔ Prohibited Sites</div>
+          {% elif acc_status == 'warned' %}
+          <div class="status-badge-corner status-warned">⚠️ Warned</div>
+          {% endif %}
+
+          <div class="avatar-wrapper">
+            <img src="/photo/{{ s.trno }}" alt="{{ clean_name }}" class="avatar-img"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="avatar-fallback">{{ initials }}</div>
+          </div>
+
+          <div class="student-trno">#{{ s.trno }}</div>
+          <div class="student-name" title="{{ clean_name }}">{{ clean_name }}</div>
+          {% if s.name_ar %}
+          <div class="student-name-ar">{{ s.name_ar }}</div>
+          {% endif %}
+
+          <div class="chip-row">
+            <span class="chip chip-gold">Darajah {{ s.class or s.darajah or '—' }}</span>
+            <span class="chip {% if s.group == 'Talebaat' %}chip-sky{% else %}chip-emerald{% endif %}">{{ s.group or '—' }}</span>
+          </div>
+
+          <div class="ad-banner {% if is_ad_dis %}disabled{% else %}active{% endif %}">
+            <span>{% if is_ad_dis %}⛔{% else %}🟢{% endif %}</span>
+            <span>{% if is_ad_dis %}AD Domain: Disabled{% else %}AD Domain: Active{% endif %}</span>
+          </div>
+
+          <div class="card-kpi-strip">
+            <div class="kpi-unit">
+              <span class="kpi-unit-val">{{ s.total_visits or 0 }}</span>
+              <span class="kpi-unit-lbl">Visits</span>
+            </div>
+            <div class="kpi-unit">
+              <span class="kpi-unit-val">{{ s.lab_hours or 0.0 }}h</span>
+              <span class="kpi-unit-lbl">Lab Time</span>
+            </div>
+            <div class="kpi-unit">
+              <span class="kpi-unit-val" style="color:{% if s.violation_count > 0 %}var(--rose){% else %}var(--text-muted){% endif %};">{{ s.violation_count or 0 }}</span>
+              <span class="kpi-unit-lbl">Violations</span>
+            </div>
+          </div>
+
+          <div class="risk-meter">
+            <div class="risk-head">
+              <span>Risk Metric</span>
+              <span style="color:{% if risk_score >= 60 %}var(--rose){% elif risk_score >= 30 %}var(--amber){% else %}var(--emerald){% endif %}; font-family:'JetBrains Mono';">{{ risk_score }}/100</span>
+            </div>
+            <div class="risk-bar">
+              <div class="risk-bar-fill" style="width:{{ risk_score }}%; background:{% if risk_score >= 60 %}var(--rose){% elif risk_score >= 30 %}var(--amber){% else %}var(--emerald){% endif %};"></div>
+            </div>
+          </div>
+
+          <div class="card-actions">
+            <a href="/report/{{ s.trno }}" class="btn-dossier">Dossier Report →</a>
+            {% if acc_status == 'blocked' %}
+            <button class="btn-action-unblock" onclick="quickUnblock('{{ s.trno }}')">Unblock</button>
+            {% else %}
+            <button class="btn-action-disable" onclick="quickDisable('{{ s.trno }}')">Suspend</button>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- TABLE VIEW -->
+      <div class="table-container roster-table-view">
+        <table class="roster-table">
+          <thead>
+            <tr>
+              <th>Student Identity</th>
+              <th>TRNO</th>
+              <th>Darajah</th>
+              <th>Group</th>
+              <th>AD Status</th>
+              <th>Visits</th>
+              <th>Lab Time</th>
+              <th>Violations</th>
+              <th>Risk Score</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in students %}
+            {% set clean_name = s.name.split('-')[-1].strip() if '-' in s.name else s.name %}
+            {% set initials = (clean_name.split()[0][0] if clean_name else s.trno[0] if s.trno else '?') | upper %}
+            {% set acc_status = s.account_status if s.account_status is defined else 'active' %}
+            {% set risk_score = s.risk_score if s.risk_score is defined else 0 %}
+            {% set is_ad_dis = s.ad_disabled if s.ad_disabled is defined else false %}
+            <tr>
+              <td>
+                <div class="table-avatar-cell">
+                  <div class="table-avatar">
+                    <img src="/photo/{{ s.trno }}" alt="{{ clean_name }}" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'38\' height=\'38\'><rect width=\'38\' height=\'38\' fill=\'%231e3a8a\'/><text x=\'50%25\' y=\'55%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%23fff\' font-weight=\'bold\'>{{ initials }}</text></svg>';">
+                  </div>
+                  <div>
+                    <strong style="color:#fff; font-size:13.5px;">{{ clean_name }}</strong>
+                    {% if s.name_ar %}
+                    <div style="font-size:11px; color:var(--text-dim); direction:rtl;">{{ s.name_ar }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+              </td>
+              <td><span style="font-family:'JetBrains Mono'; font-weight:700; color:var(--gold);">#{{ s.trno }}</span></td>
+              <td><span class="chip chip-gold">Darajah {{ s.class or s.darajah or '—' }}</span></td>
+              <td><span class="chip {% if s.group == 'Talebaat' %}chip-sky{% else %}chip-emerald{% endif %}">{{ s.group or '—' }}</span></td>
+              <td>
+                <span class="chip {% if is_ad_dis %}chip-rose{% else %}chip-emerald{% endif %}">
+                  {% if is_ad_dis %}⛔ Disabled{% else %}🟢 Active{% endif %}
+                </span>
+              </td>
+              <td><span style="font-family:'JetBrains Mono'; font-weight:600;">{{ s.total_visits or 0 }}</span></td>
+              <td><span style="font-family:'JetBrains Mono'; font-weight:600; color:var(--sky);">{{ s.lab_hours or 0.0 }}h</span></td>
+              <td>
+                <span style="font-family:'JetBrains Mono'; font-weight:700; color:{% if s.violation_count > 0 %}var(--rose){% else %}var(--text-muted){% endif %};">
+                  {{ s.violation_count or 0 }}
+                </span>
+              </td>
+              <td>
+                <span style="font-family:'JetBrains Mono'; font-weight:700; color:{% if risk_score >= 60 %}var(--rose){% elif risk_score >= 30 %}var(--amber){% else %}var(--emerald){% endif %};">
+                  {{ risk_score }}/100
+                </span>
+              </td>
+              <td>
+                <div style="display:flex; gap:6px;">
+                  <a href="/report/{{ s.trno }}" class="btn-dossier" style="padding:4px 8px; font-size:11px;">Dossier</a>
+                  {% if acc_status == 'blocked' %}
+                  <button class="btn-action-unblock" style="padding:4px 8px; font-size:11px;" onclick="quickUnblock('{{ s.trno }}')">Unblock</button>
+                  {% else %}
+                  <button class="btn-action-disable" style="padding:4px 8px; font-size:11px;" onclick="quickDisable('{{ s.trno }}')">Suspend</button>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endfor %}
+
+  </div>
+
+  <footer>
+    <div style="display:flex; align-items:center; justify-content:center; gap:8px; font-weight:700; margin-bottom:4px;">
+      <span>🛡️</span>
+      <span>MamalBrowse Sentinel · <strong>Ma'amal CompLab Department</strong> · Al-Jamea tus-Saifiyah Nairobi</span>
+    </div>
+    <div>Institutional Computer Laboratory Telemetry &amp; Access Governance Console &bull; Academic Year {{ current_ay or '1447H' }}</div>
+  </footer>
+
+  <script>
+    function switchView(view) {
+      const gridViews = document.querySelectorAll('.roster-grid-view');
+      const tableViews = document.querySelectorAll('.roster-table-view');
+      const tabGrid = document.getElementById('tabGrid');
+      const tabTable = document.getElementById('tabTable');
+
+      if (view === 'table') {
+        gridViews.forEach(el => el.style.display = 'none');
+        tableViews.forEach(el => el.style.display = 'block');
+        tabGrid.classList.remove('active');
+        tabTable.classList.add('active');
+        localStorage.setItem('sentinel_student_view', 'table');
+      } else {
+        gridViews.forEach(el => el.style.display = 'grid');
+        tableViews.forEach(el => el.style.display = 'none');
+        tabTable.classList.remove('active');
+        tabGrid.classList.add('active');
+        localStorage.setItem('sentinel_student_view', 'grid');
+      }
+    }
+
+    // Restore saved view preference
+    const savedView = localStorage.getItem('sentinel_student_view') || 'grid';
+    if (savedView === 'table') {
+      switchView('table');
+    }
+
+    async function quickDisable(trno) {
+      const reason = prompt(`Enter reason to suspend student #${trno} under the 14-day policy window:`, 'Institutional policy non-compliance');
+      if (reason === null) return;
+      try {
+        const res = await fetch('/enforce/admin/disable-account', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ trno: String(trno), reason: reason })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          alert(`⛔ Student #${trno} account suspended. 14-day retention window initiated.`);
+          location.reload();
+        } else {
+          alert('Error: ' + (data.error || 'Failed to suspend student account'));
+        }
+      } catch (e) {
+        alert('Network communication error: ' + e.message);
+      }
+    }
+
+    async function quickUnblock(trno) {
+      if (!confirm(`Restore and re-enable student #${trno} active status?`)) return;
+      try {
+        const res = await fetch('/enforce/admin/enable-account', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ trno: String(trno), note: 'Restored from faculty directory' })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          alert(`🔓 Student #${trno} account successfully restored.`);
+          location.reload();
+        } else {
+          alert('Error: ' + (data.error || 'Failed to unblock student'));
+        }
+      } catch (e) {
+        alert('Network communication error: ' + e.message);
+      }
+    }
+  </script>
+</body>
+</html>

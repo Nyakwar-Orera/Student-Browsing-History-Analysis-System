@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ display_title }} — Academic & Digital Lab Intelligence Dossier</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      line-height: 1.45;
+      font-size: 12px;
+      padding: 24px;
+    }
+    .no-print-bar {
+      position: sticky; top: 0; z-index: 1000;
+      background: #0a1128; color: #fff;
+      padding: 12px 24px; margin: -24px -24px 24px -24px;
+      display: flex; align-items: center; justify-content: space-between;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      border-bottom: 1px solid rgba(245, 200, 66, 0.25);
+    }
+    .no-print-btn {
+      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+      color: #fff; border: 1px solid rgba(245, 200, 66, 0.35); border-radius: 6px;
+      padding: 8px 18px; font-weight: 600; font-size: 13px; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 8px;
+      transition: all 0.2s ease;
+    }
+    .no-print-btn:hover {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      border-color: #f5c842;
+      box-shadow: 0 0 12px rgba(245, 200, 66, 0.25);
+    }
+    .no-print-btn.btn-secondary {
+      background: #1a2447;
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+    .no-print-btn.btn-secondary:hover {
+      background: #232e54;
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .report-paper {
+      max-width: 1060px;
+      margin: 0 auto;
+      background: #fff;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 36px 40px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+
+    /* Letterhead */
+    .header-table {
+      width: 100%;
+      border-bottom: 2px solid #1e3a8a;
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+    }
+    .inst-title {
+      font-size: 20px; font-weight: 800; color: #0f172a;
+      letter-spacing: -0.01em;
+    }
+    .inst-sub {
+      font-size: 12px; color: #64748b; font-weight: 500; margin-top: 2px;
+    }
+    .meta-box {
+      text-align: right; font-size: 11px; color: #475569;
+    }
+    .meta-box strong { color: #0f172a; }
+
+    /* Summary KPI Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .kpi-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 10px 14px;
+      background: #f8fafc;
+    }
+    .kpi-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em; }
+    .kpi-val { font-size: 20px; font-weight: 800; color: #0f172a; margin-top: 2px; }
+    .kpi-sub { font-size: 10px; color: #94a3b8; }
+
+    /* Table */
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+    table.data-table th {
+      background: #0f172a;
+      color: #fff;
+      font-weight: 600;
+      text-align: left;
+      padding: 8px 10px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    table.data-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #e2e8f0;
+      vertical-align: middle;
+    }
+    table.data-table tr:nth-child(even) td {
+      background: #f8fafc;
+    }
+    .student-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      border: 1px solid #cbd5e1; object-fit: cover; display: block;
+    }
+    .avatar-fallback {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: #6366f1; color: #fff; font-weight: 700;
+      display: none; align-items: center; justify-content: center; font-size: 12px;
+    }
+    .badge {
+      display: inline-block; padding: 2px 7px; border-radius: 10px;
+      font-size: 9.5px; font-weight: 700; text-transform: uppercase;
+    }
+    .badge-low { background: #dcfce7; color: #166534; }
+    .badge-medium { background: #fef3c7; color: #92400e; }
+    .badge-high { background: #fee2e2; color: #991b1b; }
+    .badge-ad-disabled { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+    .badge-ad-active { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+
+    /* Signature footer */
+    .sign-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 30px;
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1.5px solid #cbd5e1;
+    }
+    .sign-box {
+      text-align: center; font-size: 10px; color: #475569;
+    }
+    .sign-line {
+      border-bottom: 1px solid #0f172a;
+      height: 36px;
+      margin-bottom: 6px;
+    }
+
+    @media print {
+      body { background: #fff !important; padding: 0 !important; }
+      .no-print-bar { display: none !important; }
+      .report-paper { border: none !important; box-shadow: none !important; padding: 0 !important; max-width: 100% !important; }
+      @page {
+        margin: 1.2cm;
+        size: landscape;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="no-print-bar">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span style="font-weight:700;font-size:14px;">🖨️ Academic Report Generator</span>
+      <span style="font-size:12px;color:#94a3b8;">Format: PDF / High-Res Landscape Dossier</span>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="window.print()" class="no-print-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
+        Print / Save to PDF
+      </button>
+      <button onclick="window.close()" class="no-print-btn btn-secondary">Close</button>
+    </div>
+  </div>
+
+  <div class="report-paper">
+    <table class="header-table">
+      <tr>
+        <td style="vertical-align:top;">
+          <div class="inst-title">Al-Jamea tus-Saifiyah &nbsp;·&nbsp; Mamal Computer Lab</div>
+          <div class="inst-sub">Official Academic & Digital Conduct Intelligence Dossier — {{ display_title }}</div>
+        </td>
+        <td class="meta-box" style="vertical-align:top;">
+          <div>Academic Calendar: <strong>🌙 {{ hijri_date }}</strong></div>
+          <div>Report Generated: <strong>{{ generation_time }}</strong></div>
+          <div>Domain Scope: <strong>Windows Active Directory (mamal.nbi)</strong></div>
+        </td>
+      </tr>
+    </table>
+
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Total Cohort</div>
+        <div class="kpi-val" style="color:#0284c7;">{{ student_count }}</div>
+        <div class="kpi-sub">Enrolled Students</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Avg Engagement</div>
+        <div class="kpi-val" style="color:{% if avg_score >= 70 %}#16a34a{% elif avg_score >= 40 %}#d97706{% else %}#dc2626{% endif %};">
+          {{ avg_score }}/100
+        </div>
+        <div class="kpi-sub">Academic Quality</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Lab Computer Time</div>
+        <div class="kpi-val" style="color:#16a34a;">{{ total_lab_hours }}h</div>
+        <div class="kpi-sub">Total Hours Logged</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Attention Needed</div>
+        <div class="kpi-val" style="color:#dc2626;">{{ risk_counts.high }}</div>
+        <div class="kpi-sub">High Security Risk</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">AD Locked</div>
+        <div class="kpi-val" style="color:{% if ad_disabled_count > 0 %}#dc2626{% else %}#16a34a{% endif %};">
+          {{ ad_disabled_count }}
+        </div>
+        <div class="kpi-sub">Domain Suspended</div>
+      </div>
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width:40px;">Photo</th>
+          <th>TRNO</th>
+          <th>Student Name</th>
+          <th>Focus Score</th>
+          <th>Security Risk</th>
+          <th>Browsing Visits</th>
+          <th>Edu Ratio</th>
+          <th>Lab Duration</th>
+          <th>Active Directory Domain</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for student in engagement_matrix %}
+        <tr>
+          <td>
+            <div style="position:relative;width:32px;height:32px;">
+              <img src="/photo/{{ student.trno }}" alt="" class="student-avatar" loading="lazy"
+                   onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+              <div class="avatar-fallback">{{ (student.name[0] if student.name else '?') | upper }}</div>
+            </div>
+          </td>
+          <td><strong style="font-family:'JetBrains Mono',monospace;">#{{ student.trno }}</strong></td>
+          <td><strong>{{ student.name }}</strong></td>
+          <td>
+            <span style="font-weight:700;color:{% if student.engagement_score >= 70 %}#16a34a{% elif student.engagement_score >= 40 %}#d97706{% else %}#dc2626{% endif %};">
+              {{ student.engagement_score }}
+            </span>/100
+          </td>
+          <td><span class="badge badge-{{ student.risk_level }}">{{ student.risk_level }}</span></td>
+          <td>{{ student.total_visits }}</td>
+          <td>{{ student.educational_ratio }}%</td>
+          <td><strong>{{ student.lab_formatted }}</strong></td>
+          <td>
+            {% if student.ad_disabled %}
+            <span class="badge badge-ad-disabled">⛔ DISABLED (mamal.nbi)</span>
+            {% else %}
+            <span class="badge badge-ad-active">🟢 ACTIVE</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="sign-section">
+      <div class="sign-box">
+        <div class="sign-line"></div>
+        <div><strong>Darajah Proctor / Ustadh In-Charge</strong></div>
+        <div>Al-Jamea tus-Saifiyah Academic Faculty</div>
+      </div>
+      <div class="sign-box">
+        <div class="sign-line"></div>
+        <div><strong>Lab Administrator / Governance Officer</strong></div>
+        <div>Mamal Computer Lab System Sentinel</div>
+      </div>
+      <div class="sign-box">
+        <div class="sign-line"></div>
+        <div><strong>Head of Department (HOD)</strong></div>
+        <div>Academic Verification & Governance Endorsement</div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>{% if is_account_suspended %}Account Suspended — MamalBrowse Sentinel{% else %}Access Warning — MamalBrowse Sentinel{% endif %}</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a1128;
+    --card: #131c3a;
+    --card-surface: #1a2447;
+    --border: rgba(255, 255, 255, 0.09);
+    --red: #ef4444;
+    --red-glow: rgba(239, 68, 68, 0.25);
+    --amber: #f59e0b;
+    --amber-glow: rgba(245, 158, 11, 0.25);
+    --gold: #f5c842;
+    --gold-glow: rgba(245, 200, 66, 0.25);
+    --blue: #2563eb;
+    --royal: #1e3a8a;
+    --text: #f8fafc;
+    --muted: #94a3b8;
+    --subtle: #64748b;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: radial-gradient(1000px 700px at 50% 10%, rgba(30, 58, 138, 0.45) 0%, var(--bg) 70%);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    {% if is_account_suspended %}
+    background: linear-gradient(90deg, #ef4444, #f43f5e, #dc2626);
+    {% else %}
+    background: linear-gradient(90deg, #f59e0b, #fbbf24, #d97706);
+    {% endif %}
+  }
+
+  .container {
+    width: 100%;
+    max-width: 660px;
+    position: relative;
+    z-index: 10;
+    animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(14px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .card {
+    background: rgba(15, 23, 42, 0.88);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 40px 36px;
+    text-align: center;
+    box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 40px -10px {% if is_account_suspended %}var(--red-glow){% else %}var(--amber-glow){% endif %};
+  }
+
+  .badge-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 20px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    {% if is_account_suspended %}
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+    box-shadow: 0 0 25px rgba(239, 68, 68, 0.2);
+    {% else %}
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    color: #fde68a;
+    box-shadow: 0 0 25px rgba(245, 158, 11, 0.2);
+    {% endif %}
+  }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    {% if is_account_suspended %}
+    background: rgba(239, 68, 68, 0.15);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    {% else %}
+    background: rgba(245, 158, 11, 0.15);
+    color: #fde68a;
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    {% endif %}
+  }
+
+  .status-pill .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    {% if is_account_suspended %}
+    background: #ef4444;
+    box-shadow: 0 0 8px #ef4444;
+    animation: pulse 1.8s infinite;
+    {% else %}
+    background: #f59e0b;
+    box-shadow: 0 0 8px #f59e0b;
+    {% endif %}
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.85); }
+  }
+
+  h1 {
+    font-size: 26px;
+    font-weight: 800;
+    margin-bottom: 10px;
+    letter-spacing: -0.02em;
+    color: #fff;
+  }
+
+  p.description {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+
+  .target-box {
+    background: rgba(8, 13, 26, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    text-align: left;
+  }
+
+  .target-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--subtle);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .target-url {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: #cbd5e1;
+    word-break: break-all;
+  }
+
+  .details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 26px;
+    text-align: left;
+  }
+
+  .detail-card {
+    background: rgba(8, 13, 26, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 12px 14px;
+  }
+
+  .detail-title {
+    font-size: 11px;
+    color: var(--subtle);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 4px;
+  }
+
+  .detail-val {
+    font-size: 13px;
+    font-weight: 600;
+    color: #e2e8f0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .reason-alert {
+    background: rgba(239, 68, 68, 0.08);
+    border-left: 3px solid #ef4444;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    color: #fecaca;
+    text-align: left;
+    margin-bottom: 26px;
+    line-height: 1.5;
+  }
+
+  .actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    border: none;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--indigo), var(--blue));
+    color: white;
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
+  }
+
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.06);
+    color: #e2e8f0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+  }
+
+  /* Override Form */
+  .override-panel {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    display: none;
+    text-align: left;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .override-panel.active {
+    display: block;
+  }
+
+  .override-panel h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #e2e8f0;
+  }
+
+  .override-panel p {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  textarea {
+    width: 100%;
+    background: rgba(8, 13, 26, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    color: #f8fafc;
+    padding: 12px;
+    font-family: inherit;
+    font-size: 13px;
+    min-height: 85px;
+    margin-bottom: 14px;
+    resize: vertical;
+  }
+
+  textarea:focus {
+    outline: none;
+    border-color: var(--indigo);
+  }
+
+  .footer-meta {
+    margin-top: 32px;
+    font-size: 11px;
+    color: var(--subtle);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 18px;
+  }
+
+  .toast-msg {
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    display: none;
+  }
+  .toast-success { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.3); }
+  .toast-error { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="card">
+    <div class="badge-icon">
+      {% if is_account_suspended %}🔒{% else %}⚠️{% endif %}
+    </div>
+
+    <div class="status-pill">
+      <span class="dot"></span>
+      {% if is_account_suspended %}
+        Student Account Suspended
+      {% else %}
+        Lab Policy Warning
+      {% endif %}
+    </div>
+
+    <h1>
+      {% if is_account_suspended %}
+        Account Locked: Restricted Site
+      {% else %}
+        Website Restricted
+      {% endif %}
+    </h1>
+
+    <p class="description">
+      {% if is_account_suspended %}
+        Access to <strong>{{ url or "unwanted websites" }}</strong> violates computer lab policy.
+        Your student account has been automatically suspended from web access. Please contact your class teacher or IT administrator to review and restore access.
+      {% else %}
+        Access to this website is restricted during lab hours. A policy warning has been recorded on your student profile. Continued attempts will result in your account being suspended.
+      {% endif %}
+    </p>
+
+    <div class="target-box">
+      <div class="target-label">Attempted Destination</div>
+      <div class="target-url">{{ url or "Restricted Web Destination" }}</div>
+    </div>
+
+    <div class="details-grid">
+      <div class="detail-card">
+        <div class="detail-title">Student TRNO</div>
+        <div class="detail-val">{{ trno or "Unassigned" }} {% if student_name %}({{ student_name }}){% endif %}</div>
+      </div>
+      <div class="detail-card">
+        <div class="detail-title">Lab Workstation</div>
+        <div class="detail-val">{{ station or "Lab PC" }}</div>
+      </div>
+      <div class="detail-card">
+        <div class="detail-title">Category</div>
+        <div class="detail-val" style="text-transform: capitalize;">{{ category or "Unwanted Website" }}</div>
+      </div>
+      <div class="detail-card">
+        <div class="detail-title">Account Status</div>
+        <div class="detail-val" style="color: {% if is_account_suspended %}#f87171{% else %}#fbbf24{% endif %};">
+          {{ account_status|upper }} {% if warning_count > 0 %}({{ warning_count }} warning{{ 's' if warning_count > 1 else '' }}){% endif %}
+        </div>
+      </div>
+    </div>
+
+    {% if reason %}
+    <div class="reason-alert">
+      <strong>Policy Notice:</strong> {{ reason }}
+    </div>
+    {% endif %}
+
+    <div class="actions" id="mainActions">
+      <button class="btn btn-primary" onclick="toggleOverrideForm()">
+        📩 Request Teacher Override
+      </button>
+      <button class="btn btn-secondary" onclick="closeWindow()">
+        ✕ Close Tab
+      </button>
+    </div>
+
+    <!-- Override appeal section -->
+    <div class="override-panel" id="overridePanel">
+      <h4>Submit Override / Appeal Request</h4>
+      <p>If you require this site for academic research or a class project, describe your reason below for teacher review.</p>
+      <textarea id="overrideReason" placeholder="Describe the assignment or academic reason for visiting this website..."></textarea>
+      <div style="display: flex; gap: 10px;">
+        <button class="btn btn-primary" id="submitOverrideBtn" onclick="submitOverride()">
+          Send Request to Teacher
+        </button>
+        <button class="btn btn-secondary" onclick="toggleOverrideForm()">
+          Cancel
+        </button>
+      </div>
+      <div id="toastMessage" class="toast-msg"></div>
+    </div>
+
+    <div class="footer-meta">
+      <div>MamalBrowse Sentinel · Al-Jamea tus-Saifiyah Nairobi</div>
+      <div>Security & Policy Enforcement Engine</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const TRNO = {{ trno|tojson }};
+  const URL_TARGET = {{ url|tojson }};
+
+  function toggleOverrideForm() {
+    const panel = document.getElementById('overridePanel');
+    const isActive = panel.classList.contains('active');
+    panel.classList.toggle('active', !isActive);
+    if (!isActive) {
+      document.getElementById('overrideReason').focus();
+    }
+  }
+
+  function closeWindow() {
+    window.location.href = "about:blank";
+  }
+
+  async function submitOverride() {
+    const reasonInput = document.getElementById('overrideReason');
+    const reason = reasonInput.value.trim();
+    const btn = document.getElementById('submitOverrideBtn');
+    const toast = document.getElementById('toastMessage');
+
+    if (!reason) {
+      toast.className = "toast-msg toast-error";
+      toast.style.display = "block";
+      toast.textContent = "Please enter an explanation for your teacher.";
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "Submitting...";
+
+    try {
+      const resp = await fetch('/enforce/request-override', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          trno: TRNO,
+          url: URL_TARGET,
+          reason: reason
+        })
+      });
+      const data = await resp.json();
+
+      if (data.ok) {
+        toast.className = "toast-msg toast-success";
+        toast.style.display = "block";
+        toast.textContent = data.message || "Request delivered to your teacher.";
+        reasonInput.value = "";
+        setTimeout(() => {
+          toggleOverrideForm();
+        }, 3000);
+      } else {
+        toast.className = "toast-msg toast-error";
+        toast.style.display = "block";
+        toast.textContent = data.error || "Could not submit request.";
+      }
+    } catch (err) {
+      toast.className = "toast-msg toast-error";
+      toast.style.display = "block";
+      toast.textContent = "Connection error. Please try again.";
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Send Request to Teacher";
+    }
+  }
+</script>
+
+</body>
+</html>

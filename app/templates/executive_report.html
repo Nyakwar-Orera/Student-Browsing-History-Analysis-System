@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Executive Lab Governance & Browsing Audit Report — Al-Jamea tus-Saifiyah</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #091024;
+      --card-bg: #0f1a38;
+      --gold: #d4af37;
+      --gold-light: #f5c842;
+      --royal: #1e3a8a;
+      --emerald: #10b981;
+      --rose: #f43f5e;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: rgba(212, 175, 55, 0.25);
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      padding: 30px 20px 60px;
+      line-height: 1.5;
+    }
+    .report-wrap {
+      max-width: 1040px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+    }
+    .action-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-gold {
+      background: linear-gradient(135deg, #d4af37 0%, #f5c842 100%);
+      color: #000;
+      border: none;
+    }
+    .btn-gold:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(212, 175, 55, 0.4); }
+    .btn-back {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .btn-back:hover { background: rgba(255, 255, 255, 0.15); }
+
+    /* Report Header */
+    .rep-header {
+      text-align: center;
+      padding-bottom: 24px;
+      border-bottom: 2px solid var(--gold);
+      margin-bottom: 30px;
+    }
+    .rep-crest {
+      font-size: 38px;
+      margin-bottom: 8px;
+    }
+    .rep-inst {
+      font-family: 'Cinzel', serif;
+      font-size: 24px;
+      letter-spacing: 0.05em;
+      color: var(--gold-light);
+      font-weight: 700;
+    }
+    .rep-campus {
+      font-size: 13px;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .rep-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 10px;
+    }
+    .rep-meta {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      font-size: 12.5px;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Grid Sections */
+    .section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--gold-light);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin: 28px 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .cards-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .cards-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .card-label { font-size: 11.5px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; }
+    .card-value { font-size: 22px; font-weight: 750; color: #fff; font-family: 'JetBrains Mono', monospace; }
+    .card-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+    .highlight-gold { color: var(--gold-light); }
+    .highlight-green { color: var(--emerald); }
+    .highlight-rose { color: var(--rose); }
+
+    /* Tables */
+    .rep-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      font-size: 13px;
+    }
+    .rep-table th {
+      background: rgba(212, 175, 55, 0.1);
+      color: var(--gold-light);
+      text-align: left;
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .rep-table td {
+      padding: 11px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--text);
+    }
+    .rep-table tr:hover { background: rgba(255, 255, 255, 0.02); }
+
+    /* Signatures */
+    .sign-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 50px;
+      margin-top: 50px;
+      padding-top: 30px;
+      border-top: 1px dashed rgba(255, 255, 255, 0.15);
+    }
+    .sign-box { text-align: center; }
+    .sign-line { width: 80%; height: 1px; background: rgba(255, 255, 255, 0.3); margin: 40px auto 8px; }
+    .sign-title { font-size: 13px; font-weight: 600; color: #fff; }
+    .sign-role { font-size: 11.5px; color: var(--text-muted); }
+
+    /* Print Styles */
+    @media print {
+      body { background: #fff !important; color: #000 !important; padding: 0 !important; }
+      .action-bar { display: none !important; }
+      .report-wrap { border: none !important; box-shadow: none !important; padding: 0 !important; background: #fff !important; }
+      .rep-inst { color: #1e3a8a !important; }
+      .rep-header { border-bottom-color: #1e3a8a !important; }
+      .section-title { color: #1e3a8a !important; }
+      .card { background: #f8fafc !important; border-color: #cbd5e1 !important; color: #000 !important; }
+      .card-value { color: #000 !important; }
+      .card-label, .card-sub, .rep-meta, .rep-campus { color: #475569 !important; }
+      .rep-table th { background: #f1f5f9 !important; color: #0f172a !important; border-color: #cbd5e1 !important; }
+      .rep-table td { color: #0f172a !important; border-color: #e2e8f0 !important; }
+      .sign-line { background: #000 !important; }
+      .sign-title { color: #000 !important; }
+      .sign-role { color: #475569 !important; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="report-wrap">
+
+  <div class="action-bar">
+    <a href="/home" class="btn btn-back">← Back to Dashboard</a>
+    <div style="display: flex; gap: 10px;">
+      <a href="/api/reports/executive_csv" class="btn btn-back">📥 Download CSV</a>
+      <button onclick="window.print()" class="btn btn-gold">🖨️ Print / Save PDF</button>
+    </div>
+  </div>
+
+  <div class="rep-header">
+    <div class="rep-crest">🛡️</div>
+    <div class="rep-inst">{{ data.institution_name }}</div>
+    <div class="rep-campus">{{ data.campus_location }} · Computer Laboratories &amp; Surveillance Directorate</div>
+    <div class="rep-title">{{ data.report_title }}</div>
+    <div class="rep-meta">
+      <span>📅 {{ data.display_date }}</span>
+      <span>🌙 {{ data.hijri_date }} (AY {{ data.current_ay }})</span>
+      <span>⏱️ Generated: {{ data.generated_at }}</span>
+    </div>
+  </div>
+
+  <!-- 1. Active Directory OU Census -->
+  <div class="section-title">1. Authoritative Student Enrollment (Active Directory OUs Only)</div>
+  <div class="cards-3">
+    <div class="card">
+      <div class="card-label">Total Enrolled in OUs</div>
+      <div class="card-value highlight-gold">{{ data.ou_census.total }}</div>
+      <div class="card-sub">Domain: {{ data.ou_census.domain }} (Authoritative)</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Talabaat (Boys OU)</div>
+      <div class="card-value">{{ data.ou_census.talabaat }}</div>
+      <div class="card-sub">OU=TALABAAT,OU=MAMAL</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Talebaat (Girls OU)</div>
+      <div class="card-value">{{ data.ou_census.talebaat }}</div>
+      <div class="card-sub">OU=TALEBAAT,OU=MAMAL</div>
+    </div>
+  </div>
+
+  <!-- 2. Lab Terminal Capacities -->
+  <div class="section-title">2. Campus Computer Lab Fleet (120 Total Terminals)</div>
+  <table class="rep-table">
+    <thead>
+      <tr>
+        <th>Facility Name</th>
+        <th>Lab Identifier</th>
+        <th>Workstation Capacity</th>
+        <th>Designated Student Cohort</th>
+        <th>Operational Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for lab in data.lab_terminals.labs %}
+      <tr>
+        <td><strong>{{ lab.name }}</strong></td>
+        <td><code>{{ lab.id }}</code></td>
+        <td><strong>{{ lab.capacity }} Terminals</strong></td>
+        <td>{{ lab.cohort }}</td>
+        <td><span style="color: var(--emerald);">● Online (Sentinel Managed)</span></td>
+      </tr>
+      {% endfor %}
+      <tr style="background: rgba(255, 255, 255, 0.04); font-weight: 700;">
+        <td>Total Campus Terminal Fleet</td>
+        <td>—</td>
+        <td>{{ data.lab_terminals.total_capacity }} Workstations</td>
+        <td>Campus-Wide</td>
+        <td>Active Sentinel Real-Time Protection</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 3. Policy Enforcement & Retention -->
+  <div class="section-title">3. Institutional Security Governance &amp; Policy Compliance</div>
+  <div class="cards-4">
+    <div class="card">
+      <div class="card-label">Compliance Rate</div>
+      <div class="card-value highlight-green">{{ data.security_governance.compliance_rate }}%</div>
+      <div class="card-sub">Zero critical breaches</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Active Suspensions</div>
+      <div class="card-value highlight-rose">{{ data.security_governance.active_suspensions }}</div>
+      <div class="card-sub">14-Day Mandatory Review</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Warning Strikes</div>
+      <div class="card-value highlight-gold">{{ data.security_governance.active_warnings }}</div>
+      <div class="card-sub">Auto-Disable on Strike 5</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Locked in AD</div>
+      <div class="card-value highlight-rose">{{ data.security_governance.ad_disabled_count }}</div>
+      <div class="card-sub">Domain UserAccountControl</div>
+    </div>
+  </div>
+
+  <table class="rep-table">
+    <thead>
+      <tr>
+        <th>Governance Policy Component</th>
+        <th>Configured Standard</th>
+        <th>Enforcement Engine</th>
+        <th>Verification</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Non-Educational YouTube Videos &amp; Shorts</strong></td>
+        <td>Immediate tab close + warning strikes (Strike 1 to 4)</td>
+        <td>Sentinel Client Agent UIAutomation</td>
+        <td><span style="color: var(--emerald);">Enforced</span></td>
+      </tr>
+      <tr>
+        <td><strong>Persistent Non-Educational Violations</strong></td>
+        <td>Auto-lock workstation &amp; disable account at 5 strikes</td>
+        <td>BrowseGuard Policy Engine</td>
+        <td><span style="color: var(--emerald);">Enforced</span></td>
+      </tr>
+      <tr>
+        <td><strong>Prohibited Sites &amp; Torrents</strong></td>
+        <td>Immediate 14-day suspension (flagged for manual review)</td>
+        <td>Retention Policy Ledger</td>
+        <td><span style="color: var(--emerald);">Enforced</span></td>
+      </tr>
+      <tr>
+        <td><strong>Rogue &amp; Portable Executables</strong></td>
+        <td>Auto-termination (Tor, Opera GX, uTorrent, Picard, etc.)</td>
+        <td>Process Guard Subsystem</td>
+        <td><span style="color: var(--emerald);">Enforced</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 4. Academic Utilization -->
+  <div class="section-title">4. Curriculum Domain Utilization Share</div>
+  <table class="rep-table">
+    <thead>
+      <tr>
+        <th>Academic Domain Category</th>
+        <th>Sample Resources</th>
+        <th>Curriculum Share</th>
+        <th>Compliance Evaluation</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for cat in data.academic_categories %}
+      <tr>
+        <td><strong>{{ cat.name }}</strong></td>
+        <td>Quran Tajweed, Sabaq, Khan Academy, Python, Coursera, Wikipedia</td>
+        <td><strong>{{ cat.share }}%</strong> of lab requests</td>
+        <td><span style="color: var(--emerald);">✓ Approved Educational Resource</span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Signatures -->
+  <div class="sign-row">
+    <div class="sign-box">
+      <div class="sign-line"></div>
+      <div class="sign-title">Head of Department (Al-Idarah)</div>
+      <div class="sign-role">Al-Jamea tus-Saifiyah, Nairobi</div>
+    </div>
+    <div class="sign-box">
+      <div class="sign-line"></div>
+      <div class="sign-title">Head of Computer Laboratories</div>
+      <div class="sign-role">IT &amp; Sentinel Surveillance Directorate</div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
